@@ -308,3 +308,59 @@ h1 br {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
 }
+
+/* science-click custom css */
+
+.panel-body.large {
+    min-height: 500px;
+}
+
+.ui-draggable-handle {
+    cursor: move;
+}
+.element {
+    font-size: 3em;
+    font-weight: bold;
+    border: 0px;
+    padding: 1px;
+    z-index: 50;
+}
+#observationsContent {
+    font-size: 24px;
+}
+
+.white-badge {
+    color: black;
+    background-color: transparent;
+    position: relative;
+    font-weight: bold;
+    top: -20px;
+    left: 20px;
+}
+
+/* https://github.com/mbostock/d3/blob/master/lib/colorbrewer/colorbrewer.css */
+.Paired .q0-12{fill:rgb(166,206,227)}
+.Paired .q1-12{fill:rgb(31,120,180)}
+.Paired .q2-12{fill:rgb(178,223,138)}
+.Paired .q3-12{fill:rgb(51,160,44)}
+.Paired .q4-12{fill:rgb(251,154,153)}
+.Paired .q5-12{fill:rgb(227,26,28)}
+.Paired .q6-12{fill:rgb(253,191,111)}
+.Paired .q7-12{fill:rgb(255,127,0)}
+.Paired .q8-12{fill:rgb(202,178,214)}
+.Paired .q9-12{fill:rgb(106,61,154)}
+.Paired .q10-12{fill:rgb(255,255,153)}
+.Paired .q11-12{fill:rgb(177,89,40)}
+
+.Paired .q0-12{color:rgb(166,206,227)}
+.Paired .q1-12{color:rgb(31,120,180)}
+.Paired .q2-12{color:rgb(178,223,138)}
+.Paired .q3-12{color:rgb(51,160,44)}
+.Paired .q4-12{color:rgb(251,154,153)}
+.Paired .q5-12{color:rgb(227,26,28)}
+.Paired .q6-12{color:rgb(253,191,111)}
+.Paired .q7-12{color:rgb(255,127,0)}
+.Paired .q8-12{color:rgb(202,178,214)}
+.Paired .q9-12{color:rgb(106,61,154)}
+.Paired .q10-12{color:rgb(255,255,153)}
+.Paired .q11-12{color:rgb(177,89,40)}

@@ -10,7 +10,7 @@
   game.load();
 
   var lab = game.lab;
-  var research = game.research;
+  var elements = game.elements;
   var workers = game.workers;
   var upgrades = game.upgrades;
   var achievements = game.achievements;
@@ -40,6 +40,11 @@
     };
   }]);
 
+  // Hack to prevent text highlighting
+  document.getElementById('detector').addEventListener('mousedown', function(e) {
+    e.preventDefault();
+  });
+
   // controllers
   app.controller('DetectorController', function() {
     this.click = function() {
@@ -50,10 +55,26 @@
     };
   });
 
-  // Hack to prevent text highlighting
-  document.getElementById('detector').addEventListener('mousedown', function(e) {
-    e.preventDefault();
-  });
+  app.controller('ElementController', ['$compile', function($compile) {
+    this.elements = elements;
+    this.isVisible = function(item) {
+      return item.isVisible(lab);
+    };
+    this.isAvailable = function(item) {
+      return item.isAvailable(lab);
+    };
+    this.doElement = function(item) {
+      var cost = item.element(lab);
+      if (cost > 0) {
+        UI.showUpdateValue("#update-data", -cost);
+        UI.showUpdateValue("#update-reputation", item.state.reputation);
+      }
+    };
+    this.showInfo = function(r) {
+      UI.showModal(r.name, r.getInfo());
+      UI.showLevels(r.state.level);
+    };
+  }]);
 
   app.controller('LabController', ['$interval', function($interval) {
     this.lab = lab;
@@ -78,27 +99,6 @@
         }).reduce(function(a, b){return a + b}, 0));
       }
     }, 1000);
-  }]);
-
-  app.controller('ResearchController', ['$compile', function($compile) {
-    this.research = research;
-    this.isVisible = function(item) {
-      return item.isVisible(lab);
-    };
-    this.isAvailable = function(item) {
-      return item.isAvailable(lab);
-    };
-    this.doResearch = function(item) {
-      var cost = item.research(lab);
-      if (cost > 0) {
-        UI.showUpdateValue("#update-data", -cost);
-        UI.showUpdateValue("#update-reputation", item.state.reputation);
-      }
-    };
-    this.showInfo = function(r) {
-      UI.showModal(r.name, r.getInfo());
-      UI.showLevels(r.state.level);
-    };
   }]);
 
   app.controller('HRController', function() {

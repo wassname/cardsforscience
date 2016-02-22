@@ -18,7 +18,7 @@ var UI = (function () {
       }
       $('.scrollable').height(h - offset + 'px');
 
-      var types = ['research', 'hr', 'upgrades'];
+      var types = ['element', 'hr', 'upgrades'];
 
       if ($(window).width() < 992) {
         for (var i = 0; i < types.length; i++) {
@@ -65,6 +65,8 @@ var UI = (function () {
           detector.init(400);
         }
       }
+
+      detector.bubblr.onResize();
     }
 
     $(window).resize(resize);

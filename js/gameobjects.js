@@ -82,34 +82,35 @@ var GameObjects = (function() {
     return false;
   };
 
-  /** @class Research
+  /** @class Element
    */
-  var Research = function(obj) {
+  var Element = function(obj) {
     GameObject.apply(this, [obj]);
-    this.state.level = 0;
-    this.state.interesting = false;
+    this.state.amount = Math.round(Math.random()*2);
+    this.state.discovered = Math.random()<0.1;
+    this.state.interesting = Math.random()<0.1;
+    this.state.color = Math.round(Math.random()*12);
   };
 
-  Research.prototype = Object.create(GameObject.prototype);
+  Element.prototype = Object.create(GameObject.prototype);
 
-  Research.prototype.constructor = Research;
+  Element.prototype.constructor = Element;
 
-  Research.prototype.isVisible = function(lab) {
+  Element.prototype.isVisible = function(lab) {
     if (!lab) {
       return false;
     }
-    return this.state.level > 0 ||
-           lab.state.data >= this.state.cost * GLOBAL_VISIBILITY_THRESHOLD;
+    return this.state.discovered;
   };
 
-  Research.prototype.isAvailable = function(lab) {
+  Element.prototype.isAvailable = function(lab) {
     if (!lab) {
       return false;
     }
-    return lab.state.data >= this.state.cost;
+    return this.state.amount>0;
   };
 
-  Research.prototype.research = function(lab) {
+  Element.prototype.research = function(lab) {
     if (lab && lab.research(this.state.cost, this.state.reputation)) {
       this.state.level++;
       if (this.state.info_levels.length > 0 &&
@@ -124,7 +125,7 @@ var GameObjects = (function() {
     return -1;
   };
 
-  Research.prototype.getInfo = function() {
+  Element.prototype.getInfo = function() {
     if (!this._info) {
       this._info = Helpers.loadFile(this.info);
     }
@@ -269,7 +270,7 @@ var GameObjects = (function() {
   // Expose classes in module.
   return {
     Lab: Lab,
-    Research: Research,
+    Element: Element,
     Worker: Worker,
     Upgrade: Upgrade,
     Achievement: Achievement

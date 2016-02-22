@@ -64,9 +64,6 @@
 			self.animationLoop();
 			}, this.options.animationSpeed);
 
-
-		$(window).on('resize',this.onResize.bind(this));
-
     };
 
 	Bubblr.prototype.onResize= function(){

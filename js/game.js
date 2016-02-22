@@ -6,7 +6,7 @@ var Game = (function(Helpers,GameObjects,ObjectStorage) {
 
   var Game = function() {
     this.lab = new GameObjects.Lab();
-    this.research = null;
+    this.elements = null;
     this.workers = null;
     this.upgrades = null;
     this.achievements = null;
@@ -23,10 +23,12 @@ var Game = (function(Helpers,GameObjects,ObjectStorage) {
     // However, I don't see any other reasonable way to do this in order to
     // make it work with Angular. If you know a way, let me know, and I'll
     // give you a beer. - Kevin
-    this.research = Helpers.loadFile('json/research.json');
+    this.elements = Helpers.loadFile('json/elements.json');
     this.workers = Helpers.loadFile('json/workers.json');
     this.upgrades = Helpers.loadFile('json/upgrades.json');
     this.achievements = Helpers.loadFile('json/achievements.json');
+    this.runes = Helpers.loadFile('json/runes.json');
+    this.keywords = Helpers.loadFile('json/keywords.json');
 
     // Turn JSON files into actual game objects and fill map of all objects
     var _this = this;
@@ -37,8 +39,8 @@ var Game = (function(Helpers,GameObjects,ObjectStorage) {
       _this.allObjects[o.key] = o;
       return o;
     };
-    this.research = this.research.map(
-        function(r) { return makeGameObject(GameObjects.Research, r); });
+    this.elements = this.elements.map(
+        function(r) { return makeGameObject(GameObjects.Element, r); });
     this.workers = this.workers.map(
         function(w) { return makeGameObject(GameObjects.Worker, w); });
     this.upgrades = this.upgrades.map(
