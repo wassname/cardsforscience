@@ -1,3 +1,11 @@
+/** Define and draw to canvas particle events, used in detector **/
+
+/**
+ * Define and draw to canvas particle events, used in detector
+ * @param {Object}  type     Object with name 'electron'||'jet'||'muon'
+ * @param {Number}  count    Number of particles in this event
+ * @param {Boolean} external Wether even was caused by player or worker
+ */
 function ParticleEvent(type, count, external)
 {
     this.work = typeof external !== 'undefined' ? external : false;
@@ -60,4 +68,3 @@ ParticleEvent.prototype.draw = function(duration, init)
         this.alpha -= 0.03 / 16 * duration;
     }
 };
-

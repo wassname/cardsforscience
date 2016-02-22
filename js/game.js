@@ -1,4 +1,7 @@
-var Game = (function() {
+/**
+ * Game object load/saves game resources and stores game objects
+ */
+var Game = (function(Helpers,GameObjects,ObjectStorage) {
   'use strict';
 
   var Game = function() {
@@ -58,4 +61,4 @@ var Game = (function() {
   };
 
   return {Game : Game};
-}());
+}(Helpers,GameObjects,ObjectStorage));

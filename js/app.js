@@ -1,7 +1,11 @@
+/**
+ * Define the angular app
+ */
 'use strict';
 (function() {
   Helpers.validateSaveVersion();
 
+  // init game
   var game = new Game.Game();
   game.load();
 
@@ -15,6 +19,7 @@
 
   var app = angular.module('particleClicker', []);
 
+  // add helpers as filters
   app.filter('niceNumber', ['$filter', function($filter) {
       return Helpers.formatNumberPostfix;
   }]);
@@ -35,6 +40,7 @@
     };
   }]);
 
+  // controllers
   app.controller('DetectorController', function() {
     this.click = function() {
       lab.clickDetector();

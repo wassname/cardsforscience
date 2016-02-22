@@ -1,3 +1,7 @@
+/**
+ * Game objects such as workers, research, upgrades, and achievements.
+ */
+
 var GameObjects = (function() {
   'use strict';
   var GLOBAL_VISIBILITY_THRESHOLD = 0.5;
@@ -22,7 +26,7 @@ var GameObjects = (function() {
     GameObject.apply(this, [{
                              key : 'lab',
                              state : {
-                               name : 'Give your lab an awesome name!',
+                               name : 'Click here to give your lab an awesome name!',
                                detector : 1,
                                factor : 5,
                                data : 0,

@@ -1,3 +1,4 @@
+/** Custom google analystics events **/
 var analytics =
 {
     enabled: true,
@@ -15,19 +16,19 @@ var analytics =
         categoryResearch: 'Research',
         categoryHR: 'HR',
         categoryUpgrades: 'Upgrades',
-        
+
         actionResearch: 'Research',
         actionHire: 'Hire',
         actionBuy: 'Buy'
     },
-    
+
     init: function()
     {
         if (typeof Helpers.analytics === 'undefined' || Helpers.analytics == '') {
             analytics.enabled = false;
             return;
         }
-        
+
         ga('create', Helpers.analytics);
         ga('set', { 'appName': 'Particle Clicker', 'appId': 'ch.cern.particle-clicker', 'appVersion': '0.9' });
         ga('set', 'anonymizeIp', true);
@@ -54,22 +55,22 @@ var analytics =
             analytics.sendScreen(analytics.screens.main);
         });
     },
-    
+
     sendScreen: function(type)
     {
         if (!analytics.enabled || typeof type === 'undefined') {
             return;
         }
-        
+
         ga('send', 'screenview', { 'screenName': type });
     },
-    
+
     sendEvent: function(category, action, label, value)
     {
         if (!analytics.enabled || typeof category === 'undefined' || typeof action === 'undefined' || typeof label === 'undefined' || typeof value === 'undefined') {
             return;
         }
-        
+
         //ga('send', 'event', category, action, label, value, {'screenName': analytics.screens.main });
     }
 };
