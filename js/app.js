@@ -47,6 +47,17 @@
 
   // controllers
   app.controller('DetectorController', function() {
+     this.dropOptions={
+        //   accept: ".rune",
+          addClasses: true,
+          // greedy: true,
+          // tolerance: "pointer",
+          activeClass: "ui-state-hover",
+          hoverClass: "ui-state-active",
+      }
+    this.onDrop = function(event,ui){
+        detector.onDrop(event,ui,lab);
+    }
     this.click = function() {
       lab.clickDetector();
       detector.addEvent();
@@ -56,6 +67,16 @@
   });
 
   app.controller('ElementController', ['$compile', function($compile) {
+    this.dragOptions = {
+        revert: true,//"invalid",
+        zIndex: 100,
+        // helper: "clone", // drags a clone
+        // opacity: 0.75,
+        // start: this.onRuneDrop.bind(this),
+        // stop: this.onRuneDrop.bind(this),
+        cancel:false,
+        // containment:false
+    };
     this.elements = elements;
     this.isVisible = function(item) {
       return item.isVisible(lab);

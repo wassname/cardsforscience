@@ -12,6 +12,7 @@ var Game = (function(Helpers,GameObjects,ObjectStorage) {
     this.achievements = null;
     this.allObjects = {lab : this.lab};
     this.loaded = false;
+    this.rules= null;
   };
 
   Game.prototype.load = function() {
@@ -52,8 +53,50 @@ var Game = (function(Helpers,GameObjects,ObjectStorage) {
       var o = this.allObjects[key];
       o.loadState(ObjectStorage.load(key));
     }
+
+    this.rules = this.generateRules();
+
     this.loaded = true;
   };
+
+  /** Generate rules between runes **/
+  Game.prototype.generateRules= function(){
+      var elements = this.elements;
+      // generate rules and store them with a hash of inredients
+      // the rule will be an object with ingredients, catalysts, conditions, results
+      // todo make a strcture that's more like a tree with progression etc
+      // todo add duds, misleading ones, explosions wildcards
+      // todo make this theory based?
+      // todo simulation
+      var rules={};
+      for (var k = 0; k < this.elements.length*5; k++) {
+          // make a rules
+          var rule={ingredients:[],catalysts:[],conditions:[],results:[],inputs:[]}
+          var numOfIngredients = 2+Math.round(Math.random()*2);
+          for (var i = 0; i < numOfIngredients; i++) {
+              var j = Math.round(Math.random()*(elements.length-1));
+              rule.ingredients.push(elements[j].key);
+          }
+
+          if (Math.random()<0.1) {
+              var j = Math.round(Math.random()*(elements.length-1));
+              rule.catalysts.push(elements[j].key);
+          }
+          var numOfresults = Math.round(Math.random()*3);
+          for (var i = 0; i < numOfresults; i++) {
+              var j = Math.round(Math.random()*(elements.length-1));
+              rule.results.push(elements[j].key);
+          }
+          rule.inputs=[].concat(rule.ingredients,rule.catalysts)
+          rule.ingredients.sort()
+          rule.results.sort()
+          rule.catalysts.sort()
+          rule.inputs.sort();
+          // index byhash of sorted array of ingredients
+          rules[rule.inputs]=rule
+      }
+      return rules;
+  },
 
   Game.prototype.save = function() {
     // Save every object's state to local storage

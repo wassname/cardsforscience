@@ -40,6 +40,7 @@ var GameObjects = (function() {
                                time: 0
                              }
                            }]);
+
   };
 
   Lab.prototype = Object.create(GameObject.prototype);
@@ -73,6 +74,29 @@ var GameObjects = (function() {
     return false;
   };
 
+  /** Run an experiment depending on ingredients and conditions **/
+  Lab.prototype.experiment = function(options) {
+      var elements = options.elements || [];
+      var elementKeys = elements.map(function(e){return $(e).data('element')});
+      elementKeys.sort(); // this makes reaction be independant of order
+
+      var result = this.rules[elementKeys]
+      if (result) {
+          this.reaction(result.ingredients,result.rune)
+      }
+      return result;
+  };
+
+  /** Remove ingredients and make results with animations **/
+  Lab.prototype.reaction= function(ingredients,results){
+      // TODO put new rune in old position, add animations
+      var rune = this.runeElem(r,$(aElem).parent().parent());
+      $('#observationsContent').append('<div class="col-md-12">'+this.runes[a]+'+'+this.runes[b]+'='+this.runes[r]+'</div>')
+      this.bubblr.start(1500);
+      // TODO use jqueru ui transfer effect to remove or puff
+      $(aElem).remove();
+      $(bElem).remove();
+  }
   Lab.prototype.buy = function(cost) {
     if (this.state.money >= cost) {
       this.state.money -= cost;

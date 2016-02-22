@@ -131,7 +131,48 @@ var detector =
     draw: function(duration)
     {
         detector.bubblr.start(duration);
-    }
+    },
+
+    onDrop: function(event, ui, lab){
+        // TODO tidy this, attach new runes to something better
+        // FIXME at the moment it duplicates runes, but we need a better system
+        var self=this;
+        console.debug('onDrop',arguments);
+        var $draggable = $(ui.draggable),
+            $droppable = $(event.target);
+        var draggableTop    = $draggable.offset().top;
+        var draggableHeight = $draggable.height();
+        var draggableBottom = draggableTop + draggableHeight;
+        var draggableLeft    = $draggable.offset().left;
+        var draggableWidth = $draggable.height();
+        var draggableRight = draggableLeft + draggableWidth;
+        var $droppables = $(".ui-droppable");
+        var $droppablesCoveredByDraggable = $droppables.filter( function() {
+            var $droppable      = $(this);
+            var top             = $droppable.offset().top;
+            var height          = $droppable.height();
+            var bottom          = top + height;
+
+            var left             = $droppable.offset().left;
+            var width          = $droppable.width();
+            var right          = left + width;
+
+            var isCoveredByDraggable = top <= draggableBottom && bottom >= draggableTop
+                && left <= draggableRight && right >= draggableLeft;
+            return isCoveredByDraggable;
+        });
+        for (var i = 0; i < $droppablesCoveredByDraggable.length; i++) {
+            this.experiment($draggable,$droppablesCoveredByDraggable[i]);
+        }
+        console.log('droppables', $droppablesCoveredByDraggable.length);
+
+        // duplicate
+        var newRune = this.runeElem(ui.draggable.data('id'),$draggable.parent().parent());
+        newRune.position({my:'center', at:'center',of: $draggable})
+
+        // var newRune = ui.draggable.clone(true,true);
+        // $draggable.parent().append(newRune);
+    },
 };
 
 window.requestAnimFrame = (function(){
