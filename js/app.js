@@ -17,7 +17,7 @@
   var allObjects = game.allObjects;
   var lastSaved;
 
-  var app = angular.module('particleClicker', []);
+  var app = angular.module('particleClicker', ['ngDragDrop']);
 
   // add helpers as filters
   app.filter('niceNumber', ['$filter', function($filter) {
