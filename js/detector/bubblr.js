@@ -38,6 +38,8 @@
 			return;
 		}
 
+		if (this.timerId) this.remove();
+
 		$canvas = $(this.element);
 
 		this.width = $canvas.width();
@@ -63,10 +65,15 @@
 			}, this.options.animationSpeed);
 
 
-
-		// this.clear();
+		$(window).on('resize',this.onResize.bind(this));
 
     };
+
+	Bubblr.prototype.onResize= function(){
+		this.clear();
+		this.width = Math.max($canvas.width(),this.element.width);
+		this.height = Math.max($canvas.height(),this.element.height);
+	};
 
 	Bubblr.prototype.start = function(timespan) {
 		var self = this;
@@ -78,16 +85,21 @@
 			this.on=true;
 		} else {
 			clearInterval(this.nextOffID);
-			this.nextOff = setTimeout(self.stop.bind(self),timespan);
+			this.nextOffID = setTimeout(self.stop.bind(self),timespan);
 		}
 	};
 
 	Bubblr.prototype.stop = function() {
-		// this.clear();
-		// clearInterval(this.timerId);
 		this.on=false;
-		this.timerId=undefined;
+		this.nextOffID=null;
 	};
+
+	/** remove animation loop **/
+	Bubblr.prototype.remove = function (arguments) {
+		clearInterval(this.timerId);
+		this.timerId=null;
+		detector.bubblr.clear()
+	}
 
 	Bubblr.prototype.animationLoop = function() {
 

@@ -104,14 +104,8 @@
         <hr class="hidden-xs">
         <div id="detector-holder">
           <div id="detector" ng-controller="DetectorController as dc">
-            <div class="test-tube-container">
-                <div class="test-tube">
-                    <div class="test-tube-bg">
-                        <canvas id="detector-core'" class="substance" width="400"
-                                       height="400" style=""></canvas>
-                    </div>
-                </div>
-            </div>
+            <canvas id="detector-core" class="test-tube" width="400"
+                           height="400" style=""></canvas>
             <canvas ng-click="dc.click()" id="detector-events" width="400" height="400" class="prevent-select">
               Your detector. Click on it to generate events.
             </canvas>

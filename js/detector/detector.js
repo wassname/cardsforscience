@@ -24,14 +24,7 @@ var detector =
 
     lastRender: 0,
 
-    animate: function(time)
-    {
-        // var duration = typeof time !== 'undefined' ? time - detector.lastRender : 16;
-        // detector.lastRender = time;
-        //
-        // requestAnimFrame(detector.animate);
-        // detector.draw(duration);
-    },
+    bubblr: undefined,
 
     init: function(baseSize)
     {
@@ -86,8 +79,17 @@ var detector =
             detector.events.ctx.scale(ratio, ratio);
         }
 
+
+        detector.initBubbles();
+        // TODO refactor flame animation and put it here
+        // this.flame = $('#detector-flame').flame();
+
+        detector.animate();
+    },
+
+    initBubbles: function(){
         // init the test tube animation
-        var bubblrElem = $('detector-core').bubblr({
+        var bubblrElem = $('#detector-core').bubblr({
             backgroundColor: '#e8e8e8',
             bubbleColor: "#bfbfbf",
             bubbleMinSize: 3,
@@ -101,35 +103,34 @@ var detector =
             // top edge bubbles will disappear
             bubbleYpopLimit: 10
         });
-        this.bubblr = bubblrElem.data('plugin_bubblr');
-
-        // TODO refactor flame animation and put it here
-        // this.flame = $('#detector-flame').flame();
-
-        // detector.coreDraw();
-        detector.animate();
+        detector.bubblr = bubblrElem.data('plugin_bubblr');
     },
 
-    /** draw a static core on background **/
-    // coreDraw: function()
-    // {
-    //
-    // },
+    animate: function(time)
+    {
+        // var duration = typeof time !== 'undefined' ? time - detector.lastRender : 16;
+        // detector.lastRender = time;
+        //
+        // requestAnimFrame(detector.animate);
+        // detector.draw(duration);
+    },
 
+    /** When a user clicks the detector **/
     addEvent: function()
     {
-
+        detector.bubblr.start(500); // bubble for 500ms, TODO make one bubble
     },
 
+    /** When a worker clicks the detector **/
     addEventExternal: function(numWorkers)
     {
-
+        // detector.bubblr.start(500*numWorkers);
     },
 
     /** Draw current events **/
     draw: function(duration)
     {
-
+        detector.bubblr.start(duration);
     }
 };
 
