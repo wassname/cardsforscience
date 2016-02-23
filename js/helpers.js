@@ -17,6 +17,14 @@ var Helpers = (function () {
     return res;
   };
 
+  var makeGameObject = function(type, object) {
+    // It's okay to define this function here since load is only called
+    // once anyway...
+    var o = new type(object);
+    _this.allObjects[o.key] = o;
+    return o;
+  };
+
   /** Format a number with proper postfix.
    */
   var formatNumberPostfix = function (number) {
@@ -41,7 +49,7 @@ var Helpers = (function () {
         return (number / prefixes[i].magnitude).toFixed(1) + prefixes[i].label;
       }
     }
-    return number; 
+    return number;
   }
 
   var formatTime = function (msec) {
@@ -77,7 +85,7 @@ var Helpers = (function () {
       ObjectStorage.save('saveVersion', saveVersion);
     }
   };
- 
+
   return {
     loadFile: loadFile,
     formatNumberPostfix: formatNumberPostfix,

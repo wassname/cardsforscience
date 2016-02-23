@@ -53,6 +53,8 @@ var Game = (function(Helpers,GameObjects,ObjectStorage) {
       o.loadState(ObjectStorage.load(key));
     }
 
+    // this.detector.init(400,$('#detector'));
+
     this.rules = this.generateRules();
 
     this.loaded = true;
@@ -119,7 +121,7 @@ var Game = (function(Helpers,GameObjects,ObjectStorage) {
 
         }
 
-        // TODO use jqueru ui transfer effect to remove or puff
+        // TODO use angular effects to remove in puff of fade
         $(aElem).remove();
         $(bElem).remove();
 
@@ -147,5 +149,5 @@ var Game = (function(Helpers,GameObjects,ObjectStorage) {
     }
   };
 
-  return {Game : Game};
+  return Game;
 }(Helpers,GameObjects,ObjectStorage));

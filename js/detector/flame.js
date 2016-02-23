@@ -6,7 +6,6 @@
  * @copyright (c) 2015 wassname
  * @license: MIT
  */
-// TODO recenter on canvas/window resize
 ;(function ( $, window, document, undefined ) {
     var pluginName = "flame";
 

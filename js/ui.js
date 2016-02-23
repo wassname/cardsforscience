@@ -3,74 +3,10 @@
 /** Define UI specific stuff.
  */
 var UI = (function () {
-  /** Resize the scrollable containers and make sure they are resized whenever
-   * the window is resized.
-   * Also introduce FastClick for faster clicking on mobile.
+  /** Introduce FastClick for faster clicking on mobile.
    */
   $(function() {
     FastClick.attach(document.body);
-
-    var resize = function() {
-      var h = $(window).height();
-      var offset = 111;
-      if ($(window).width() < 992) {
-        offset = 112;
-      }
-      $('.scrollable').height(h - offset + 'px');
-
-      var types = ['element', 'hr', 'upgrades'];
-
-      if ($(window).width() < 992) {
-        for (var i = 0; i < types.length; i++) {
-          if ($('#' + types[i] + 'Content').parent().attr('id') == types[i] + 'Large') {
-            $('#' + types[i] + 'Content').detach().appendTo('#' + types[i]);
-          }
-        }
-      } else {
-        for (var i = 0; i < types.length; i++) {
-          if ($('#' + types[i] + 'Content').parent().attr('id') != types[i] + 'Large') {
-            $('#' + types[i] + 'Content').detach().appendTo('#' + types[i] + 'Large');
-          }
-        }
-      }
-
-      if ($(window).width() < 600) {
-        var newWidth = Math.max($(window).width() - ($(window).height() - 90 + 10), 300);
-        $('#column-lab').width($(window).width() - newWidth);
-        $('#column-tabs').width(newWidth);
-      } else {
-        $('#column-lab').removeAttr('style');
-        $('#column-tabs').removeAttr('style');
-      }
-
-      if ($(window).width() >= 1200) {
-        if (detector.width != 500) {
-          $('#detector').width(500).height(500);
-          detector.init(500);
-        }
-      } else if ($(window).width() < 768 && $(window).height() - 90 < 300) {
-        var newWidth = $(window).width() - Math.max($(window).width() - ($(window).height() - 90 + 10), 300) - 10;
-        if (detector.width != newWidth) {
-          $('#detector').width(newWidth).height(newWidth);
-          detector.init(newWidth);
-        }
-      } else if ($(window).width() < 992) {
-        if (detector.width != 300) {
-          $('#detector').width(300).height(300);
-          detector.init(300);
-        }
-      } else {
-        if (detector.width != 400) {
-          $('#detector').width(400).height(400);
-          detector.init(400);
-        }
-      }
-
-      detector.onResize();
-    }
-
-    $(window).resize(resize);
-    resize();
   });
 
   /** Show a bootstrap modal with dynamic content e.g. background info **/

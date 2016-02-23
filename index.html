@@ -108,15 +108,15 @@
         <div id="detector-holder">
 
           <div id="detector"  ng-controller="DetectorController as dc">
-            <canvas id="detector-core" class="test-tube" width="400"
-                           height="400" style=""></canvas>
-            <canvas ng-click="dc.click()" id="detector-events" width="400" height="400" class="prevent-select" data-drop="true"
+            <!-- <canvas id="detector-core" class="test-tube center-block " width="400"
+                           height="400" style=""></canvas> -->
+            <canvas ng-click="dc.click()" id="detector-core" width="400" height="400" class="test-tube prevent-select center-block " data-drop="true"
                 jqyoui-droppable="{onDrop: 'dc.onDrop'}"
                 data-jqyoui-options="{{dc.dropOptions}}"
                 >
               Your detector. Click on it to generate events.
             </canvas>
-            <canvas id="detector-flame" width="400" height="400" class="prevent-select" ng-click="dc.toggleFlameFuel()">
+            <canvas id="detector-flame" width="300" height="300" class="prevent-select center-block " ng-click="dc.toggleFlameFuel()">
               Your bunsen burner. Click it to turn on and off.
             </canvas>
           </div>
