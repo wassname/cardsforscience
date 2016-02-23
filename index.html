@@ -78,18 +78,24 @@
             </h4>
           </div>
 
-          <div class="panel-body large" id="elementLarge">
-            <div id="elementContent" ng-controller="ElementController as rc">
+          <div class="panel-body large" id="elementLarge"
+              data-drop="true"
+              jqyoui-droppable="{onDrop: 'rc.onDrop'}"
+              data-jqyoui-options="{{rc.dropOptions}}"
+               ng-controller="ElementController as rc"
+              >
+            <div id="elementContent">
               <div class="row" ng-cloak>
 
-                <div class="col-md-3" ng-repeat="r in rc.elements" ng-show="rc.isVisible(r)">
+                <div class="col-md-4" ng-repeat="r in rc.elements" ng-show="rc.isVisible(r)">
                   <span
                     id="{{r.key}}"
-                    class="{{r.key}} element element-icon {{ r.state.interesting ? 'blink' : '' }} {{'q'+r.state.color+'-12'}}"
+                    class="{{r.key}} element element-icon {{ r.state.interesting ? 'blink' : '' }} {{'q'+r.state.color+'-12'}} {{r.state.amount>0 ? '': 'empty'}}"
                     data-element="{{r.key}}"
-                    data-drag="true"
+                    data-drag="{{r.state.amount>0}}"
                     jqyoui-draggable="{containment:'offset'}"
                     data-jqyoui-options="{{rc.dragOptions}}"
+                    data-hashkey={{r.$$hashKey}}
                     >
                         {{r.key}}
                     </span>
@@ -108,9 +114,33 @@
         <div id="detector-holder">
 
           <div id="detector"  ng-controller="DetectorController as dc">
-            <!-- <canvas id="detector-core" class="test-tube center-block " width="400"
-                           height="400" style=""></canvas> -->
-            <canvas ng-click="dc.click()" id="detector-core" width="400" height="400" class="test-tube prevent-select center-block " data-drop="true"
+
+
+            <div id="detector-element-container" ng-cloak>
+                <div ng-repeat="r in dc.elements">
+                    <span
+                        class="{{r.key}} element q{{r.state.color}}-12"
+                        data-element="{{r.key}}"
+                        data-drag="true"
+                        jqyoui-draggable="{containment:'offset'}"
+                        data-jqyoui-options="{{rc.dragOptions}}"
+                        aria-disabled="false"
+                        style="position: fixed; z-index: 9999; left: {{r.state.left}}px; top: {{r.state.top}}px;" 
+                        data-hashkey={{r.$$hashKey}}
+                        >
+                        {{r.key}}
+                    </span>
+                </div>
+
+            </div>
+
+            <canvas
+                ng-click="dc.click()"
+                id="detector-core"
+                width="400"
+                height="400"
+                class="test-tube prevent-select center-block "
+                data-drop="true"
                 jqyoui-droppable="{onDrop: 'dc.onDrop'}"
                 data-jqyoui-options="{{dc.dropOptions}}"
                 >

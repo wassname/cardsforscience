@@ -21,46 +21,9 @@ var app = (function () {
 
     // directives
 
-    /** Change scope values on window resize **/
-    app.directive('resize', function ($window) {
-        return function (scope, element, attr) {
-            // make window into an angular element
-            var w = angular.element($window);
-            // watch window h&w, onchange scope
-            scope.$watch(
-                function () {
-                    return {
-                        'h': w.height(),
-                        'w': w.width()
-                    };
-                },
-                function (newValue, oldValue) {
-                    // update scope values
-                    scope.windowHeight = newValue.h;
-                    scope.windowWidth = newValue.w;
-
-                    // new function
-                    scope.resizeWithOffset = function (offsetH) {
-                        scope.$eval(attr.notifier);
-                        return {
-                            'height': (newValue.h - offsetH) + 'px'
-                                //,'width': (newValue.w - 100) + 'px'
-                        };
-                    };
-
-                },
-                true
-            );
-
-            // update scope on resize event
-            w.bind('resize', function () {
-                scope.$apply();
-            });
-        }
-    });
 
 
-    // factories to provide game objects
+    // factories to provide services. They serve shared game objects
     app.factory('elements', function () {
         var elements = Helpers.loadFile('json/elements.json');
         elements = elements.map(
@@ -103,37 +66,74 @@ var app = (function () {
         };
     }]);
 
-
-
     // controllers
-    app.controller('DetectorController', ['$scope','game','detector', function ($scope,game,detector) {
-        // this.detector.init(400);
-        this.dropOptions = {
+    app.controller('ElementController', ['$scope', '$compile', 'game', 'detector', function ($scope, $compile, game, detector) {
+        var vs = this;
+        vs.dragOptions = {
+            revert: true, //"invalid",
+            zIndex: 100,
+            // helper: "clone", // drags a clone
+            // opacity: 0.75,
+            // start: vs.onRuneDrop.bind(vs),
+            // stop: vs.onRuneDrop.bind(vs),
+            cancel: false,
+            // containment:false
+        };
+        vs.elements = game.elements;
+        vs.isVisible = function (item) {
+            return item.isVisible(game.lab);
+        };
+        vs.isAvailable = function (item) {
+            return item.isAvailable(game.lab);
+        };
+        vs.onDrop = function (event, ui) {
+            // store the dropped element
+            var draggable = angular.element(ui.draggable);
+            var key = draggable.data('element');
+            if (!draggable.hasClass('element-icon')) {
+                var elementStore = vs.elements.filter(function (e) {
+                    return e.key === key;
+                })[0];
+                var hashKey=draggable.data('hashkey');
+                var found=false;
+                for (var i = 0; i < detector.elements.length; i++) {
+                    if (detector.elements[i].$$hashKey===hashKey){
+                        // delete detector.elements[i];
+                        detector.elements.splice(i,1);
+                        var found=true;
+                        break;
+                    }
+                }
+                if (!found) console.warn('Could not find dragged element in detector.elements',draggable);
+                else elementStore.state.amount+=1;
+            }
+        }
+        vs.doElement = function (item) {
+            var cost = item.element(game.lab);
+            if (cost > 0) {
+                UI.showUpdateValue("#update-data", -cost);
+                UI.showUpdateValue("#update-reputation", item.state.reputation);
+            }
+        };
+        vs.showInfo = function (r) {
+            UI.showModal(r.name, r.getInfo());
+            UI.showLevels(r.state.level);
+        };
+    }]);
+
+    app.controller('DetectorController', ['$scope', 'game', 'detector', function ($scope, game, detector) {
+        var vm = this;
+        vm.elements = detector.elements;
+        vm.dropOptions = {
             //   accept: ".rune",
             addClasses: true,
             // greedy: true,
             // tolerance: "pointer",
             activeClass: "ui-state-hover",
             hoverClass: "ui-state-active",
-        }
-        this.onDrop = function (event, ui) {
-            detector.onDrop(event, ui, game);
-        }
-        this.click = function () {
-            game.lab.clickDetector();
-            detector.addEvent();
-            UI.showUpdateValue("#update-data", game.lab.state.detector);
-            return false;
         };
-        this.toggleFlameFuel = function () {
-            console.log('toggleFlameFuel');
-            detector.flame.toggleFuel();
-        }
-    }]);
-
-    app.controller('ElementController', ['$scope', '$compile','game','detector', function ($scope, $compile,game,detector) {
-        this.dragOptions = {
-            revert: true, //"invalid",
+        vm.dragOptions = {
+            revert: "invalid",
             zIndex: 100,
             // helper: "clone", // drags a clone
             // opacity: 0.75,
@@ -142,27 +142,22 @@ var app = (function () {
             cancel: false,
             // containment:false
         };
-        this.elements = game.elements;
-        this.isVisible = function (item) {
-            return item.isVisible(game.lab);
+        vm.onDrop = function (event, ui) {
+            detector.onDrop(event, ui, game);
         };
-        this.isAvailable = function (item) {
-            return item.isAvailable(game.lab);
+        vm.click = function () {
+            game.lab.clickDetector();
+            detector.addEvent();
+            UI.showUpdateValue("#update-data", game.lab.state.detector);
+            return false;
         };
-        this.doElement = function (item) {
-            var cost = item.element(game.lab);
-            if (cost > 0) {
-                UI.showUpdateValue("#update-data", -cost);
-                UI.showUpdateValue("#update-reputation", item.state.reputation);
-            }
-        };
-        this.showInfo = function (r) {
-            UI.showModal(r.name, r.getInfo());
-            UI.showLevels(r.state.level);
+        vm.toggleFlameFuel = function () {
+            console.log('toggleFlameFuel');
+            detector.flamer.toggleFuel();
         };
     }]);
 
-    app.controller('LabController', ['$interval','game','detector', function ($interval,game,detector) {
+    app.controller('LabController', ['$interval', 'game', 'detector', function ($interval, game, detector) {
         this.lab = game.lab;
         this.showDetectorInfo = function () {
             if (!this._detectorInfo) {
@@ -189,7 +184,7 @@ var app = (function () {
         }, 1000);
     }]);
 
-    app.controller('HRController', ['$scope','game', function ($scope,game) {
+    app.controller('HRController', ['$scope', 'game', function ($scope, game) {
         this.workers = game.workers;
         this.isVisible = function (worker) {
             return worker.isVisible(game.lab);
@@ -205,7 +200,7 @@ var app = (function () {
         };
     }]);
 
-    app.controller('UpgradesController', ['$scope','game', function ($scope,game) {
+    app.controller('UpgradesController', ['$scope', 'game', function ($scope, game) {
         this.upgrades = game.upgrades;
         this.isVisible = function (upgrade) {
             return upgrade.isVisible(game.lab, game.allObjects);
@@ -220,7 +215,7 @@ var app = (function () {
         }
     }]);
 
-    app.controller('AchievementsController', function ($scope,game) {
+    app.controller('AchievementsController', function ($scope, game) {
         $scope.achievements = game.achievements;
         $scope.progress = function () {
             return game.achievements.filter(function (a) {
@@ -229,7 +224,7 @@ var app = (function () {
         };
     });
 
-    app.controller('SaveController', ['$scope', '$interval','game', function ($scope, $interval,game) {
+    app.controller('SaveController', ['$scope', '$interval', 'game', function ($scope, $interval, game) {
         game.lastSaved = new Date().getTime();
         $scope.lastSaved = game.lastSaved;
         $scope.saveNow = function () {
@@ -250,7 +245,7 @@ var app = (function () {
         $interval($scope.saveNow, 10000);
     }]);
 
-    app.controller('StatsController', ['$scope','game',function ($scope, game) {
+    app.controller('StatsController', ['$scope', 'game', function ($scope, game) {
         $scope.lab = game.lab;
     }]);
 

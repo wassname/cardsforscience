@@ -326,6 +326,9 @@ h1 br {
     padding: 1px;
     z-index: 50;
 }
+.element.empty {
+    opacity: 0.2;
+}
 #observationsContent {
     font-size: 24px;
 }

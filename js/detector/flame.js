@@ -182,10 +182,10 @@
     /** Toggle fuel and the flame will burn down or up again **/
     Flame.prototype.toggleFuel = function (state) {
         if (state===undefined)
-            detector.flame.state.on=!detector.flame.state.on;
+            this.state.on=!this.state.on;
         else
-            detector.flame.state.on=state;
-        return detector.flame.state.on;
+            this.state.on=state;
+        return this.state.on;
     }
 
     Flame.prototype.animate = function(){
