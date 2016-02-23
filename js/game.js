@@ -28,7 +28,6 @@ var Game = (function(Helpers,GameObjects,ObjectStorage) {
     this.workers = Helpers.loadFile('json/workers.json');
     this.upgrades = Helpers.loadFile('json/upgrades.json');
     this.achievements = Helpers.loadFile('json/achievements.json');
-    this.runes = Helpers.loadFile('json/runes.json');
     this.keywords = Helpers.loadFile('json/keywords.json');
 
     // Turn JSON files into actual game objects and fill map of all objects
@@ -98,6 +97,49 @@ var Game = (function(Helpers,GameObjects,ObjectStorage) {
       return rules;
   },
 
+    /** Run an experiment depending on ingredients and conditions **/
+    Game.prototype.experiment = function(options) {
+        var inputs = options.inputs || [];
+        var inputKeys = inputs.map(function(i,e){return $(e).data('element')});
+        inputKeys.sort(); // this makes reaction be independant of order
+
+        var result = this.rules[inputKeys]
+        if (result) {
+            return this.reaction(result.ingredients,result.rune)
+        }
+        return result;
+    },
+
+    /** Remove ingredients and make results with animations **/
+    Game.prototype.reaction= function(ingredients,results){
+
+        // remove ingredients
+        for (var i = 0; i < ingredients.length; i++) {
+            var ingredient = ingredients[i];
+
+        }
+
+        // TODO use jqueru ui transfer effect to remove or puff
+        $(aElem).remove();
+        $(bElem).remove();
+
+        // if the dragger came from the elements panels, clone it to here
+        for (var i = 0; i < results.length; i++) {
+            // make sure it's discovered
+            var resultKey = results[i];
+            var elementStore = this.elements.filter(function(e){return e.key===resultKey;});
+            elementStore.state.discovered=true;
+
+            // add new element to beaker
+            var newElement = $('#elementContent').find('.'+resultKey).clone();
+            $('#detector').append(newElement);
+            newElement.offset($draggable.offset())
+        }
+
+        // effects
+        this.bubblr.start(1500);
+
+    },
   Game.prototype.save = function() {
     // Save every object's state to local storage
     for (var key in this.allObjects) {

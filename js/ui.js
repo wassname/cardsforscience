@@ -66,7 +66,7 @@ var UI = (function () {
         }
       }
 
-      detector.bubblr.onResize();
+      detector.onResize();
     }
 
     $(window).resize(resize);

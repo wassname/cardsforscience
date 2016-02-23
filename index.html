@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="particleClicker">
+<html lang="en" ng-app="scienceAlchemy">
   <head>
     <title>Science Alchemy</title>
     <meta charset="utf-8">
@@ -88,7 +88,7 @@
                     class="{{r.key}} element element-icon {{ r.state.interesting ? 'blink' : '' }} {{'q'+r.state.color+'-12'}}"
                     data-element="{{r.key}}"
                     data-drag="true"
-                    jqyoui-draggable
+                    jqyoui-draggable="{containment:'offset'}"
                     data-jqyoui-options="{{rc.dragOptions}}"
                     >
                         {{r.key}}
@@ -116,7 +116,7 @@
                 >
               Your detector. Click on it to generate events.
             </canvas>
-            <canvas id="detector-flame" width="400" height="400" class="prevent-select">
+            <canvas id="detector-flame" width="400" height="400" class="prevent-select" ng-click="dc.toggleFlameFuel()">
               Your bunsen burner. Click it to turn on and off.
             </canvas>
           </div>

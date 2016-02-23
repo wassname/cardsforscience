@@ -15,6 +15,12 @@ var detector =
         list: [],
     },
 
+    flame:
+    {
+        canvas: null,
+        ctx: null
+    },
+
     visible: true,
 
     width: 400,
@@ -35,6 +41,9 @@ var detector =
 
         detector.events.canvas = document.getElementById('detector-events');
         detector.events.ctx = detector.events.canvas.getContext('2d');
+
+        detector.flame.canvas = document.getElementById('detector-flame');
+        detector.flame.ctx = detector.events.canvas.getContext('2d');
 
         // set size
         // TODO resize "#detector-flame" too
@@ -57,6 +66,9 @@ var detector =
 
         detector.events.canvas.width = baseSize;
         detector.events.canvas.height = baseSize;
+
+        detector.flame.canvas.width = baseSize;
+        detector.flame.canvas.height = baseSize;
 
         if (devicePixelRatio !== backingStoreRatio) {
             var oldWidth = detector.core.canvas.width;
@@ -81,6 +93,7 @@ var detector =
 
 
         detector.initBubbles();
+        detector.initFlame();
         // TODO refactor flame animation and put it here
         // this.flame = $('#detector-flame').flame();
 
@@ -106,6 +119,16 @@ var detector =
         detector.bubblr = bubblrElem.data('plugin_bubblr');
     },
 
+    initFlame: function(){
+        var flameElem = $('#detector-flame').flame();
+        this.flame = flameElem.data('plugin_flame')
+    },
+
+    onResize: function(){
+        this.bubblr.onResize();
+        this.flame.onResize();
+    },
+
     animate: function(time)
     {
         // var duration = typeof time !== 'undefined' ? time - detector.lastRender : 16;
@@ -118,28 +141,42 @@ var detector =
     /** When a user clicks the detector **/
     addEvent: function()
     {
-        detector.bubblr.start(500); // bubble for 500ms, TODO make one bubble
+        detector.bubblr.bubble(); // bubble for 500ms, TODO make one bubble
     },
 
     /** When a worker clicks the detector **/
     addEventExternal: function(numWorkers)
     {
-        // detector.bubblr.start(500*numWorkers);
+        // detector.bubblr.bubble(numWorkers);
     },
 
     /** Draw current events **/
     draw: function(duration)
     {
-        detector.bubblr.start(duration);
+        detector.bubblr.bubble();
     },
 
-    onDrop: function(event, ui, lab){
+    onDrop: function(event, ui, game){
         // TODO tidy this, attach new runes to something better
         // FIXME at the moment it duplicates runes, but we need a better system
         var self=this;
         console.debug('onDrop',arguments);
         var $draggable = $(ui.draggable),
             $droppable = $(event.target);
+
+        // if the dragger came from the elements panels, clone it to here
+        var newElement = $draggable.clone();
+        var $detector = $droppable.parent()
+        $detector.append(newElement);
+        // also set position to that of droppable
+        newElement.offset($draggable.offset())
+
+
+        var elementStore = game.elements.filter(function(e){return e.key==$draggable.data('element')});
+        elementStore[0].state.amount-=1;
+
+        // get everything intersecting the drop
+
         var draggableTop    = $draggable.offset().top;
         var draggableHeight = $draggable.height();
         var draggableBottom = draggableTop + draggableHeight;
@@ -161,17 +198,19 @@ var detector =
                 && left <= draggableRight && right >= draggableLeft;
             return isCoveredByDraggable;
         });
+        // TODO also get draggable covered by droppable
         for (var i = 0; i < $droppablesCoveredByDraggable.length; i++) {
-            this.experiment($draggable,$droppablesCoveredByDraggable[i]);
+
         }
+        // just get one thes with a data-element attribute
+        var inputs = $droppablesCoveredByDraggable.filter(function(e){
+            return $(e).data('element');
+        })
+        inputs.push($draggable);
+        var reaction = game.experiment({inputs:inputs});
         console.log('droppables', $droppablesCoveredByDraggable.length);
 
-        // duplicate
-        var newRune = this.runeElem(ui.draggable.data('id'),$draggable.parent().parent());
-        newRune.position({my:'center', at:'center',of: $draggable})
 
-        // var newRune = ui.draggable.clone(true,true);
-        // $draggable.parent().append(newRune);
     },
 };
 

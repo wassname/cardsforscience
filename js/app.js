@@ -17,7 +17,7 @@
   var allObjects = game.allObjects;
   var lastSaved;
 
-  var app = angular.module('particleClicker', ['ngDragDrop']);
+  var app = angular.module('scienceAlchemy', ['ngDragDrop']);
 
   // add helpers as filters
   app.filter('niceNumber', ['$filter', function($filter) {
@@ -56,7 +56,7 @@
           hoverClass: "ui-state-active",
       }
     this.onDrop = function(event,ui){
-        detector.onDrop(event,ui,lab);
+        detector.onDrop(event,ui,game);
     }
     this.click = function() {
       lab.clickDetector();
@@ -64,6 +64,10 @@
       UI.showUpdateValue("#update-data", lab.state.detector);
       return false;
     };
+    this.toggleFlameFuel = function(){
+        console.log('toggleFlameFuel');
+        detector.flame.toggleFuel();
+    }
   });
 
   app.controller('ElementController', ['$compile', function($compile) {
