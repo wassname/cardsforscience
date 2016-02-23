@@ -87,10 +87,10 @@
             <div id="elementContent">
               <div class="row" ng-cloak>
 
-                <div class="col-md-4" ng-repeat="r in rc.elements" ng-show="rc.isVisible(r)">
-                  <span
+                <div class="col-md-4" ng-repeat="r in rc.elements">
+                  <span  ng-show="rc.isVisible(r)"
                     id="{{r.key}}"
-                    class="{{r.key}} element element-icon {{ r.state.interesting ? 'blink' : '' }} {{'q'+r.state.color+'-12'}} {{r.state.amount>0 ? '': 'empty'}}"
+                    class="{{r.key}} element element-icon {{ r.state.interesting ? 'blink' : '' }} {{'q'+r.state.color+'-12'}} {{r.state.amount>0 ? '': 'empty'}}  ui-draggable"
                     data-element="{{r.key}}"
                     data-drag="{{r.state.amount>0}}"
                     jqyoui-draggable="{containment:'offset'}"
@@ -99,7 +99,7 @@
                     >
                         {{r.key}}
                     </span>
-                  <span ng-show="r.state.amount > 0" class="white-badge ng-binding">{{r.state.amount}}</span>
+                  <span ng-show="rc.isVisible(r)"  ng-show="r.state.amount > 0" class="{{r.state.amount>0 ? '': 'empty'}} white-badge ng-binding">{{r.state.amount}}</span>
                 </div>
               </div>
             </div>
@@ -119,13 +119,13 @@
             <div id="detector-element-container" ng-cloak>
                 <div ng-repeat="r in dc.elements">
                     <span
-                        class="{{r.key}} element q{{r.state.color}}-12"
+                        class="{{r.key}} element q{{r.state.color}}-12 ui-draggable"
                         data-element="{{r.key}}"
                         data-drag="true"
                         jqyoui-draggable="{containment:'offset'}"
                         data-jqyoui-options="{{rc.dragOptions}}"
                         aria-disabled="false"
-                        style="position: fixed; z-index: 9999; left: {{r.state.left}}px; top: {{r.state.top}}px;" 
+                        style="position: fixed; z-index: 9999; left: {{r.state.left}}px; top: {{r.state.top}}px;"
                         data-hashkey={{r.$$hashKey}}
                         >
                         {{r.key}}
@@ -139,7 +139,7 @@
                 id="detector-core"
                 width="400"
                 height="400"
-                class="test-tube prevent-select center-block "
+                class="test-tube prevent-select center-block"
                 data-drop="true"
                 jqyoui-droppable="{onDrop: 'dc.onDrop'}"
                 data-jqyoui-options="{{dc.dropOptions}}"
@@ -149,10 +149,11 @@
             <canvas id="detector-flame" width="300" height="300" class="prevent-select center-block " ng-click="dc.toggleFlameFuel()">
               Your bunsen burner. Click it to turn on and off.
             </canvas>
+            <button id="clearall" class="btn btn-default" ng-click="dc.clearAll()"><i class="fa fa-refresh"></i></button>
           </div>
-
         </div>
         <button id="detector-info" class="btn btn-info" ng-click="lc.showDetectorInfo()"><i class="fa fa-info"></i></button>
+
         <div class="row status" ng-cloak>
           <div class="col-xs-4 text-center col-no-padding-xs">
             <strong>Data</strong><br>

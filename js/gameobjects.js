@@ -86,6 +86,47 @@ var GameObjects = (function () {
         return false;
     };
 
+    var ElementStore = function (obj) {
+        Array.apply(this, [obj]);
+    };
+
+    ElementStore.prototype = Object.create(Array.prototype);
+
+    ElementStore.prototype.constructor = ElementStore;
+
+    /** Add a random element or specify it's key **/
+    ElementStore.prototype.addToStore = function(element){
+        if (!element) this.get(element);
+        if (!element) element = this.select();
+        return element.state.amount+=1;
+    };
+
+    /** Select random element from store **/
+    ElementStore.prototype.select = function () {
+        var i = Math.floor((this.length-1)*Math.random());
+        return this[i];
+    };
+    /** Get element by hashid **/
+    ElementStore.prototype.get = function (key) {
+        return this.filter(function (e) {
+            return e.key === key;
+        })[0];
+    }
+
+    /** Get element by hashid **/
+    ElementStore.prototype.getByHashKey = function (hashKey) {
+        return this.filter(function (e) {
+            return e.$$hashKey === hashKey;
+        })[0];
+    }
+
+    /** Get element by hashid **/
+    ElementStore.prototype.findIndexByHashKey = function (hashKey) {
+        return this.findIndex(function (e) {
+            return e.$$hashKey === hashKey;
+        })[0];
+    }
+
     /** @class Element
      */
     var Element = function (obj) {
@@ -279,6 +320,7 @@ var GameObjects = (function () {
         Element: Element,
         Worker: Worker,
         Upgrade: Upgrade,
-        Achievement: Achievement
+        Achievement: Achievement,
+        ElementStore: ElementStore
     };
 }());

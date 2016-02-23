@@ -23,7 +23,7 @@ var Detector = function(){
             ctx: null
         },
 
-        elements: [],
+        elements: new GameObjects.ElementStore(),
 
         visible: true,
 
@@ -120,13 +120,27 @@ var Detector = function(){
         /** When a worker clicks the detector **/
         addEventExternal: function(numWorkers)
         {
-            // this.bubblr.bubble(numWorkers);
+            this.bubblr.genBubbles(numWorkers);
         },
 
         /** Draw current events **/
         draw: function(duration)
         {
             this.bubblr.bubble();
+        },
+
+        /** Clear an element back to element Store **/
+        storeElementByHashKey: function(hashKey,game){
+            var i = this.elements.findIndexByHashKey(hashKey);
+            var removedElement = this.elements.splice(i,1)[0];
+            return game.elements.get(removedElement.key).state.amount+=1;
+        },
+
+        clearAll: function(game){
+            var hashKeys = this.elements.map(function(e){return e.$$hashKey;});
+            for (var i = 0; i < hashKeys.length; i++) {
+                this.storeElementByHashKey(hashKeys[i], game);
+            }
         },
 
         onDrop: function(event, ui, game){

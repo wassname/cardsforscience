@@ -24,14 +24,17 @@ var app = (function () {
 
 
     // factories to provide services. They serve shared game objects
-    app.factory('elements', function () {
-        var elements = Helpers.loadFile('json/elements.json');
-        elements = elements.map(
-            function (r) {
-                return new GameObjects.Element(r);
-            });
-        return elements
-    });
+    // app.factory('elements', function () {
+    //     var elements = Helpers.loadFile('json/elements.json');
+    //     elements = elements.map(
+    //         function (r) {
+    //             return new GameObjects.Element(r);
+    //         });
+    //     // put in extended array with helper methods
+    //     elementStore = new GameObjects.ElementStore();
+    //     elementStore.push.apply(elementStore,elements);
+    //     return elementStore;
+    // });
 
     app.factory('game', function () {
         var game = new Game();
@@ -91,23 +94,12 @@ var app = (function () {
             var draggable = angular.element(ui.draggable);
             var key = draggable.data('element');
             if (!draggable.hasClass('element-icon')) {
-                var elementStore = vs.elements.filter(function (e) {
-                    return e.key === key;
-                })[0];
-                var hashKey=draggable.data('hashkey');
-                var found=false;
-                for (var i = 0; i < detector.elements.length; i++) {
-                    if (detector.elements[i].$$hashKey===hashKey){
-                        // delete detector.elements[i];
-                        detector.elements.splice(i,1);
-                        var found=true;
-                        break;
-                    }
-                }
-                if (!found) console.warn('Could not find dragged element in detector.elements',draggable);
-                else elementStore.state.amount+=1;
+                var elementStore = vs.elements.get(key);
+                var i = findIndexByHashKey(draggable.data('hashkey'));
+                detector.elements.splice(i,1);
+                elementStore.state.amount+=1;
             }
-        }
+        };
         vs.doElement = function (item) {
             var cost = item.element(game.lab);
             if (cost > 0) {
@@ -149,12 +141,16 @@ var app = (function () {
             game.lab.clickDetector();
             detector.addEvent();
             UI.showUpdateValue("#update-data", game.lab.state.detector);
+            game.elements.addToStore();
             return false;
         };
         vm.toggleFlameFuel = function () {
             console.log('toggleFlameFuel');
             detector.flamer.toggleFuel();
         };
+        vm.clearAll = function(){
+            detector.clearAll(game);
+        }
     }]);
 
     app.controller('LabController', ['$interval', 'game', 'detector', function ($interval, game, detector) {

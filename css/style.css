@@ -316,7 +316,7 @@ h1 br {
     min-height: 500px;
 }
 
-.ui-draggable-handle {
+.ui-draggable {
     cursor: move;
 }
 .element {
@@ -327,6 +327,9 @@ h1 br {
     z-index: 50;
 }
 .element.empty {
+    opacity: 0.2;
+}
+.white-badge.empty {
     opacity: 0.2;
 }
 #observationsContent {
