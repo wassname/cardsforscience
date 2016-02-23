@@ -17,7 +17,7 @@ var app = (function () {
     // var allObjects = game.allObjects;
     // var lastSaved;
 
-    var app = angular.module('scienceAlchemy', ['ngDragDrop']);
+    var app = angular.module('scienceAlchemy', ['ngDragDrop', 'datatables']);
 
     // directives
 
@@ -96,8 +96,8 @@ var app = (function () {
             if (!draggable.hasClass('element-icon')) {
                 var elementStore = vs.elements.get(key);
                 var i = findIndexByHashKey(draggable.data('hashkey'));
-                detector.elements.splice(i,1);
-                elementStore.state.amount+=1;
+                detector.elements.splice(i, 1);
+                elementStore.state.amount += 1;
             }
         };
         vs.doElement = function (item) {
@@ -135,7 +135,9 @@ var app = (function () {
             // containment:false
         };
         vm.onDrop = function (event, ui) {
-            detector.onDrop(event, ui, game);
+            var result = detector.onDrop(event, ui, game);
+            if (result)
+                game.lab.observe(result);
         };
         vm.click = function () {
             game.lab.clickDetector();
@@ -148,7 +150,7 @@ var app = (function () {
             console.log('toggleFlameFuel');
             detector.flamer.toggleFuel();
         };
-        vm.clearAll = function(){
+        vm.clearAll = function () {
             detector.clearAll(game);
         }
     }]);
@@ -180,20 +182,14 @@ var app = (function () {
         }, 1000);
     }]);
 
-    app.controller('HRController', ['$scope', 'game', function ($scope, game) {
-        this.workers = game.workers;
-        this.isVisible = function (worker) {
-            return worker.isVisible(game.lab);
+    app.controller('ObservationsController', ['$scope', 'game', function ($scope, game) {
+        var vm = this;
+        vm.observations = game.lab.state.observations;
+        vm.dtOptions = {
+            paginationType: 'full_numbers',
+            displayLength: 2
         };
-        this.isAvailable = function (worker) {
-            return worker.isAvailable(game.lab);
-        };
-        this.hire = function (worker) {
-            var cost = worker.hire(game.lab);
-            if (cost > 0) {
-                UI.showUpdateValue("#update-funding", -cost);
-            }
-        };
+
     }]);
 
     app.controller('UpgradesController', ['$scope', 'game', function ($scope, game) {

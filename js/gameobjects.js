@@ -21,6 +21,15 @@ var GameObjects = (function () {
         function (state) {
             $.extend(this.state, state);
         };
+    GameObject.prototype.guid = function () {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+            s4() + '-' + s4() + s4() + s4();
+    }
 
     /** @class Lab
      */
@@ -39,7 +48,8 @@ var GameObjects = (function () {
                 moneySpent: 0,
                 dataCollected: 0,
                 dataSpent: 0,
-                time: 0
+                time: 0,
+                observations: [],
             }
         }]);
 
@@ -76,6 +86,14 @@ var GameObjects = (function () {
         return false;
     };
 
+    /**
+     * Takes in a rule/observation object and records observation in journal
+     * with reactants, inputs, catalysts, conditions, results
+     ***/
+    Lab.prototype.observe = function (observation) {
+        this.state.observations.push(observation);
+    };
+
 
     Lab.prototype.buy = function (cost) {
         if (this.state.money >= cost) {
@@ -95,15 +113,15 @@ var GameObjects = (function () {
     ElementStore.prototype.constructor = ElementStore;
 
     /** Add a random element or specify it's key **/
-    ElementStore.prototype.addToStore = function(element){
+    ElementStore.prototype.addToStore = function (element) {
         if (!element) this.get(element);
         if (!element) element = this.select();
-        return element.state.amount+=1;
+        return element.state.amount += 1;
     };
 
     /** Select random element from store **/
     ElementStore.prototype.select = function () {
-        var i = Math.floor((this.length-1)*Math.random());
+        var i = Math.floor((this.length - 1) * Math.random());
         return this[i];
     };
     /** Get element by hashid **/
@@ -115,13 +133,29 @@ var GameObjects = (function () {
 
     /** Get element by hashid **/
     ElementStore.prototype.getByHashKey = function (hashKey) {
-        return this.filter(function (e) {
+        if (hashKey === undefined) {
+            console.warn('GetByHashKey given an undefined hashkey', hashKey)
+            return;
+        }
+        var res = this.filter(function (e) {
             return e.$$hashKey === hashKey;
-        })[0];
+        });
+        if (res.length == 1) return res[0];
+        else if (res.length) {
+            console.warn('Got multiple results when filtering on hashKey', hashKey);
+            return res[0];
+        } else {
+            console.warn('Got no results when filtering on hashKey', hashKey);
+            return;
+        }
     }
 
     /** Get element by hashid **/
     ElementStore.prototype.findIndexByHashKey = function (hashKey) {
+        if (hashKey === undefined) {
+            console.warn('FindIndexByHashKey given an undefined hashkey', hashKey)
+            return;
+        }
         return this.findIndex(function (e) {
             return e.$$hashKey === hashKey;
         })[0];
@@ -135,6 +169,7 @@ var GameObjects = (function () {
         this.state.discovered = Math.random() < 0.1;
         this.state.interesting = Math.random() < 0.1;
         this.state.color = Math.round(Math.random() * 11);
+        this.uuid=this.guid();
     };
 
     Element.prototype = Object.create(GameObject.prototype);

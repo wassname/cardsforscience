@@ -12,6 +12,10 @@
 
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/angular-datatables.css">
+    <link rel="stylesheet" href="bower_components/datatables/media/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="bower_components/datatables/media/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="bower_components/angular-datatables/dist/plugins/bootstrap/datatables.bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
 
     <link rel="icon" type="image/png" href="assets/favicon.png" />
@@ -90,9 +94,9 @@
                 <div class="col-md-4" ng-repeat="r in rc.elements">
                   <span  ng-show="rc.isVisible(r)"
                     id="{{r.key}}"
-                    class="{{r.key}} element element-icon {{ r.state.interesting ? 'blink' : '' }} {{'q'+r.state.color+'-12'}} {{r.state.amount>0 ? '': 'empty'}}  ui-draggable"
+                    class="{{r.key}} element element-icon {{ r.state.interesting ? 'blink' : '' }} {{'q'+r.state.color+'-12'}} {{r.state.amount>0 ? ' ui-draggable': 'empty'}}"
                     data-element="{{r.key}}"
-                    data-drag="{{r.state.amount>0}}"
+                    data-drag="true"
                     jqyoui-draggable="{containment:'offset'}"
                     data-jqyoui-options="{{rc.dragOptions}}"
                     data-hashkey={{r.$$hashKey}}
@@ -177,22 +181,28 @@
         <div class="panel panel-default panel-stick">
           <div class="panel-heading">
             <h4 class="panel-title">
-              <i class="fa fa-users"></i> HR
+              <i class="fa fa-users"></i> Observations
             </h4>
           </div>
           <div class="panel-body scrollable large" id="hrLarge">
 
-            <div id="hrContent" ng-controller="HRController as hrc">
-              <ul class="media-list" ng-cloak>
-                <li class="media" ng-repeat="w in hrc.workers" ng-show="hrc.isVisible(w)">
-                  <div class="media-body">
-                    <h4 class="media-heading">{{ w.name }} <span ng-show="w.state.hired > 0" class="badge">{{ w.state.hired | niceNumber }}</span></h4>
-                    <p ng-show="w.state.hired > 0">{{ w.description }}</p>
-                    <p ng-show="w.state.hired > 0" class="small">Produce <strong>{{ w.state.rate | niceNumber }}</strong> data per second.</p>
-                    <button class="btn btn-primary" ng-disabled="!hrc.isAvailable(w)" ng-click="hrc.hire(w)"><i class="fa fa-user"></i> <small>{{ w.state.cost | currency }}</small></button>
-                  </div>
-                </li>
-              </ul>
+
+
+            <div id="hrContent" ng-controller="ObservationsController as oc">
+                <table datatable="ng"  dt-options="oc.dtOptions" class="compact">
+                    <thead>
+                        <tr>
+                            <th>Reactants</th>
+                            <th>Results</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="o in ::oc.observations" ng-cloak>
+                           <td>{{ o.inputs.join('') }}</td>
+                           <td>{{ o.results.join('') }}</td>
+                       </tr>
+                    </tbody>
+                </table>
             </div>
 
           </div>
@@ -344,13 +354,19 @@
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.17/angular.min.js"></script>
-    <script src="bower_components/angular-dragdrop/src/angular-dragdrop.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="js/external/jquery.ui.touch-punch.min.js"></script>
     <script src="js/external/jquery.cookie-1.4.1.min.js"></script>
+
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.17/angular.min.js"></script>
+    <script src="bower_components/angular-dragdrop/src/angular-dragdrop.min.js"></script>
+
     <script src="js/external/retina.js"></script>
     <script src="js/external/fastclick.js"></script>
+
+    <script src="bower_components/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script src="bower_components/angular-datatables/dist/angular-datatables.min.js"></script>
 
     <script src="js/storage.js"></script>
     <script src="js/helpers.js"></script>

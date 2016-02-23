@@ -150,11 +150,12 @@ var Detector = function(){
                 $droppable = angular.element(event.target);
 
             // if the dragger came from the elements panels, clone it to here
+            var newElement;
             if ($draggable.hasClass('element-icon')){
 
                 var elementStore = game.elements.filter(function(e){return e.key==$draggable.data('element');})[0];
                 elementStore.state.amount-=1;
-                var newElement = angular.copy(elementStore);
+                newElement = angular.copy(elementStore);
                 newElement.state.top=$draggable.offset().top;
                 newElement.state.left=$draggable.offset().left;
                 this.elements.push(newElement);
@@ -168,8 +169,8 @@ var Detector = function(){
             var draggableLeft    = $draggable.offset().left;
             var draggableWidth = $draggable.height();
             var draggableRight = draggableLeft + draggableWidth;
-            var $draggables = angular.element('#detector').find('.element').not('.element-icon'); // replace with detector.elements
-            var inputs = $draggables.filter( function() {
+            var detectorDOMElems = angular.element('#detector').find('.element').not('.element-icon'); // replace with detector.elements
+            var intersectingDOMElems = detectorDOMElems.filter( function() {
                 var $elem           = angular.element(this);
                 var top             = $elem.offset().top;
                 var height          = $elem.height();
@@ -184,31 +185,51 @@ var Detector = function(){
                 return isCoveredByDraggable;
             });
 
-            var reaction = this.experiment({inputs:inputs},game);
-            console.log('droppables', inputs.length);
+            // We have the DOM's in the area (maybe missing the newly dropped one)
+            // var droppedModel = game.elements.getByHashKey($draggable.data('hashkey'));
+            var intersectingElements = intersectingDOMElems.toArray().map(function(input){
+                return self.elements.getByHashKey(angular.element(input).data('hashkey'));
+            });
+
+            // make sure we include the dropped element as in some cases
+            // it wont have DOM object yet so it wont be picked up as intersecting
+            if (newElement && intersectingElements.indexOf(newElement)===-1) intersectingElements.push(newElement);
+
+
+            var observation = this.experiment({inputs:intersectingElements,location:$draggable.offset()},game);
+            console.log('droppables', intersectingElements.length, observation);
+            return observation;
 
 
         },
 
-        /** Run an experiment depending on ingredients and conditions **/
+        /** Run an experiment depending on reactants and conditions **/
         experiment: function(options,game) {
             var inputs = options.inputs || [];
-            var inputKeys = inputs.map(function(i,e){return $(e).data('element')});
+            var inputKeys = inputs.map(function(e){return e.key;});
             inputKeys.sort(); // this makes reaction be independant of order
 
-            var result = game.rules[inputKeys]
+            var result = game.rules[inputKeys];
             if (result) {
-                return this.reaction(result.ingredients,result.rune,game)
+                this.reaction(result.reactants,result.results, game);
+            } else {
+                result = {
+                    reactants: [],
+                    catalysts: [],
+                    conditions: [],
+                    results: [],
+                    inputs: inputKeys
+                };
             }
             return result;
         },
 
-        /** Remove ingredients and make results with animations **/
-        reaction: function(ingredients,results,game){
+        /** Remove reactants and make results with animations **/
+        reaction: function(reactants,results,game){
 
-            // remove ingredients from detector
-            for (var i = 0; i < ingredients.length; i++) {
-                var ingredient = ingredients[i];
+            // remove reactants from detector
+            for (var i = 0; i < reactants.length; i++) {
+                var ingredient = reactants[i];
             }
 
             // TODO use angular effects to remove in puff of fade
@@ -218,7 +239,7 @@ var Detector = function(){
                 var resultKey = results[i];
 
                 // make sure it's discovered
-                var elementStore = this.elements.filter(function(e){return e.key===resultKey;});
+                var elementStore = game.elements.get(resultKey);
                 elementStore.state.discovered=true;
 
                 // add new element to beaker
@@ -229,7 +250,7 @@ var Detector = function(){
             }
 
             // effects
-            this.bubblr.start(1500);
+            this.bubblr.bubble();
 
         },
     }
