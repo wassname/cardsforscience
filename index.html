@@ -12,10 +12,10 @@
 
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="css/angular-datatables.css">
-    <link rel="stylesheet" href="bower_components/datatables/media/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="bower_components/datatables/media/css/dataTables.bootstrap.min.css">
-    <link rel="stylesheet" href="bower_components/angular-datatables/dist/plugins/bootstrap/datatables.bootstrap.min.css">
+
+    <link rel="stylesheet" type="text/css" href="bower_components/angular-ui-grid/ui-grid.min.css">
+    <link rel="stylesheet" href="css/ui-grid.css">
+
     <link rel="stylesheet" href="css/style.css">
 
     <link rel="icon" type="image/png" href="assets/favicon.png" />
@@ -94,7 +94,7 @@
                 <div class="col-md-4" ng-repeat="r in rc.elements">
                   <span  ng-show="rc.isVisible(r)"
                     id="{{r.key}}"
-                    class="{{r.key}} element element-icon {{ r.state.interesting ? 'blink' : '' }} {{'q'+r.state.color+'-12'}} {{r.state.amount>0 ? ' ui-draggable': 'empty'}}"
+                    class="{{r.key}} element element-store {{ r.state.interesting ? 'blink' : '' }} {{'q'+r.state.color+'-12'}} {{r.state.amount>0 ? ' ui-draggable': 'empty'}}"
                     data-element="{{r.key}}"
                     data-drag="true"
                     jqyoui-draggable="{containment:'offset'}"
@@ -184,25 +184,12 @@
               <i class="fa fa-users"></i> Observations
             </h4>
           </div>
-          <div class="panel-body scrollable large" id="hrLarge">
+          <div class="panel-body scrollable large obervations-panel-body" id="hrLarge">
 
 
 
             <div id="hrContent" ng-controller="ObservationsController as oc">
-                <table datatable="ng"  dt-options="oc.dtOptions" class="compact">
-                    <thead>
-                        <tr>
-                            <th>Reactants</th>
-                            <th>Results</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="o in ::oc.observations" ng-cloak>
-                           <td>{{ o.inputs.join('') }}</td>
-                           <td>{{ o.results.join('') }}</td>
-                       </tr>
-                    </tbody>
-                </table>
+                <div id="observations-grid" ui-grid="oc.gridOptions" class="observations-grid"></div>
             </div>
 
           </div>
@@ -352,21 +339,21 @@
       </div>
     </div>
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.js"></script>
     <script src="js/external/jquery.ui.touch-punch.min.js"></script>
     <script src="js/external/jquery.cookie-1.4.1.min.js"></script>
 
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.js"></script>
 
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.17/angular.min.js"></script>
-    <script src="bower_components/angular-dragdrop/src/angular-dragdrop.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.17/angular.js"></script>
+    <script src="bower_components/angular-dragdrop/src/angular-dragdrop.js"></script>
 
     <script src="js/external/retina.js"></script>
     <script src="js/external/fastclick.js"></script>
 
-    <script src="bower_components/datatables/media/js/jquery.dataTables.min.js"></script>
-    <script src="bower_components/angular-datatables/dist/angular-datatables.min.js"></script>
+    <script src="bower_components/lodash/dist/lodash.js"></script>
+    <script src="bower_components/angular-ui-grid/ui-grid.js"></script>
 
     <script src="js/storage.js"></script>
     <script src="js/helpers.js"></script>

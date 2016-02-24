@@ -89,9 +89,16 @@ var GameObjects = (function () {
     /**
      * Takes in a rule/observation object and records observation in journal
      * with reactants, inputs, catalysts, conditions, results
-     ***/
+     **/
     Lab.prototype.observe = function (observation) {
-        this.state.observations.push(observation);
+        // join the arrays into strings for display
+        var obsText = {};
+        for (var k in observation) {
+            if (observation.hasOwnProperty(k)) {
+                obsText[k] = observation[k].sort().join('');
+            }
+        }
+        this.state.observations.push(obsText);
     };
 
 
@@ -104,35 +111,50 @@ var GameObjects = (function () {
         return false;
     };
 
-    var ElementStore = function (obj) {
-        Array.apply(this, [obj]);
+    var ElementStores = function (obj) {
+        this.push.apply(this, obj);
     };
 
-    ElementStore.prototype = Object.create(Array.prototype);
+    ElementStores.prototype = Object.create(Array.prototype);
 
-    ElementStore.prototype.constructor = ElementStore;
+    ElementStores.prototype.constructor = Array.constructor;
+
+    ElementStores.prototype.pushAll = function (items) {
+        this.push.apply(this, items);
+    };
 
     /** Add a random element or specify it's key **/
-    ElementStore.prototype.addToStore = function (element) {
-        if (!element) this.get(element);
+    ElementStores.prototype.addToStore = function (element) {
+        if (element) this.get(element);
         if (!element) element = this.select();
         return element.state.amount += 1;
     };
 
+    /** Add a random discovered element or specify it's key **/
+    ElementStores.prototype.addKnownToStore = function (element) {
+        var discovered = this.filter(function (e) {
+            return e.state.discovered;
+        });
+        discovered = new GameObjects.ElementStores(discovered);
+        if (element) discovered.get(element);
+        if (!element) element = discovered.select();
+        return element.state.amount += 1;
+    };
+
     /** Select random element from store **/
-    ElementStore.prototype.select = function () {
-        var i = Math.floor((this.length - 1) * Math.random());
+    ElementStores.prototype.select = function () {
+        var i = Math.round((this.length - 1) * Math.random());
         return this[i];
     };
-    /** Get element by hashid **/
-    ElementStore.prototype.get = function (key) {
+    /** Get element by key **/
+    ElementStores.prototype.get = function (key) {
         return this.filter(function (e) {
             return e.key === key;
         })[0];
-    }
+    };
 
     /** Get element by hashid **/
-    ElementStore.prototype.getByHashKey = function (hashKey) {
+    ElementStores.prototype.getByHashKey = function (hashKey) {
         if (hashKey === undefined) {
             console.warn('GetByHashKey given an undefined hashkey', hashKey)
             return;
@@ -148,49 +170,68 @@ var GameObjects = (function () {
             console.warn('Got no results when filtering on hashKey', hashKey);
             return;
         }
-    }
+    };
 
-    /** Get element by hashid **/
-    ElementStore.prototype.findIndexByHashKey = function (hashKey) {
-        if (hashKey === undefined) {
-            console.warn('FindIndexByHashKey given an undefined hashkey', hashKey)
-            return;
-        }
-        return this.findIndex(function (e) {
-            return e.$$hashKey === hashKey;
-        })[0];
-    }
+    /** filter by e.g. {uuid:'34hgyh454'} **/
+    // ElementStores.prototype.filterBy = function (filter) {
+    //     return this.filter(function (e) {
+    //         var match = true;
+    //         for (var k in filter) {
+    //             if (filter.hasOwnProperty(k)) {
+    //                 match = match && (e[k] === filter[k]);
+    //             };
+    //         }
+    //         return match;
+    //     });
+    // };
+    //
+    // /** Get indexes matching filter e.g. {uuid:'34hgyh454'} **/
+    // ElementStores.prototype.findIndex = function (filter) {
+    //     var self = this;
+    //     return this.filterBy(function (e) {
+    //             var match = true;
+    //             for (var k in filter) {
+    //                 if (filter.hasOwnProperty(k)) {
+    //                     match = match && (e[k] === filter[k]);
+    //                 };
+    //             }
+    //             return match;
+    //         })
+    //         .map(function (e) {
+    //             return self.indexOf(e);
+    //         });
+    // };
 
-    /** @class Element
+    /** @class ElementStore
      */
-    var Element = function (obj) {
+    var ElementStore = function (obj) {
         GameObject.apply(this, [obj]);
         this.state.amount = Math.round(Math.random() * 2);
         this.state.discovered = Math.random() < 0.1;
         this.state.interesting = Math.random() < 0.1;
         this.state.color = Math.round(Math.random() * 11);
-        this.uuid=this.guid();
+        this.uuid = this.guid();
     };
 
-    Element.prototype = Object.create(GameObject.prototype);
+    ElementStore.prototype = Object.create(GameObject.prototype);
 
-    Element.prototype.constructor = Element;
+    ElementStore.prototype.constructor = ElementStore;
 
-    Element.prototype.isVisible = function (lab) {
+    ElementStore.prototype.isVisible = function (lab) {
         if (!lab) {
             return false;
         }
         return this.state.discovered;
     };
 
-    Element.prototype.isAvailable = function (lab) {
+    ElementStore.prototype.isAvailable = function (lab) {
         if (!lab) {
             return false;
         }
         return this.state.amount > 0;
     };
 
-    Element.prototype.research = function (lab) {
+    ElementStore.prototype.research = function (lab) {
         if (lab && lab.research(this.state.cost, this.state.reputation)) {
             this.state.level++;
             if (this.state.info_levels.length > 0 &&
@@ -205,12 +246,25 @@ var GameObjects = (function () {
         return -1;
     };
 
-    Element.prototype.getInfo = function () {
+    ElementStore.prototype.getInfo = function () {
         if (!this._info) {
             this._info = Helpers.loadFile(this.info);
         }
         this.state.interesting = false;
         return this._info;
+    };
+
+    /** Create a new element for the test tube from this ElementStore **/
+    ElementStore.prototype.spawn = function () {
+        var element = angular.copy(this);
+        element.uuid = element.guid();
+        element.state = undefined;
+        this.state.amount -= 1;
+        return element;
+    };
+
+    ElementStore.prototype.decreaseStore = function () {
+        return this.state.amount -= 1;
     };
 
     /** @class Worker
@@ -352,10 +406,10 @@ var GameObjects = (function () {
     // Expose classes in module.
     return {
         Lab: Lab,
-        Element: Element,
+        ElementStore: ElementStore,
         Worker: Worker,
         Upgrade: Upgrade,
         Achievement: Achievement,
-        ElementStore: ElementStore
+        ElementStores: ElementStores
     };
 }());

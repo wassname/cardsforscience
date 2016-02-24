@@ -17,7 +17,7 @@ var app = (function () {
     // var allObjects = game.allObjects;
     // var lastSaved;
 
-    var app = angular.module('scienceAlchemy', ['ngDragDrop', 'datatables']);
+    var app = angular.module('scienceAlchemy', ['ngDragDrop', 'ui.grid']);
 
     // directives
 
@@ -28,10 +28,10 @@ var app = (function () {
     //     var elements = Helpers.loadFile('json/elements.json');
     //     elements = elements.map(
     //         function (r) {
-    //             return new GameObjects.Element(r);
+    //             return new GameObjects.ElementStore(r);
     //         });
     //     // put in extended array with helper methods
-    //     elementStore = new GameObjects.ElementStore();
+    //     elementStore = new GameObjects.ElementStores();
     //     elementStore.push.apply(elementStore,elements);
     //     return elementStore;
     // });
@@ -93,7 +93,7 @@ var app = (function () {
             // store the dropped element
             var draggable = angular.element(ui.draggable);
             var key = draggable.data('element');
-            if (!draggable.hasClass('element-icon')) {
+            if (!draggable.hasClass('element-store')) {
                 var elementStore = vs.elements.get(key);
                 var i = findIndexByHashKey(draggable.data('hashkey'));
                 detector.elements.splice(i, 1);
@@ -143,7 +143,7 @@ var app = (function () {
             game.lab.clickDetector();
             detector.addEvent();
             UI.showUpdateValue("#update-data", game.lab.state.detector);
-            game.elements.addToStore();
+            game.elements.addKnownToStore();
             return false;
         };
         vm.toggleFlameFuel = function () {
@@ -185,11 +185,17 @@ var app = (function () {
     app.controller('ObservationsController', ['$scope', 'game', function ($scope, game) {
         var vm = this;
         vm.observations = game.lab.state.observations;
-        vm.dtOptions = {
-            paginationType: 'full_numbers',
-            displayLength: 2
+        vm.gridOptions = {
+            enableFiltering: true,
+            columnDefs: [
+                { field: 'inputs', filter:{}, visible:true},
+                { field: 'reactants', visible:false},
+                { field: 'results', visible:true,  sort: { direction: 'asc' }},
+                { field: 'catalysts', visible:false},
+                { field: 'conditions', visible:false},
+            ],
+            data: vm.observations
         };
-
     }]);
 
     app.controller('UpgradesController', ['$scope', 'game', function ($scope, game) {

@@ -43,7 +43,7 @@ var Game = (function (Helpers, GameObjects, ObjectStorage) {
         };
         this.elements = this.elements.slice(0,20).map(
             function (r) {
-                return makeGameObject(GameObjects.Element, r);
+                return makeGameObject(GameObjects.ElementStore, r);
             });
         this.workers = this.workers.map(
             function (w) {
@@ -64,7 +64,7 @@ var Game = (function (Helpers, GameObjects, ObjectStorage) {
         }
 
         // put elements in extended array with utility methods
-        this.elementStore = new GameObjects.ElementStore();
+        this.elementStore = new GameObjects.ElementStores();
         this.elementStore.push.apply(this.elementStore, this.elements);
         this.elements = this.elementStore;
 
