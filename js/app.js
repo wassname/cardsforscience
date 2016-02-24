@@ -5,23 +5,9 @@
 var app = (function () {
     Helpers.validateSaveVersion();
 
-    // init game
-    // var game = new Game();
-    //
-    //
-    // var lab = game.lab;
-    // var elements = game.elements;
-    // var workers = game.workers;
-    // var upgrades = game.upgrades;
-    // var achievements = game.achievements;
-    // var allObjects = game.allObjects;
-    // var lastSaved;
-
     var app = angular.module('scienceAlchemy', ['ngDragDrop', 'ui.grid']);
 
     // directives
-
-
 
     // factories to provide services. They serve shared game objects
     // app.factory('elements', function () {
@@ -36,84 +22,101 @@ var app = (function () {
     //     return elementStore;
     // });
 
-    app.factory('game', function () {
-        var game = new Game();
-        game.load();
-        return game;
-    });
 
-    app.factory('detector', function () {
+    function game($http, $q, lab) {
+        var game = new Game();
+        game.lab=lab;
+        var promise = game.load($http, $q);
+        // return promise;
+        return game;
+    };
+    game.$inject = ['$http', '$q'];
+    app.factory('game', game);
+
+    function lab() {
+        if (!this.lab) this.lab = new GameObjects.Lab();
+        return this.lab;
+    };
+    app.factory('lab', lab);
+
+    function detector() {
         var detector = new Detector();
         detector.init(400);
         return detector;
-    });
+    }
+    app.factory('detector', detector);
 
     // add helpers as filters
-    app.filter('niceNumber', ['$filter', function ($filter) {
+
+    function niceNumber($filter) {
         return Helpers.formatNumberPostfix;
-    }]);
+    };
+    niceNumber.$inject = ['$filter'];
+    app.filter('niceNumber', niceNumber);
 
-    app.filter('niceTime', ['$filter', function ($filter) {
+    function niceTime($filter) {
         return Helpers.formatTime;
-    }]);
+    };
+    niceTime.$inject = ['$filter'];
+    app.filter('niceTime', niceTime);
 
-    app.filter('currency', ['$filter', function ($filter) {
+    function currency($filter) {
         return function (input) {
             return 'JTN ' + $filter('niceNumber')(input);
         };
-    }]);
+    };
+    currency.$inject = ['$filter'];
+    app.filter('currency', currency);
 
-    app.filter('reverse', ['$filter', function ($filter) {
+    function reverse($filter) {
         return function (items) {
-            return items.slice().reverse();
+            if (items instanceof Array)
+                return items.slice().reverse();
+            else
+                return items;
         };
-    }]);
+    };
+    reverse.$inject = ['$filter'];
+    app.filter('reverse', reverse);
 
     // controllers
-    app.controller('ElementController', ['$scope', '$compile', 'game', 'detector', function ($scope, $compile, game, detector) {
-        var vs = this;
-        vs.dragOptions = {
+    app.controller('ElementController', ElementController);
+    ElementController.$inject = ['$scope', '$compile', 'game', 'detector', 'lab'];
+
+    function ElementController($scope, $compile, game, detector, lab) {
+        var vm = this;
+        vm.dragOptions = {
             revert: true, //"invalid",
             zIndex: 100,
             // helper: "clone", // drags a clone
             // opacity: 0.75,
-            // start: vs.onRuneDrop.bind(vs),
-            // stop: vs.onRuneDrop.bind(vs),
+            // start: vm.onRuneDrop.bind(vs),
+            // stop: vm.onRuneDrop.bind(vs),
             cancel: false,
             // containment:false
         };
-        vs.elements = game.elements;
-        vs.isVisible = function (item) {
-            return item.isVisible(game.lab);
+        vm.elements = game.elements;
+        vm.isVisible = function (item) {
+            return item.isVisible(lab);
         };
-        vs.isAvailable = function (item) {
-            return item.isAvailable(game.lab);
+        vm.isAvailable = function (item) {
+            return item.isAvailable(lab);
         };
-        vs.onDrop = function (event, ui) {
+        vm.onDrop = function (event, ui) {
             // store the dropped element
             var draggable = angular.element(ui.draggable);
             var key = draggable.data('element');
             if (!draggable.hasClass('element-store')) {
-                var elementStore = vs.elements.get(key);
-                var i = findIndexByHashKey(draggable.data('hashkey'));
+                var elementStore = vm.elements.get(key);
+                var i = _.findIndex(vm.elements,{$$hashKey:draggable.data('hashkey')});
                 detector.elements.splice(i, 1);
                 elementStore.state.amount += 1;
             }
         };
-        vs.doElement = function (item) {
-            var cost = item.element(game.lab);
-            if (cost > 0) {
-                UI.showUpdateValue("#update-data", -cost);
-                UI.showUpdateValue("#update-reputation", item.state.reputation);
-            }
-        };
-        vs.showInfo = function (r) {
-            UI.showModal(r.name, r.getInfo());
-            UI.showLevels(r.state.level);
-        };
-    }]);
+    };
 
-    app.controller('DetectorController', ['$scope', 'game', 'detector', function ($scope, game, detector) {
+
+    function DetectorController($scope, game, detector, lab) {
         var vm = this;
         vm.elements = detector.elements;
         vm.dropOptions = {
@@ -137,12 +140,12 @@ var app = (function () {
         vm.onDrop = function (event, ui) {
             var result = detector.onDrop(event, ui, game);
             if (result)
-                game.lab.observe(result);
+                lab.observe(result);
         };
         vm.click = function () {
-            game.lab.clickDetector();
+            lab.clickDetector();
             detector.addEvent();
-            UI.showUpdateValue("#update-data", game.lab.state.detector);
+            UI.showUpdateValue("#update-data", lab.state.detector);
             game.elements.addKnownToStore();
             return false;
         };
@@ -152,100 +155,135 @@ var app = (function () {
         };
         vm.clearAll = function () {
             detector.clearAll(game);
-        }
-    }]);
+        };
+    };
+    DetectorController.$inject = ['$scope', 'game', 'detector', 'lab'];
+    app.controller('DetectorController', DetectorController);
 
-    app.controller('LabController', ['$interval', 'game', 'detector', function ($interval, game, detector) {
-        this.lab = game.lab;
-        this.showDetectorInfo = function () {
-            if (!this._detectorInfo) {
-                this._detectorInfo = Helpers.loadFile('html/detector.html');
+
+    function LabController($interval, game, detector, lab) {
+        // todo give workers instead of game
+        var vm = this;
+        vm.lab = lab;
+        vm.showDetectorInfo = function () {
+            if (!vm._detectorInfo) {
+                vm._detectorInfo = Helpers.loadFile('html/detector.html');
             }
-            UI.showModal('Detector', this._detectorInfo);
+            UI.showModal('Detector', vm._detectorInfo);
         };
         $interval(function () { // one tick
-            var grant = game.lab.getGrant();
+            var grant = lab.getGrant();
             UI.showUpdateValue("#update-funding", grant);
             var sum = 0;
             for (var i = 0; i < game.workers.length; i++) {
                 sum += game.workers[i].state.hired * game.workers[i].state.rate;
             }
             if (sum > 0) {
-                game.lab.acquireData(sum);
+                lab.acquireData(sum);
                 UI.showUpdateValue("#update-data", sum);
                 detector.addEventExternal(game.workers.map(function (w) {
                     return w.state.hired;
                 }).reduce(function (a, b) {
-                    return a + b
+                    return a + b;
                 }, 0));
             }
         }, 1000);
-    }]);
+    };
+    LabController.$inject = ['$interval', 'game', 'detector', 'lab'];
+    app.controller('LabController', LabController);
 
-    app.controller('ObservationsController', ['$scope', 'game', function ($scope, game) {
+
+    function ObservationsController($scope, game, lab) {
         var vm = this;
-        vm.observations = game.lab.state.observations;
+        vm.observations = lab.state.observations;
         vm.gridOptions = {
             enableFiltering: true,
-            columnDefs: [
-                { field: 'inputs', filter:{}, visible:true},
-                { field: 'reactants', visible:false},
-                { field: 'results', visible:true,  sort: { direction: 'asc' }},
-                { field: 'catalysts', visible:false},
-                { field: 'conditions', visible:false},
-            ],
+            columnDefs: [{
+                field: 'inputs',
+                filter: {},
+                visible: true
+            }, {
+                field: 'reactants',
+                visible: false
+            }, {
+                field: 'results',
+                visible: true,
+                sort: {
+                    direction: 'asc'
+                }
+            }, {
+                field: 'catalysts',
+                visible: false
+            }, {
+                field: 'conditions',
+                visible: false
+            }, ],
             data: vm.observations
         };
-    }]);
+    };
+    ObservationsController.$inject = ['$scope', 'game', 'lab'];
+    app.controller('ObservationsController', ObservationsController);
 
-    app.controller('UpgradesController', ['$scope', 'game', function ($scope, game) {
-        this.upgrades = game.upgrades;
-        this.isVisible = function (upgrade) {
-            return upgrade.isVisible(game.lab, game.allObjects);
+    function UpgradesController($scope, game, lab) {
+        var vm = this;
+        vm.upgrades = game.upgrades;
+        vm.isVisible = function (upgrade) {
+            return upgrade.isVisible(lab, game.allObjects);
         };
-        this.isAvailable = function (upgrade) {
-            return upgrade.isAvailable(game.lab, game.allObjects);
+        vm.isAvailable = function (upgrade) {
+            return upgrade.isAvailable(lab, game.allObjects);
         };
-        this.upgrade = function (upgrade) {
-            if (upgrade.buy(game.lab, game.allObjects)) {
+        vm.upgrade = function (upgrade) {
+            if (upgrade.buy(lab, game.allObjects)) {
                 UI.showUpdateValue("#update-funding", upgrade.cost);
             }
-        }
-    }]);
+        };
+    };
+    UpgradesController.$inject = ['$scope', 'game', 'lab'];
+    app.controller('UpgradesController', UpgradesController);
 
-    app.controller('AchievementsController', function ($scope, game) {
-        $scope.achievements = game.achievements;
-        $scope.progress = function () {
+    function AchievementsController($scope, game, lab) {
+        var vm = this;
+        vm.achievements = game.achievements;
+        vm.progress = function () {
             return game.achievements.filter(function (a) {
-                return a.validate(game.lab, game.allObjects, game.lastSaved);
+                return a.validate(lab, game.allObjects, game.lastSaved);
             }).length;
         };
-    });
+    };
+    AchievementsController.$inject = ['$scope', 'game', 'lab'];
+    app.controller('AchievementsController', AchievementsController);
 
-    app.controller('SaveController', ['$scope', '$interval', 'game', function ($scope, $interval, game) {
+    function SaveController($scope, $interval, $window, game, lab) {
+        var vm = this;
         game.lastSaved = new Date().getTime();
-        $scope.lastSaved = game.lastSaved;
-        $scope.saveNow = function () {
+        vm.lastSaved = game.lastSaved;
+        vm.saveNow = function () {
             var saveTime = new Date().getTime();
-            game.lab.state.time += saveTime - game.lastSaved;
+            lab.state.time += saveTime - game.lastSaved;
             game.save();
             game.lastSaved = saveTime;
-            $scope.lastSaved = game.lastSaved;
+            vm.lastSaved = game.lastSaved;
         };
-        $scope.restart = function () {
-            if (window.confirm(
+        vm.restart = function () {
+            if ($window.confirm(
                     'Do you really want to restart the game? All progress will be lost.'
                 )) {
                 ObjectStorage.clear();
-                window.location.reload(true);
+                $window.location.reload(true);
             }
         };
-        $interval($scope.saveNow, 10000);
-    }]);
+        $interval(vm.saveNow, 10000);
+    };
+    SaveController.$inject = ['$scope', '$interval', '$window', 'game', 'lab'];
+    app.controller('SaveController', SaveController);
 
-    app.controller('StatsController', ['$scope', 'game', function ($scope, game) {
-        $scope.lab = game.lab;
-    }]);
+    function StatsController($scope, lab) {
+        var vm = this;
+        vm.lab = lab;
+    };
+    StatsController.$inject = ['$scope', 'lab'];
+    app.controller('StatsController', StatsController);
 
     analytics.init();
     analytics.sendScreen(analytics.screens.main);

@@ -94,7 +94,7 @@
                 <div class="col-md-4" ng-repeat="r in rc.elements">
                   <span  ng-show="rc.isVisible(r)"
                     id="{{r.key}}"
-                    class="{{r.key}} element element-store {{ r.state.interesting ? 'blink' : '' }} {{'q'+r.state.color+'-12'}} {{r.state.amount>0 ? ' ui-draggable': 'empty'}}"
+                    class="{{r.key}} element element-store {{ r.state.interesting ? 'blink' : '' }} {{r.color}} {{r.state.amount>0 ? ' ui-draggable': 'empty'}}"
                     data-element="{{r.key}}"
                     data-drag="true"
                     jqyoui-draggable="{containment:'offset'}"
@@ -123,7 +123,7 @@
             <div id="detector-element-container" ng-cloak>
                 <div ng-repeat="r in dc.elements">
                     <span
-                        class="{{r.key}} element q{{r.state.color}}-12 ui-draggable"
+                        class="{{r.key}} element {{r.color}} ui-draggable"
                         data-element="{{r.key}}"
                         data-drag="true"
                         jqyoui-draggable="{containment:'offset'}"

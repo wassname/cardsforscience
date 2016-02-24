@@ -6,8 +6,8 @@ var Detector = function(){
     return {
         core:
         {
-            canvas: null,
-            ctx: null
+            // canvas: null,
+            // ctx: null
         },
         //
         // events:
@@ -19,8 +19,8 @@ var Detector = function(){
 
         flame:
         {
-            canvas: null,
-            ctx: null
+            // canvas: null,
+            // ctx: null
         },
 
         elements: new GameObjects.ElementStores(),
@@ -39,15 +39,15 @@ var Detector = function(){
         init: function(baseSize,element)
         {
             // get canvas
-            this.core.canvas = document.getElementById('detector-core');
-            if (!this.core.canvas) {
-                this.core.canvas=$('<canvas id="detector-core"></canvas>');
-                $(element).append(this.core.canvas);
-            }
-            this.core.ctx = this.core.canvas.getContext('2d');
-
-            this.flame.canvas = document.getElementById('detector-flame');
-            this.flame.ctx = this.flame.canvas.getContext('2d');
+            // this.core.canvas = document.getElementById('detector-core');
+            // if (!this.core.canvas) {
+            //     this.core.canvas=$('<canvas id="detector-core"></canvas>');
+            //     $(element).append(this.core.canvas);
+            // }
+            // this.core.ctx = this.core.canvas.getContext('2d');
+            //
+            // this.flame.canvas = document.getElementById('detector-flame');
+            // this.flame.ctx = this.flame.canvas.getContext('2d');
 
             this.initBubbles();
             this.initFlame();
@@ -130,8 +130,8 @@ var Detector = function(){
         },
 
         /** Clear an element back to element Store **/
-        storeElementByHashKey: function(hashKey,game){
-            var i = this.elements.findIndexByHashKey(hashKey);
+        storeElementBy: function(qObject,game){
+            var i = _.findIndex(this.elements,qObject);
             var removedElement = this.elements.splice(i,1)[0];
             return game.elements.get(removedElement.key).state.amount+=1;
         },
@@ -139,7 +139,7 @@ var Detector = function(){
         clearAll: function(game){
             var hashKeys = this.elements.map(function(e){return e.$$hashKey;});
             for (var i = 0; i < hashKeys.length; i++) {
-                this.storeElementByHashKey(hashKeys[i], game);
+                this.storeElementBy({'$$hashKey': hashKeys[i]}, game);
             }
         },
 
@@ -231,7 +231,8 @@ var Detector = function(){
             for (var i = 0; i < reactants.length; i++) {
                 // get the uuid from inputs
                 var ingredient = inputs.filter(function(e){return e.key===reactants[i];})[0];
-                this.elements.findIndexByHashKey(ingredient.uuid);
+                var j = _.findIndex(this.elements,{uuid:ingredient.uuid});
+                var removed = this.elements.slice(j,1);
             }
 
             // TODO use angular effects to remove in puff of fade

@@ -372,6 +372,9 @@ h1 br {
 .Paired .q10-12{color:rgb(255,255,153)}
 .Paired .q11-12{color:rgb(177,89,40)}
 
+.Red {color:red;}
+.Black {color:black;}
+
 
 /* ui grid */
 .observations-grid {
