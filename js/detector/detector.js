@@ -4,26 +4,7 @@ var Detector = function(){
 
 
     return {
-        core:
-        {
-            // canvas: null,
-            // ctx: null
-        },
-        //
-        // events:
-        // {
-        //     canvas: null,
-        //     ctx: null,
-        //     list: [],
-        // },
-
-        flame:
-        {
-            // canvas: null,
-            // ctx: null
-        },
-
-        elements: new GameObjects.ElementStores(),
+        elements: new GameObjects.Cards(),
 
         visible: true,
 
@@ -36,21 +17,10 @@ var Detector = function(){
 
         bubblr: undefined,
 
-        init: function(baseSize,element)
+        init: function()
         {
-            // get canvas
-            // this.core.canvas = document.getElementById('detector-core');
-            // if (!this.core.canvas) {
-            //     this.core.canvas=$('<canvas id="detector-core"></canvas>');
-            //     $(element).append(this.core.canvas);
-            // }
-            // this.core.ctx = this.core.canvas.getContext('2d');
-            //
-            // this.flame.canvas = document.getElementById('detector-flame');
-            // this.flame.ctx = this.flame.canvas.getContext('2d');
-
-            this.initBubbles();
-            this.initFlame();
+            // this.initBubbles();
+            // this.initFlame();
         },
 
         initBubbles: function(){
@@ -72,10 +42,10 @@ var Detector = function(){
             this.bubblr = bubblrElem.data('plugin_bubblr');
         },
 
-        initFlame: function(){
-            var flameElem = $('#detector-flame').flame();
-            this.flamer = flameElem.data('plugin_flame')
-        },
+        // initFlame: function(){
+        //     var flameElem = $('#detector-flame').flame();
+        //     this.flamer = flameElem.data('plugin_flame')
+        // },
 
         bindOnResize: function(){
             // HACK
@@ -114,19 +84,19 @@ var Detector = function(){
         /** When a user clicks the detector **/
         addEvent: function()
         {
-            this.bubblr.bubble(); // bubble for 500ms, TODO make one bubble
+            // this.bubblr.bubble(); // bubble for 500ms, TODO make one bubble
         },
 
         /** When a worker clicks the detector **/
         addEventExternal: function(numWorkers)
         {
-            this.bubblr.genBubbles(numWorkers);
+            // this.bubblr.genBubbles(numWorkers);
         },
 
         /** Draw current events **/
         draw: function(duration)
         {
-            this.bubblr.bubble();
+            // this.bubblr.bubble();
         },
 
         /** Clear an element back to element Store **/
@@ -196,9 +166,14 @@ var Detector = function(){
             if (newElement && intersectingElements.indexOf(newElement)===-1) intersectingElements.push(newElement);
 
 
-            var observation = this.experiment({inputs:intersectingElements,location:$draggable.offset()},game);
-            console.log('intersectingElements', intersectingElements.length, observation);
-            return observation;
+            var uniqueElems = _(intersectingElements).map('key').uniq().value().length;
+            if (intersectingElements.length==2 && uniqueElems>1){
+                var observation = this.experiment({inputs:intersectingElements,location:$draggable.offset()},game);
+                console.log('intersectingElements', intersectingElements.length, observation);
+                return observation;
+            } else {
+                return;
+            }
 
 
         },
@@ -209,7 +184,7 @@ var Detector = function(){
             var inputKeys = inputs.map(function(e){return e.key;});
             inputKeys.sort(); // this makes reaction be independant of order
 
-            var result = game.rules[inputKeys];
+            var result = game.testRules(inputKeys);
             if (result) {
                 this.reaction(inputs,result.reactants,result.results, options.location, game);
             } else {
@@ -232,7 +207,7 @@ var Detector = function(){
                 // get the uuid from inputs
                 var ingredient = inputs.filter(function(e){return e.key===reactants[i];})[0];
                 var j = _.findIndex(this.elements,{uuid:ingredient.uuid});
-                var removed = this.elements.slice(j,1);
+                var removed = this.elements.splice(j,1);
             }
 
             // TODO use angular effects to remove in puff of fade
@@ -259,7 +234,7 @@ var Detector = function(){
             }
 
             // effects
-            this.bubblr.bubble();
+            // this.bubblr.bubble();
 
         },
     };

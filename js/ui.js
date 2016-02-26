@@ -9,6 +9,11 @@ var UI = (function () {
     FastClick.attach(document.body);
   });
 
+  // $('.prevent-select').on('mousedown', function(e) {
+  //   e.preventDefault();
+  // });
+
+
   /** Show a bootstrap modal with dynamic content e.g. background info **/
   var showModal = function(title, text, level) {
     var $modal = $('#infoBox');

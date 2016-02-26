@@ -53,7 +53,10 @@ module.exports = function (config) {
             // dependencies
             'bower_components/jquery/dist/jquery.js',
             'bower_components/jquery-ui/jquery-ui.js',
+
+
             'bower_components/bootstrap/dist/js/bootstrap.js',
+
             'bower_components/angular/angular.js',
             'bower_components/angular-route/angular-route.js',
             'bower_components/angular-resource/angular-resource.js',
@@ -61,7 +64,10 @@ module.exports = function (config) {
             'bower_components/angular-mocks/angular-mocks.js',
             'bower_components/angular-dragdrop/src/angular-dragdrop.js',
             'bower_components/angular-ui-grid/ui-grid.js',
+
             'bower_components/lodash/dist/lodash.js',
+            'bower_components/chai/chai.js',
+
             'js/external/*.js',
 
             // fixtures
@@ -88,9 +94,7 @@ module.exports = function (config) {
             'js/helpers.js',
             'js/analytics.js',
             'js/gameobjects.js',
-            'js/detector/flame.js',
-            'js/detector/bubblr.js',
-            'js/detector/event.js',
+            'js/rules.js',
             'js/detector/detector.js',
             'js/ui.js',
             'js/game.js',

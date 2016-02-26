@@ -98,7 +98,13 @@ var GameObjects = (function () {
                 obsText[k] = observation[k].sort().join('');
             }
         }
-        this.state.observations.push(obsText);
+        obsText.amount=1;
+        // check if an obs with all the attributes matching (extra attribs are ok)
+        var index = _.findIndex(this.state.observations,obsText);
+        if (index>-1)
+            this.state.observations[index].amount+=1;
+        else
+            this.state.observations.push(obsText);
     };
 
 
@@ -111,50 +117,50 @@ var GameObjects = (function () {
         return false;
     };
 
-    var ElementStores = function (obj) {
+    var Cards = function (obj) {
         this.push.apply(this, obj);
     };
 
-    ElementStores.prototype = Object.create(Array.prototype);
+    Cards.prototype = Object.create(Array.prototype);
 
-    ElementStores.prototype.constructor = Array.constructor;
+    Cards.prototype.constructor = Array.constructor;
 
-    ElementStores.prototype.pushAll = function (items) {
+    Cards.prototype.pushAll = function (items) {
         this.push.apply(this, items);
     };
 
     /** Add a random element or specify it's key **/
-    ElementStores.prototype.addToStore = function (element) {
+    Cards.prototype.addToStore = function (element) {
         if (element) this.get(element);
         if (!element) element = this.select();
         return element.state.amount += 1;
     };
 
     /** Add a random discovered element or specify it's key **/
-    ElementStores.prototype.addKnownToStore = function (element) {
+    Cards.prototype.addKnownToStore = function (element) {
         var discovered = this.filter(function (e) {
             return e.state.discovered;
         });
-        discovered = new GameObjects.ElementStores(discovered);
+        discovered = new GameObjects.Cards(discovered);
         if (element) discovered.get(element);
         if (!element) element = discovered.select();
         return element.state.amount += 1;
     };
 
     /** Select random element from store **/
-    ElementStores.prototype.select = function () {
+    Cards.prototype.select = function () {
         var i = Math.round((this.length - 1) * Math.random());
         return this[i];
     };
     /** Get element by key **/
-    ElementStores.prototype.get = function (key) {
+    Cards.prototype.get = function (key) {
         return this.filter(function (e) {
             return e.key === key;
         })[0];
     };
 
     /** Get element by hashid **/
-    ElementStores.prototype.getByHashKey = function (hashKey) {
+    Cards.prototype.getByHashKey = function (hashKey) {
         if (hashKey === undefined) {
             console.warn('GetByHashKey given an undefined hashkey', hashKey)
             return;
@@ -172,66 +178,42 @@ var GameObjects = (function () {
         }
     };
 
-    /** filter by e.g. {uuid:'34hgyh454'} **/
-    // ElementStores.prototype.filterBy = function (filter) {
-    //     return this.filter(function (e) {
-    //         var match = true;
-    //         for (var k in filter) {
-    //             if (filter.hasOwnProperty(k)) {
-    //                 match = match && (e[k] === filter[k]);
-    //             };
-    //         }
-    //         return match;
-    //     });
-    // };
-    //
-    // /** Get indexes matching filter e.g. {uuid:'34hgyh454'} **/
-    // ElementStores.prototype.findIndex = function (filter) {
-    //     var self = this;
-    //     return this.filterBy(function (e) {
-    //             var match = true;
-    //             for (var k in filter) {
-    //                 if (filter.hasOwnProperty(k)) {
-    //                     match = match && (e[k] === filter[k]);
-    //                 };
-    //             }
-    //             return match;
-    //         })
-    //         .map(function (e) {
-    //             return self.indexOf(e);
-    //         });
-    // };
-
-    /** @class ElementStore
+    /** @class Card
      */
-    var ElementStore = function (obj) {
+    var Card = function (obj) {
+        // load from localStorage by obj.key
         GameObject.apply(this, [obj]);
-        this.state.amount = Math.round(Math.random() * 2);
-        this.state.discovered = Math.random() < 0.1;
-        this.state.interesting = Math.random() < 0.1;
-        this.state.color = Math.round(Math.random() * 11);
-        this.uuid = this.guid();
+
+        // apply defaults to undefined values
+        this.state = _.defaults(this.state,{
+            amount: 0,
+            discovered: false,
+            interesting: false,
+        });
+
+        // generate uuid
+        this.uuid = this.uuid || this.guid();
     };
 
-    ElementStore.prototype = Object.create(GameObject.prototype);
+    Card.prototype = Object.create(GameObject.prototype);
 
-    ElementStore.prototype.constructor = ElementStore;
+    Card.prototype.constructor = Card;
 
-    ElementStore.prototype.isVisible = function (lab) {
+    Card.prototype.isVisible = function (lab) {
         if (!lab) {
             return false;
         }
         return this.state.discovered;
     };
 
-    ElementStore.prototype.isAvailable = function (lab) {
+    Card.prototype.isAvailable = function (lab) {
         if (!lab) {
             return false;
         }
         return this.state.amount > 0;
     };
 
-    ElementStore.prototype.research = function (lab) {
+    Card.prototype.research = function (lab) {
         if (lab && lab.research(this.state.cost, this.state.reputation)) {
             this.state.level++;
             if (this.state.info_levels.length > 0 &&
@@ -246,7 +228,7 @@ var GameObjects = (function () {
         return -1;
     };
 
-    ElementStore.prototype.getInfo = function () {
+    Card.prototype.getInfo = function () {
         if (!this._info) {
             this._info = Helpers.loadFile(this.info);
         }
@@ -254,16 +236,16 @@ var GameObjects = (function () {
         return this._info;
     };
 
-    /** Create a new element for the test tube from this ElementStore **/
-    ElementStore.prototype.spawn = function () {
+    /** Create a new element for the test tube from this Card **/
+    Card.prototype.spawn = function () {
         var element = angular.copy(this);
         element.uuid = element.guid();
         element.state = undefined;
-        this.state.amount -= 1;
+        // this.state.amount -= 1;
         return element;
     };
 
-    ElementStore.prototype.decreaseStore = function () {
+    Card.prototype.decreaseStore = function () {
         return this.state.amount -= 1;
     };
 
@@ -406,10 +388,10 @@ var GameObjects = (function () {
     // Expose classes in module.
     return {
         Lab: Lab,
-        ElementStore: ElementStore,
+        Card: Card,
         Worker: Worker,
         Upgrade: Upgrade,
         Achievement: Achievement,
-        ElementStores: ElementStores
+        Cards: Cards
     };
 }());

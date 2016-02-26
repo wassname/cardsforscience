@@ -14,12 +14,12 @@ var app = (function () {
     //     var elements = Helpers.loadFile('json/elements.json');
     //     elements = elements.map(
     //         function (r) {
-    //             return new GameObjects.ElementStore(r);
+    //             return new GameObjects.Card(r);
     //         });
     //     // put in extended array with helper methods
-    //     elementStore = new GameObjects.ElementStores();
-    //     elementStore.push.apply(elementStore,elements);
-    //     return elementStore;
+    //     Card = new GameObjects.Cards();
+    //     Card.push.apply(Card,elements);
+    //     return Card;
     // });
 
 
@@ -107,10 +107,10 @@ var app = (function () {
             var draggable = angular.element(ui.draggable);
             var key = draggable.data('element');
             if (!draggable.hasClass('element-store')) {
-                var elementStore = vm.elements.get(key);
+                var Card = vm.elements.get(key);
                 var i = _.findIndex(vm.elements,{$$hashKey:draggable.data('hashkey')});
                 detector.elements.splice(i, 1);
-                elementStore.state.amount += 1;
+                Card.state.amount += 1;
             }
         };
     };
@@ -150,8 +150,8 @@ var app = (function () {
             return false;
         };
         vm.toggleFlameFuel = function () {
-            console.log('toggleFlameFuel');
-            detector.flamer.toggleFuel();
+            // console.log('toggleFlameFuel');
+            // detector.flamer.toggleFuel();
         };
         vm.clearAll = function () {
             detector.clearAll(game);
@@ -200,13 +200,20 @@ var app = (function () {
             enableFiltering: true,
             columnDefs: [{
                 field: 'inputs',
-                filter: {},
+                filter: {
+                    type: 'select',
+                     selectOptions:  _(game.elements).filter({state:{discovered:true}}).map(function(e){return {value:e.key,label:e.key};}).value(),
+                },
                 visible: true
             }, {
                 field: 'reactants',
                 visible: false
             }, {
                 field: 'results',
+                filter: {
+                    type: 'select',
+                     selectOptions:  _(game.elements).filter({state:{discovered:true}}).map(function(e){return {value:e.key,label:e.key};}).value(),
+                },
                 visible: true,
                 sort: {
                     direction: 'asc'

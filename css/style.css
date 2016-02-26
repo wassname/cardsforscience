@@ -303,17 +303,20 @@ h1 br {
     padding-top: 50px;
 }
 .test-tube {
-    border-left: 5px solid #949494;
+    /*border-left: 5px solid #949494;
     border-right: 5px solid #949494;
     border-bottom: 5px solid #949494;
     border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
+    border-bottom-right-radius: 10px;*/
+    border: 5px solid #949494;
+    border-radius: 10px;
 }
 
 /* science-click custom css */
 
+
 .panel-body.large {
-    min-height: 500px;
+    min-height: 600px;
 }
 
 .ui-draggable {
@@ -338,12 +341,18 @@ h1 br {
 
 .white-badge {
     color: black;
-    background-color: transparent;
+    background-color: white;
+    border-radius: 2px;
+    padding: 2px;
+    z-index: 100;
     position: relative;
-    font-weight: bold;
+    border: 1px black solid;
+    /*font-weight: bold;*/
     top: -1em;
-    left: 2em;
+    left: 2.5em;
 }
+
+
 
 /* https://github.com/mbostock/d3/blob/master/lib/colorbrewer/colorbrewer.css */
 .Paired .q0-12{fill:rgb(166,206,227)}
@@ -394,4 +403,18 @@ h1 br {
     padding-bottom: 2px;
     padding-left: 5px;
     padding-right: 5px;
+}
+
+.ui-grid-filter-select {
+    background: white;
+    font-size: 22px;
+}
+#card-deck{
+    font-size: 75px;
+}
+.ui-grid-cell-contents{
+    font-size: 22px;
+}
+.ui-grid-viewport .ui-grid-cell-contents{
+    font-size: 22px;
 }
