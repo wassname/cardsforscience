@@ -279,13 +279,13 @@ var Rules = (function functionName(_) {
         if (d > 3 && d < 21) return d+'th to last'; // thanks kennebec
         switch (d % 10) {
         case 1:
-            return d+" st to last";
+            return "last";
         case 2:
-            return d+" nd to last";
+            return d+"nd to last";
         case 3:
-            return d+" rd to last";
+            return d+"rd to last";
         default:
-            return d+" th to last";
+            return d+"th to last";
         }
     };
 
@@ -326,7 +326,7 @@ var Rules = (function functionName(_) {
             ]
         ),
         new Rule(
-            "If last <%= n %><%=nth(n)%> cards value was between <%= min %> and <%= max %> play a card that isn't and vice versa.",
+            "If <%= lastn(n) %> cards value was between <%= min %> and <%= max %> play a card that isn't and vice versa.",
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - this.options.n];
                 var property = this.options.property;
@@ -372,19 +372,12 @@ var Rules = (function functionName(_) {
             ]
         ),
         new Rule(
-            "Play a card with a value <%= min %> to <%= max %> higher than the value of the last <%=n%><%=nth(n)%> card. The numbers wrap around once they reach the max",
+            "Play a card with a value <%= min %> to <%= max %> higher than the value of the <%= lastn(n) %> card. The numbers wrap around once they reach the max",
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - this.options.n];
-                var property = this.options.property;
-                var lastWasbetween = options.min < lastNCard.value && lastNCard.value < options.max;
-                if (lastWasbetween)
-                    return chai.expect(card)
-                        .to.have.property('value')
-                        .not.within(options.min, options.max);
-                else
-                    return chai.expect(card)
-                        .to.have.property('value')
-                        .within(options.min, options.max);
+                var val =  card.value%16;
+                return chai.expect(val).to.be
+                    .within(lastNCard.value+options.min, lastNCard.value+options.max);
             }, {
                 n: 1,
                 min: 1,
@@ -423,7 +416,7 @@ var Rules = (function functionName(_) {
 
 
         new Rule(
-            "If the last <%= n %><%=nth(n)%> card is an even-valued card, play a <%= evenColor %> card. Otherwise play the other color",
+            "If the <%= lastn(n) %> card is an even-valued card, play a <%= evenColor %> card. Otherwise play the other color",
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - this.options.n];
                 var lastWasEven = lastNCard % 2 == 0;
@@ -462,7 +455,7 @@ var Rules = (function functionName(_) {
         ),
 
         new Rule(
-            "Play a card that has the same <%= property %> or color as the last <%= n %><%=nth(n)%> card but not both.",
+            "Play a card that has the same <%= property %> or color as the <%= lastn(n) %> card but not both.",
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - options.n];
                 var matchesColor = lastNCard.color === card.color;
@@ -492,7 +485,7 @@ var Rules = (function functionName(_) {
         ),
 
         new Rule(
-            "If the last <%= n %><%=nth(n)%> card's number is higher than <%= min %>, change <%= property %>, and if lower, keep it the same.",
+            "If the <%= lastn(n) %> card's number is higher than <%= min %>, change <%= property %>, and if lower, keep it the same.",
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - options.n];
                 var lastWasHigher = lastNCard.value > options.min;
@@ -537,7 +530,8 @@ var Rules = (function functionName(_) {
             ]
         ),
         new Rule(
-            "If the last <%= n %><%=nth(n)%> card was a <%= property %> card, play a higher value card otherwise lower.",
+            "If the <%= lastn(n) %> card was a <%= property %> card, play a higher value card otherwise lower.",
+            //TODO what if we have a high card? we can only go higher
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - options.n];
                 var lastHadProperty = lastNCard[options.property];

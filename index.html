@@ -65,7 +65,7 @@
       </div>
     </nav>
 
-    <div id="main-content" class="container-fluid col-no-padding Paired">
+    <div id="main-content" class="container-fluid Paired">
     <div class="row">
       <div class="col-md-3 col-md-3s col-lg-2 col-no-padding visible-md-block visible-lg-block">
         <div class="panel panel-default">
@@ -81,20 +81,20 @@
             <div id="elementContent">
               <div class="row" ng-cloak>
 
-                <div class="col-md-4" ng-repeat="r in rc.elements" ng-show="rc.isAvailable(r)">
+                <div class="col-xs-2 col-no-padding " ng-repeat="r in rc.elements|orderBy:'key'" ng-show="rc.isAvailable(r)">
                   <span  ng-show="rc.isAvailable(r)"
                     id="{{r.key}}"
                     class="{{r.key}} element element-store {{ r.state.interesting ? 'blink' : '' }} {{r.color}} {{rc.isAvailable(r) ? ' ui-draggable': 'empty'}}"
                     ng-click="rc.onClick(r,$event)"
                     data-element="{{r.key}}"
                     data-drag="rc.isAvailable(r)"
-                    jqyoui-draggable="rc.dragOptions"
-                    data-jqyoui-options="rc.jqyouiDragOptions"
+                    jqyoui-draggable="rc.jqyouiDraggable"
+                    data-jqyoui-options="rc.dataJqyouiOptions"
                     data-hashkey={{r.$$hashKey}}
                     >
                         {{r.key}}
                     </span>
-                  <span ng-show="r.state.amount > 1" class="{{rc.isAvailable(r) ? '': 'empty'}} white-badge ng-binding">{{r.state.amount}}</span>
+                  <span class="{{rc.isAvailable(r) ? '': 'empty'}} {{r.state.amount > 1? 'white-badge': 'white-badge empty'}} ng-binding">{{r.state.amount}}</span>
                 </div>
               </div>
             </div>
@@ -108,14 +108,17 @@
         <!-- <input class="hidden-xs" id="labname" value="{{ lc.lab.state.name }}" ng-model="lc.lab.state.name" ng-cloak> -->
         <div class="row status" ng-cloak>
           <div class="col-xs-12 text-center col-no-padding-xs">
-            <strong>Score</strong><br>
-            {{ lc.lab.state.score | niceNumber }}
-            <div class="update-value" id="update-data"></div>
+
+            <div class="{{lc.lab.state.score<0?'bg-danger':''}} animate-increase animate-decrease" ><strong>Score</strong><br>{{ lc.lab.state.score | niceNumber }}</div>
+            <div class="update-value " ng-model="lc.lab.state.score" cfs-score-change id="update-data"></div>
+
           </div>
+
         </div>
 
 
-        <hr class="hidden-xs">
+        <hr class="hidden-xs row"></hr>
+        <div class=""><strong> Which card is next?</strong><br></div>
         <div id="detector-holder">
 
           <div id="detector"  ng-controller="DetectorController as dc">
@@ -123,13 +126,13 @@
 
             <div id="detector-element-container"
                 ng-cloak
-                jqyoui-droppable="dc.dropOptions"
-                data-jqyoui-options="dc.jqyouiDropOptions"
+                jqyoui-droppable="dc.jqyouiDroppable"
+                data-jqyoui-options="dc.dataJqyouiOptions"
                 data-drop="true"
                 >
                 <div class="main-line card-line" id="lastCards">
                     <div class="row" >
-                        <div class="col-md-1" ng-repeat="r in dc.lastCards | limitTo: -10"  ng-cloak>
+                        <div class="col-xs-1 col-no-padding add-from-top" ng-repeat="r in dc.lastCards | limitTo: -10" ng-cloak>
                             <span
                                 class="{{r.key}} element {{r.color}}"
                                 data-element="{{r.key}}"
@@ -140,18 +143,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="side-line card-line short-lines"  id="incorrectCards">
+                <div class="side-line card-line short-lines-nup"  id="incorrectCards">
                     <div class="row">
-                        <div ng-repeat="rr in dc.incorrectCards | limitTo: -10" class="col-md-1"  ng-cloak>
-                            <div ng-repeat="r in rr| limitTo: -10" class="row">
-                                <div class="col-md-12">
-                                    <span
-                                        class="{{r.key}} element {{r.color}}"
-                                        data-element="{{r.key}}"
-                                        data-hashkey={{r.$$hashKey}}
-                                        >
-                                        {{r.key}}
-                                    </span>
+                        <div class="col-md-1 col-no-padding" ng-repeat="rr in dc.incorrectCards | limitTo: -10" ng-cloak>
+                            <div class="row">
+                                <div ng-repeat="r in rr| limitTo: -10" class="col-md-12  col-no-padding add-from-right ">
+                                        <span
+                                            class="{{r.key}} element {{r.color}}"
+                                            data-element="{{r.key}}"
+                                            data-hashkey={{r.$$hashKey}}
+                                            >
+                                            {{r.key}}
+                                        </span>
                                 </div>
                             </div>
                         </div>
@@ -229,7 +232,7 @@
                 </li>
               </ul> -->
 
-              <form class="form-inline hypotheses" ng-submit="uc.guess($event,uc.rules2[uc.guessedIndex])">
+              <form class="hypotheses" ng-submit="uc.guess($event,uc.rules2[uc.guessedIndex])">
                 <div class="radio" ng-repeat="rule in uc.rules2">
                     <label class="{{uc.isGuessed(rule)}}" ng-cloak>
                     <input type="radio" ng-model="uc.guessedIndex" name="ruleRadios" id="ruleRadios-{{$index}}" value="{{$index}}"  class="btn btn-sm btn-default">

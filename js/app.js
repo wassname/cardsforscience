@@ -34,13 +34,52 @@ var app = (function () {
 
 
     /**
+     * Make little score animations when score changes require ng-model="score"
+     */
+    function cfsScoreChange($compile) {
+        return {
+            link: function (scope, element, attrs) {
+                scope.$watch(attrs.ngModel, function (newValue, oldValue) {
+                    console.log('value changed, new value is: ' + newValue, oldValue);
+
+                    // showUpdateValue
+                    var num = newValue-oldValue;
+                    var formatted = Helpers.formatNumberPostfix(num);
+                    var insert;
+                    if (num > 0) {
+                      insert = angular.element("<div class=''></div>")
+                                .attr("class", "update-plus")
+                                .html("+" + formatted);
+                    } else {
+                      insert = angular.element("<div></div>")
+                                .attr("class", "update-minus")
+                                .html(formatted);
+                    }
+
+                    // showUpdate
+                    element.append(insert);
+                    insert.animate({
+                      "bottom":"+=30px",
+                      "opacity": 0
+                    }, { duration: 500, complete: function() {
+                      angular.element(this).remove();
+                    }});
+                });
+
+            }
+        };
+    };
+    cfsScoreChange.$inject = ['$compile'];
+    app.directive('cfsScoreChange', cfsScoreChange);
+
+
+    /**
      * Directive to render a rule and bind it's option with select boxes
      * This expects ng-model="rule" as an attribute
      */
     function cfsRule($compile) {
         return {
             link: function (scope, element, attrs) {
-                scope.$eval("$index");
                 var rule = scope.$eval(attrs.ngModel);
 
                 // first generate a select box for each option (using lodash templating)
@@ -161,26 +200,32 @@ var app = (function () {
 
     function ElementController($scope, $compile, game, lab) {
         var vm = this;
-        vm.jqyouiDragOptions = {
-            revert: true, //"invalid",
+        vm.dataJqyouiOptions = {
+            revert: "invalid",
             zIndex: 100,
             cancel: false,
         };
-        vm.dragOptions = {
+        vm.jqyouiDraggable = {
             containment:'offset',
             onStart:'rc.dragStart(r)',
             onStop:'rc.dragStop(r)',
+            animate:true,
         };
         vm.onClick = function (card) {
-            // a flag to preven ng-click being fired on drag
-            if (!card.state.dragged)
+            // don't click if it was dragged within .222 seconds
+            // (to prevent double firing)
+            if (!card.state.lastDragged || new Date()-new Date(card.state.lastDragged)>300)
                 game.play(card);
+            else
+                console.log('clickprevent',card.state.lastDragged);
         };
         vm.dragStart = function(event, ui,card){
-            card.state.dragged=true;
+            card.state.lastDragged=new Date();
+            console.log('startDrag');
         };
         vm.dragStop = function(event, ui,card){
-            card.state.dragged=false;
+            card.state.lastDragged=new Date();
+            console.log('endDrag');
         };
         vm.elements = game.elements;
         vm.isVisible = function (item) {
@@ -202,7 +247,7 @@ var app = (function () {
         vm.ruleCost = 300;
         vm.lastCards = game.lastCards;
         vm.incorrectCards = game.incorrectCards;
-        vm.jqyouiDropOptions = {
+        vm.dataJqyouiOptions = {
             //   accept: ".rune",
             addClasses: true,
             // greedy: true,
@@ -210,7 +255,7 @@ var app = (function () {
             activeClass: "ui-state-hover",
             hoverClass: "ui-state-active",
         };
-        vm.dropOptions={onDrop: 'dc.onDrop'};
+        vm.jqyouiDroppable={onDrop: 'dc.onDrop',multiple:true};
         vm.onDrop = function (event, ui) {
             var result = game.onDrop(event, ui, game);
         };

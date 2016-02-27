@@ -177,7 +177,7 @@ var Game = (function (Helpers, GameObjects, ObjectStorage) {
             // deal 2 random cards
             _.sample(this.elements).state.amount+=1;
             _.sample(this.elements).state.amount+=1;
-            this.lab.state.score-=1;
+            this.lab.state.score-=2;
         }
         return correct;
     };
