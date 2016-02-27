@@ -8,6 +8,7 @@
         #     2,
         #     "unix"
         # ],
+        # https://github.com/Gillespie59/eslint-plugin-angular#rules
         "semi": [
             2,
             "always"
@@ -36,7 +37,7 @@
         "angular/module-dependency-order": [0, {"grouped": true, "prefix": null}],
         "angular/module-getter": 0,
         "angular/module-name": 0,
-        "angular/module-setter": 2,
+        "angular/module-setter": 0,
         "angular/no-angular-mock": 0,
         "angular/no-controller": 0,
         "angular/no-cookiestore": 2,

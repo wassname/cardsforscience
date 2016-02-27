@@ -5,7 +5,7 @@
 var app = (function () {
     Helpers.validateSaveVersion();
 
-    var app = angular.module('scienceAlchemy', ['ngDragDrop', 'ui.grid']);
+    var app = angular.module('scienceAlchemy', ['ngDragDrop', 'ui.grid','ngAnimate']);
 
     // directives
     /**
@@ -161,13 +161,26 @@ var app = (function () {
 
     function ElementController($scope, $compile, game, lab) {
         var vm = this;
-        vm.dragOptions = {
+        vm.jqyouiDragOptions = {
             revert: true, //"invalid",
             zIndex: 100,
             cancel: false,
         };
+        vm.dragOptions = {
+            containment:'offset',
+            onStart:'rc.dragStart(r)',
+            onStop:'rc.dragStop(r)',
+        };
         vm.onClick = function (card) {
-            game.play(card);
+            // a flag to preven ng-click being fired on drag
+            if (!card.state.dragged)
+                game.play(card);
+        };
+        vm.dragStart = function(event, ui,card){
+            card.state.dragged=true;
+        };
+        vm.dragStop = function(event, ui,card){
+            card.state.dragged=false;
         };
         vm.elements = game.elements;
         vm.isVisible = function (item) {
@@ -189,7 +202,7 @@ var app = (function () {
         vm.ruleCost = 300;
         vm.lastCards = game.lastCards;
         vm.incorrectCards = game.incorrectCards;
-        vm.dropOptions = {
+        vm.jqyouiDropOptions = {
             //   accept: ".rune",
             addClasses: true,
             // greedy: true,
@@ -197,6 +210,7 @@ var app = (function () {
             activeClass: "ui-state-hover",
             hoverClass: "ui-state-active",
         };
+        vm.dropOptions={onDrop: 'dc.onDrop'};
         vm.onDrop = function (event, ui) {
             var result = game.onDrop(event, ui, game);
         };

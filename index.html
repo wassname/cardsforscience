@@ -85,11 +85,11 @@
                   <span  ng-show="rc.isAvailable(r)"
                     id="{{r.key}}"
                     class="{{r.key}} element element-store {{ r.state.interesting ? 'blink' : '' }} {{r.color}} {{rc.isAvailable(r) ? ' ui-draggable': 'empty'}}"
-                    ng-click="rc.onClick(r)"
+                    ng-click="rc.onClick(r,$event)"
                     data-element="{{r.key}}"
                     data-drag="rc.isAvailable(r)"
-                    jqyoui-draggable="{containment:'offset'}"
-                    data-jqyoui-options="{{rc.dragOptions}}"
+                    jqyoui-draggable="rc.dragOptions"
+                    data-jqyoui-options="rc.jqyouiDragOptions"
                     data-hashkey={{r.$$hashKey}}
                     >
                         {{r.key}}
@@ -123,8 +123,8 @@
 
             <div id="detector-element-container"
                 ng-cloak
-                jqyoui-droppable="{onDrop: 'dc.onDrop'}"
-                data-jqyoui-options="{{dc.dropOptions}}"
+                jqyoui-droppable="dc.dropOptions"
+                data-jqyoui-options="dc.jqyouiDropOptions"
                 data-drop="true"
                 >
                 <div class="main-line card-line" id="lastCards">
