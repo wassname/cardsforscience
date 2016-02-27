@@ -5,7 +5,7 @@ var Game = (function (Helpers, GameObjects, ObjectStorage) {
     'use strict';
 
     var Game = function () {
-        // this.lab = new GameObjects.Lab();
+        this.lab = null;
         this.elements = null;
         this.workers = null;
         this.upgrades = null;
@@ -14,7 +14,11 @@ var Game = (function (Helpers, GameObjects, ObjectStorage) {
             // lab: this.lab
         };
         this.loaded = false;
-        this.rules = null;
+        this.rules = Rules.rules;
+        this.rule=undefined;
+
+        this.lastCards= [];
+        this.incorrectCards= [];
     };
 
     Game.prototype.load = function ($http, $q) {
@@ -28,10 +32,7 @@ var Game = (function (Helpers, GameObjects, ObjectStorage) {
         // make it work with Angular. If you know a way, let me know, and I'll
         // give you a beer. - Kevin
         this.elements = Helpers.loadFile('json/elements.json');
-        this.workers = Helpers.loadFile('/json/workers.json');
-        this.upgrades = Helpers.loadFile('./json/upgrades.json');
         this.achievements = Helpers.loadFile('./json/achievements.json');
-        this.keywords = Helpers.loadFile('./json/keywords.json');
 
         // function successCallback(response) {
         //     return angular.fromJson(response.data);
@@ -88,14 +89,6 @@ var Game = (function (Helpers, GameObjects, ObjectStorage) {
             function (r) {
                 return makeGameObject(GameObjects.Card, r);
             });
-        self.workers = self.workers.map(
-            function (w) {
-                return makeGameObject(GameObjects.Worker, w);
-            });
-        self.upgrades = self.upgrades.map(
-            function (u) {
-                return makeGameObject(GameObjects.Upgrade, u);
-            });
         self.achievements = self.achievements.map(
             function (a) {
                 return makeGameObject(GameObjects.Achievement, a);
@@ -110,158 +103,88 @@ var Game = (function (Helpers, GameObjects, ObjectStorage) {
         self.Card = new GameObjects.Cards();
         self.Card.push.apply(self.Card, self.elements);
         self.elements = self.Card;
-        // var totalElements = _(self.elements).map('state.amount').sum();
-        // if (totalElements<1) self.initialElements();
-
-
-        self.rules = self.generateRules();
 
         self.loaded = true;
         return self;
-        // });
     };
 
-    Game.prototype.initialElements = function () {
-        // if we are making new rules we will also reset element stores
-        this.elements.map(function (element) {
-            element.state.amount = 0;
-            element.state.discovered = false;
-            element.state.interesting = false;
+    Game.prototype.init = function () {
+        // setup game
+        this.rule = _.sample(Rules.rules);
+        this.rule.randomize();
+
+        // check if we have any cards in hand
+        // var totalElements = _(self.elements).map('state.amount').sum();
+        // if (totalElements<1) self.dealHand();
+        this.dealHand();
+
+        // deal first card
+        // TODO make sure these follow rule
+        this.lastCards.push.apply(this.lastCards,_.sampleSize(this.elements,3));
+        for (var i = 0; i < this.lastCards.length; i++) {
+            this.incorrectCards[i]=[];
+        }
+
+        // reset score
+        this.lab.state.score = 200;
+        return self;
+    };
+
+    Game.prototype.dealHand = function (n) {
+        n=n||12;
+        var hand=_.sampleSize(this.elements,n);
+        this.elements.map(function(card){
+            card.state.amount=0;
         });
-        // but give us a random 4 number cards of one suite
-        var startSuit = _.sample(["Spades", "Hearts", "Diamonds", "Clubs"]);
+        for (var i = 0; i < hand.length; i++) {
+            var card = hand[i];
+            this.elements.get(card.key).state.amount++;
+        }
 
-        this.elements.map(function (element) {
-            if (element.number && element.suit === startSuit) {
-                element.state.amount = 5;
-                element.state.discovered = true;
-            }
-        });
-        console.log('Set initial cards');
-        return startSuit;
-    }
+    };
+    Game.prototype.onClick = function (event, ui) {
+        var self=this;
+        console.debug('onClick',arguments);
 
-    /** Generate rules between runes **/
-    Game.prototype.generateRules = function () {
+        var cardType = angular.element(ui.draggable).data('element');
+        var card = _.find(this.elements,{key:cardType});
+        return this.play(card);
+    };
+    Game.prototype.onDrop = function (event, ui) {
+        var self=this;
+        console.debug('onDrop',arguments);
 
-            /**
-             * Make the values sequential for given card names
-             * @param  {Array} names - String names e.g. ['King','Queen']
-             * @param  {Object} rules - Rules
-             * @return {Object}       - modified Rules
-             */
-            function orderValues(names, rules, reverse) {
-                var namedCards = _.filter(elements, function (c) {
-                    return names.indexOf(c.name) > -1;
-                });
-                var uNamedCardVals = _.uniq(_.map(namedCards, 'value'));
-                var maxVal = _.max(uNamedCardVals);
-                var initialValue = rules.value[uNamedCardVals[0]];
-                for (var i = 0; i < uNamedCardVals.length; i++) {
-                    var v = uNamedCardVals[i];
-                    if (reverse)
-                        rules.value[v] = initialValue + maxVal - v;
-                    else
-                        rules.value[v] = initialValue + v;
-                }
-                return rules;
-            }
+        var cardType = angular.element(ui.draggable).data('element');
+        var card = _.find(this.elements,{key:cardType});
+        return this.play(card);
+    };
+    Game.prototype.play = function (card) {
+        var self=this;
+        card.state.amount-=1;
 
-            var rules = ObjectStorage.load('rules');
-            if (!rules) {
+        var turn = this.lastCards.length-1;
+        var correct = this.test(card);
+        if (correct){
+            if(!this.incorrectCards[turn]) this.incorrectCards[turn]=[];
+            this.lastCards.push(angular.copy(card));
+            if(!this.incorrectCards[turn+1]) this.incorrectCards[turn+1]=[];
+            this.lab.state.score+=1;
+        } else {
+            // add incorrect one to sidelines
+            if (!this.incorrectCards[turn]) this.incorrectCards[turn]=[];
+            this.incorrectCards[turn].push(angular.copy(card));
 
-                var startSuit = this.initialElements();
-
-                var elements = this.elements;
-                var attrs = ["key", "name", "value", "suit", "color", "royal", "face", "number"];
-                var rules = {};
-
-                // first lets apply random values to each attribute
-                for (var i = 0; i < attrs.length; i++) {
-                    var attr = attrs[i];
-                    rules[attr] = {};
-                    var uniqVals = _.uniq(_.map(elements, attr));
-                    for (var j = 0; j < uniqVals.length; j++) {
-                        var v = uniqVals[j];
-                        // E.g. rules.suit.black=4, rules.name.Queen=10 etc
-                        rules[attr][v] = Math.round(Math.random() * 104);
-                    }
-                }
-
-                // now lets overide some attrbutes with a bit more order
-
-                // number cards should be in sequence as should face cards
-                // _.uniq(_.map(_.filter(cards,{face:'true'}),'value'))
-                var royals = ["Jack", "Knight", "Queen", "King"];
-                var numbers = ["Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"];
-                // lets randomly add the ace to the top or bottom
-                if (Math.random() > 0.5) {
-                    royals.push("Ace");
-                } else {
-                    numbers.push("Ace");
-                }
-                orderValues(royals, rules);
-                orderValues(numbers, rules);
-
-                // and make the startingSuit 0 for a simpler set of initial rules
-                rules.suit[startSuit] = 0;
-
-                // and finally get the joker a change for a negative
-                rules.value[16] = Math.random(Math.random() * 20 - 10);
-
-
-
-                console.log('Reset and made new rules');
-
-            }
-            ObjectStorage.save('rules', rules);
-            return rules;
-        },
-        /**
-         * Test the rules
-         * @param  {array} inputKeys - e.g ["🂤", "🂤"]
-         * @return {Object}           rule with {inputs,reactants,results}
-         */
-        Game.prototype.testRules = function (inputKeys) {
-            var self = this;
-            var attrs = ["value", "suit"]; // attrs we use, possible expand later
-
-
-            // work out total for this combo
-            var total = 0;
-            for (var i = 0; i < inputKeys.length; i++) {
-                var key = inputKeys[i];
-                var element = _.find(self.elements, {
-                    key: key
-                });
-                for (var j = 0; j < attrs.length; j++) {
-                    var attr = attrs[j];
-                    // add appropriate value for this card's attribute
-                    // e.g. total+=rules.suit["spade]
-                    total += self.rules[attr][element[attr]];
-                }
-            }
-
-            // you keep you results and thus get more cards unless the total is
-            // <5
-            var maxValue = 14; //=_(self.elements).map('value').map(function(v){return parseInt(v);}).max()
-            var divisor = Math.round(maxValue * 3); // ~66% chance of dud if they don't understand rules
-            var value = total % maxValue;
-            var resultElem = _.find(self.elements, {
-                value: value
-            });
-            var reactants = resultElem ? inputKeys : [];
-            var results = resultElem ? [resultElem.key] : [];
-            // TODO add penalty for duds? like more cards
-
-            return {
-                results: results,
-                inputs: inputKeys,
-                conditions: [],
-                catalysts: [],
-                reactants: reactants
-            };
-        };
+            // deal 2 random cards
+            _.sample(this.elements).state.amount+=1;
+            _.sample(this.elements).state.amount+=1;
+            this.lab.state.score-=1;
+        }
+        return correct;
+    };
+    /** Test the rule **/
+    Game.prototype.test = function (card) {
+        return this.rule.test(card,this.lastCards,this.elements);
+    };
     Game.prototype.save = function () {
         // Save every object's state to local storage
         for (var key in this.allObjects) {

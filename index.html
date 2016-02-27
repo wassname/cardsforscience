@@ -11,11 +11,10 @@
     <meta property="og:image" content="https://avatars2.githubusercontent.com/u/8345868">
 
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.css">
 
     <link rel="stylesheet" type="text/css" href="bower_components/angular-ui-grid/ui-grid.min.css">
     <link rel="stylesheet" href="css/ui-grid.css">
-
     <link rel="stylesheet" href="css/style.css">
 
     <link rel="icon" type="image/png" href="assets/favicon.png" />
@@ -23,14 +22,7 @@
     <link rel="apple-touch-icon" sizes="72x72" href="assets/mobile/icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
-    <!-- Google Analytics -->
-    <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-    </script>
-    <!-- End Google Analytics -->
+
   </head>
   <body>
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -74,27 +66,26 @@
     </nav>
 
     <div id="main-content" class="container-fluid col-no-padding Paired">
+    <div class="row">
       <div class="col-md-3 col-md-3s col-lg-2 col-no-padding visible-md-block visible-lg-block">
         <div class="panel panel-default">
           <div class="panel-heading">
             <h4 class="panel-title">
-              <i class="fa fa-cogs"></i> Elements
+              <i class="fa fa-cogs"></i> Hand
             </h4>
           </div>
 
           <div class="panel-body large" id="elementLarge"
-              data-drop="true"
-              jqyoui-droppable="{onDrop: 'rc.onDrop'}"
-              data-jqyoui-options="{{rc.dropOptions}}"
                ng-controller="ElementController as rc"
               >
             <div id="elementContent">
               <div class="row" ng-cloak>
 
-                <div class="col-md-4" ng-repeat="r in rc.elements">
-                  <span  ng-show="rc.isVisible(r)"
+                <div class="col-md-4" ng-repeat="r in rc.elements" ng-show="rc.isAvailable(r)">
+                  <span  ng-show="rc.isAvailable(r)"
                     id="{{r.key}}"
-                    class="{{r.key}} element element-store {{ r.state.interesting ? 'blink' : '' }} {{r.color}} {{r.state.amount>0 ? ' ui-draggable': 'empty'}}"
+                    class="{{r.key}} element element-store {{ r.state.interesting ? 'blink' : '' }} {{r.color}} {{rc.isAvailable(r) ? ' ui-draggable': 'empty'}}"
+                    ng-click="rc.onClick(r)"
                     data-element="{{r.key}}"
                     data-drag="rc.isAvailable(r)"
                     jqyoui-draggable="{containment:'offset'}"
@@ -103,7 +94,7 @@
                     >
                         {{r.key}}
                     </span>
-                  <span ng-show="rc.isVisible(r)"  ng-show="r.state.amount > 0" class="{{r.state.amount>0 ? '': 'empty'}} white-badge ng-binding">{{r.state.amount}}</span>
+                  <span ng-show="r.state.amount > 1" class="{{rc.isAvailable(r) ? '': 'empty'}} white-badge ng-binding">{{r.state.amount}}</span>
                 </div>
               </div>
             </div>
@@ -112,111 +103,142 @@
         </div>
       </div>
 
-      <div id="column-lab" class="col-xs-6 col-md-5 col-md-5s col-lg-6 col-no-padding-xs" ng-controller="LabController as lc">
-        <input class="hidden-xs" id="labname" value="{{ lc.lab.state.name }}" ng-model="lc.lab.state.name" ng-cloak>
+      <div id="column-lab" class="col-xs-6 col-md-6 col-md-6s col-lg-7 col-no-padding-xs" ng-controller="LabController as lc">
+
+        <!-- <input class="hidden-xs" id="labname" value="{{ lc.lab.state.name }}" ng-model="lc.lab.state.name" ng-cloak> -->
+        <div class="row status" ng-cloak>
+          <div class="col-xs-12 text-center col-no-padding-xs">
+            <strong>Score</strong><br>
+            {{ lc.lab.state.score | niceNumber }}
+            <div class="update-value" id="update-data"></div>
+          </div>
+        </div>
+
+
         <hr class="hidden-xs">
         <div id="detector-holder">
 
           <div id="detector"  ng-controller="DetectorController as dc">
 
 
-            <div id="detector-element-container" ng-cloak>
-                <div ng-repeat="r in dc.elements">
-                    <span
-                        class="{{r.key}} element {{r.color}} ui-draggable"
-                        data-element="{{r.key}}"
-                        data-drag="true"
-                        jqyoui-draggable="{containment:'offset'}"
-                        data-jqyoui-options="{{rc.dragOptions}}"
-                        aria-disabled="false"
-                        style="position: fixed; z-index: 9999; left: {{r.state.left}}px; top: {{r.state.top}}px;"
-                        data-hashkey={{r.$$hashKey}}
-                        >
-                        {{r.key}}
-                    </span>
-                </div>
-
-            </div>
-
-            <canvas
-                ng-click="dc.click()"
-                id="detector-core"
-                width="400"
-                height="400"
-                class="test-tube prevent-select center-block"
-                data-drop="true"
+            <div id="detector-element-container"
+                ng-cloak
                 jqyoui-droppable="{onDrop: 'dc.onDrop'}"
                 data-jqyoui-options="{{dc.dropOptions}}"
+                data-drop="true"
                 >
-              Your detector. Click on it to generate events.
-            </canvas>
-            <span id="card-deck" title="deal more cards" ng-click="dc.click()" class="prevent-select">🂠</span>
-            <!-- <canvas id="detector-flame" width="300" height="300" class="prevent-select center-block " ng-click="dc.toggleFlameFuel()">
-              Your bunsen burner. Click it to turn on and off.
-            </canvas> -->
-            <button id="clearall" class="btn btn-default" ng-click="dc.clearAll()"><i class="fa fa-refresh"></i></button>
+                <div class="main-line card-line" id="lastCards">
+                    <div class="row" >
+                        <div class="col-md-1" ng-repeat="r in dc.lastCards | limitTo: -10"  ng-cloak>
+                            <span
+                                class="{{r.key}} element {{r.color}}"
+                                data-element="{{r.key}}"
+                                data-hashkey={{r.$$hashKey}}
+                                >
+                                {{r.key}}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="side-line card-line short-lines"  id="incorrectCards">
+                    <div class="row">
+                        <div ng-repeat="rr in dc.incorrectCards | limitTo: -10" class="col-md-1"  ng-cloak>
+                            <div ng-repeat="r in rr| limitTo: -10" class="row">
+                                <div class="col-md-12">
+                                    <span
+                                        class="{{r.key}} element {{r.color}}"
+                                        data-element="{{r.key}}"
+                                        data-hashkey={{r.$$hashKey}}
+                                        >
+                                        {{r.key}}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="hints">
+                <div ng-click="dc.revealHint()" class="col-md-6">
+                    <div class="panel panel-default left-list card-panel">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Hint</h3>
+                            <div ng-cloak> (-{{dc.hintCost}} score)</div>
+                        </div>
+                        <div class="panel-body">
+                            <ul>
+                                <li  ng-repeat="h in dc.hints"  ng-cloak><i>{{h}}</i></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div id="rule" ng-click="dc.revealRule()"  class="col-md-6">
+                    <div class="panel panel-default left-list card-panel">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Rule</h3>
+                            <div ng-cloak>(-{{dc.ruleCost}} score)</div>
+                        </div>
+                        <div class="panel-body">
+                          <i  ng-cloak>{{dc.rule}}</i>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- <span id="card-deck" title="deal more cards" ng-click="dc.click()" class="prevent-select">🂠</span> -->
+            <!-- <button id="clearall" class="btn btn-default" ng-click="dc.clearAll()"><i class="fa fa-refresh"></i></button> -->
           </div>
         </div>
-        <button id="detector-info" class="btn btn-info" ng-click="lc.showDetectorInfo()"><i class="fa fa-info"></i></button>
+        <button id="detector-info" type="button" class="btn btn-info" ng-click="lc.showDetectorInfo()"><i class="fa fa-info"></i></button>
 
-        <div class="row status" ng-cloak>
+        <!-- <div class="row status" ng-cloak>
           <div class="col-xs-4 text-center col-no-padding-xs">
-            <strong>Data</strong><br>
-            {{ lc.lab.state.data | niceNumber }}
+            <strong>Score</strong><br>
+            {{ lc.lab.state.score | niceNumber }}
             <div class="update-value" id="update-data"></div>
           </div>
           <div class="col-xs-4 text-center col-no-padding-xs">
-            <strong>Reputation</strong><br>
-            {{ lc.lab.state.reputation | niceNumber }}
+            <strong>Rank</strong><br>
+            {{ lc.lab.state.rank | niceNumber }}
             <div class="update-value" id="update-reputation"></div>
           </div>
           <div class="col-xs-4 text-center col-no-padding-xs">
-            <strong>Funding</strong><br>
-            {{ lc.lab.state.money | currency }}
+            <strong>High Score</strong><br>
+            {{ lc.lab.state.highScore | niceNumber }}
             <div class="update-value" id="update-funding"></div>
           </div>
-        </div>
-      </div>
+        </div> -->
 
-      <div class="col-md-3 col-md-3s col-lg-2 col-no-padding visible-md-block visible-lg-block">
-        <div class="panel panel-default panel-stick">
-          <div class="panel-heading">
-            <h4 class="panel-title">
-              <i class="fa fa-users"></i> Observations
-            </h4>
-          </div>
-          <div class="panel-body scrollable large obervations-panel-body" id="hrLarge">
-
-
-
-            <div id="hrContent" ng-controller="ObservationsController as oc">
-                <div id="observations-grid" ui-grid="oc.gridOptions" class="observations-grid"></div>
-            </div>
-
-          </div>
-        </div>
       </div>
 
       <div class="col-md-3 col-md-3s col-lg-2 col-no-padding visible-md-block visible-lg-block">
         <div class="panel panel-default hidden-xs hidden-sm">
           <div class="panel-heading">
             <h4 class="panel-title">
-              <i class="fa fa-wrench"></i> Upgrades
+              <i class="fa fa-wrench"></i> Guess the rule
             </h4>
           </div>
           <div class="panel-body scrollable large" id="upgradesLarge">
-            <div id="upgradesContent" ng-controller="UpgradesController as uc">
-              <ul class="media-list media-list-no-margin" ng-cloak>
-                <li class="media" ng-show="false"></li>
-                <li class="media" ng-repeat="u in uc.upgrades" ng-show="uc.isVisible(u)">
-                  <div class="media-body">
-                    <h4 class="media-heading"><i class="fa {{ u.icon }} media-object"></i> {{ u.name }}</h4>
-                    <p>{{ u.description }}</p>
-                    <p class="small">{{ u.effect }}</p>
-                    <button class="btn btn-primary" ng-disabled="!uc.isAvailable(u)" ng-click="uc.upgrade(u)"><i class="fa fa-money"></i> <small>{{ u.cost | currency }}</small></button>
-                  </div>
+            <div id="upgradesContent" class="left-list" ng-controller="UpgradesController as uc">
+              <!-- <label>Search: <input ng-model="searchText"></label> -->
+              <!-- <ul class="form-inline hypotheses" ng-cloak>
+                <li ng-repeat="rule in uc.rules|filter:searchText">
+                    <div cfs-rule="rule" index="$index" ng-model="uc.rules[$index]"></div>
+                    <button ng-click="uc.guess($event,rule)" class="btn btn-sm btn-default" type="submit">Guess</button>
                 </li>
-              </ul>
+              </ul> -->
+
+              <form class="form-inline hypotheses" ng-submit="uc.guess($event,uc.rules2[uc.guessedIndex])">
+                <div class="radio" ng-repeat="rule in uc.rules2">
+                    <label class="{{uc.isGuessed(rule)}}" ng-cloak>
+                    <input type="radio" ng-model="uc.guessedIndex" name="ruleRadios" id="ruleRadios-{{$index}}" value="{{$index}}"  class="btn btn-sm btn-default">
+                    </input>
+                    {{rule.describe()}}
+                 </label>
+                </div>
+                <button class="btn btn-sm btn-default" type="submit">Guess</button>
+              </form>
             </div>
           </div>
         </div>
@@ -240,6 +262,7 @@
           </div>
         </div>
       </div>
+    </div>
     </div>
 
     <div class="modal fade" id="infoBox" tabindex="-1" role="dialog" aria-labelledby="infoBoxLabel" aria-hidden="true">
@@ -339,40 +362,37 @@
         </div>
       </div>
     </div>
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="bower_components/jquery-ui/jquery-ui.js"></script>
+    <script type="text/javascript" src="js/external/jquery.ui.touch-punch.min.js"></script>
+    <script type="text/javascript" src="js/external/jquery.cookie-1.4.1.min.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.js"></script>
-    <script src="js/external/jquery.ui.touch-punch.min.js"></script>
-    <script src="js/external/jquery.cookie-1.4.1.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular/angular.js"></script>
+    <script type="text/javascript" src="bower_components/angular-dragdrop/src/angular-dragdrop.js"></script>
+    <script type="text/javascript" src="bower_components/angular-animate/angular-animate.js"></script>
 
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.js"></script>
+    <script type="text/javascript" src="js/external/retina.js"></script>
+    <script type="text/javascript" src="js/external/fastclick.js"></script>
 
-    <script src="bower_components/chai/chai.js"></script>
-    <script src="bower_components/should/should.js"></script>
-    <script src="bower_components/expect/index.js"></script>
-    <script src="bower_components/jasmine-core/lib/jasmine-core/jasmine.js"></script>
+    <script type="text/javascript" src="bower_components/chai/chai.js"></script>
+    <script type="text/javascript" src="bower_components/lodash/dist/lodash.js"></script>
+    <script type="text/javascript" src="bower_components/angular-ui-grid/ui-grid.js"></script>
 
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.17/angular.js"></script>
-    <script src="bower_components/angular-dragdrop/src/angular-dragdrop.js"></script>
-    <script src="bower_components/angular-animate/angular-animate.js"></script>
-
-    <script src="js/external/retina.js"></script>
-    <script src="js/external/fastclick.js"></script>
-
-    <script src="bower_components/lodash/dist/lodash.js"></script>
-    <script src="bower_components/angular-ui-grid/ui-grid.js"></script>
+    <!-- Google Analytics -->
+    <!-- <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    </script> -->
+    <!-- End Google Analytics -->
 
     <script src="js/storage.js"></script>
     <script src="js/helpers.js"></script>
     <script src="js/analytics.js"></script>
     <script src="js/gameobjects.js"></script>
     <script src="js/rules.js"></script>
-
-
-    <!-- <script src="js/detector/flame.js"></script>
-    <script src="js/detector/bubblr.js"></script> -->
-    <script src="js/detector/detector.js"></script>
-
     <script src="js/ui.js"></script>
     <script src="js/game.js"></script>
     <script src="js/app.js"></script>

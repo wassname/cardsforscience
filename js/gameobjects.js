@@ -37,7 +37,7 @@ var GameObjects = (function () {
         GameObject.apply(this, [{
             key: 'lab',
             state: {
-                name: 'Click here to give your lab an awesome name!',
+                name: 'Write your name here',
                 detector: 1,
                 factor: 5,
                 data: 0,
@@ -50,6 +50,11 @@ var GameObjects = (function () {
                 dataSpent: 0,
                 time: 0,
                 observations: [],
+                score: 0,
+                highScore: 0,
+                hints: 0,
+                rulesGuessed: [],
+                rulesFailed: [],
             }
         }]);
 

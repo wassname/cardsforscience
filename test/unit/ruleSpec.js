@@ -47,7 +47,7 @@ describe('Rules', function () {
         });
     });
     Rules.rules.forEach(function(rule){
-        describe('rule', function () {
+        describe('rule: "'+rule.describe()+'"', function () {
             it('should test', function () {
                 var res = rule.test(card,lastCards,allCards);
                 Boolean(res);
@@ -64,7 +64,7 @@ describe('Rules', function () {
             });
             it('should describeVariations', function () {
                 var desc = rule.describeVariations();
-                expect(typeof desc).toBe('string');
+                expect(desc instanceof Array).toBe(true);
                 expect(desc).not.toContain(/[{}]+/);
             });
             it('should genHints', function () {
@@ -79,24 +79,78 @@ describe('Rules', function () {
                 expect(typeof opts).toBe('object');
                 expect(opts).not.toEqual(opts1);
             });
+            it('should randomize', function () {
+                var opts1 = rule.options;
+                var opts = rule.randomize();
+                expect(typeof opts).toBe('object');
+                expect(opts).not.toEqual(opts1);
+            });
+
 
             // now check each rule permutation
             var options=Object.keys(rule.optionDesc);
             options.forEach(function(option){
                 var vals = rule.optionDesc[option].possibleVals;
-                for (var i = 0; i < vals.length; i++) {
-                    it('should test with option: '+option+' = '+vals[i],function(){
-                        var options={};
-                        options[option]=vals[i];
-                        rule.setOptions(options);
-                        var res = rule.test(card,lastCards,allCards);
-                        Boolean(res);
+                var def = rule.optionDefaults[option];
+                describe('option: '+option, function () {
+                    for (var i = 0; i < vals.length; i++) {
+                        it('should test with val: '+vals[i],function(){
+                            var options={};
+                            options[option]=vals[i];
+                            rule.setOptions(options);
+                            var res = rule.test(card,lastCards,allCards);
+                            expect(typeof res).toBe('boolean');
+                        });
+                    }
+
+                    it('default should be in possible vals '+option+' = '+vals[i],function(){
+                        expect(vals).toEqual(jasmine.arrayContaining([def]));
                     });
-                }
+                });
 
             });
 
 
+        });
+    });
+});
+
+describe('Rules compilation', function () {
+    var $compile,
+        $rootScope;
+
+    beforeEach(
+        module('scienceAlchemy')
+    );
+
+    // Store references to $rootScope and $compile
+    // so they are available to all tests in this describe block
+    beforeEach(inject(function (_$compile_, _$rootScope_) {
+        // The injector unwraps the underscores (_) from around the parameter names when matching
+        $compile = _$compile_;
+        $rootScope = _$rootScope_;
+    }));
+
+    Rules.rules.forEach(function(rule){
+        describe('rule: "'+rule.describe()+'"', function () {
+            it('should render using cfs-rule directive', function () {
+
+                // define a rule for testing
+                $rootScope.rule = Rules.rules[0];
+
+                // Compile a piece of HTML containing the directive
+                var element = $compile('<div cfs-rule="rule" ng-model="rule"></div>')($rootScope);
+
+                // fire all the watches, so the scope expressions will be evaluated
+                // $rootScope.$digest();
+                $rootScope.$apply();
+
+                // Check that the compiled element contains the templated content
+                var html = element.html();
+                expect(html).toContain("<select");
+                expect(html).toContain("<option");
+                expect(html).toContain("Next card must not have the same");
+            });
         });
     });
 });

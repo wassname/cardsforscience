@@ -8,6 +8,80 @@ var app = (function () {
     var app = angular.module('scienceAlchemy', ['ngDragDrop', 'ui.grid']);
 
     // directives
+    /**
+     * Provides an easy way to toggle a checkboxes indeterminate property
+     *
+     * @example <input type="checkbox" ui-indeterminate="isUnkown">
+     */
+    // app.directive('uiIndeterminate', [
+    //     function () {
+    //
+    //         return {
+    //             compile: function (tElm, tAttrs) {
+    //                 if (!tAttrs.type || tAttrs.type.toLowerCase() !== 'checkbox') {
+    //                     return angular.noop;
+    //                 }
+    //
+    //                 return function ($scope, elm, attrs) {
+    //                     $scope.$watch(attrs.uiIndeterminate, function (newVal) {
+    //                         elm[0].indeterminate = !!newVal;
+    //                     });
+    //                 };
+    //             }
+    //         };
+    //     }
+    // ]);
+
+
+    /**
+     * Directive to render a rule and bind it's option with select boxes
+     * This expects ng-model="rule" as an attribute
+     */
+    function cfsRule($compile) {
+        return {
+            link: function (scope, element, attrs) {
+                scope.$eval("$index");
+                var rule = scope.$eval(attrs.ngModel);
+
+                // first generate a select box for each option (using lodash templating)
+                _.templateSettings.interpolate = /<%=([\s\S]+?)%>/g;
+                var optionTmpl = '' +
+                    '<select \n' +
+                    '   name="<%=option%>" \n' +
+                    '   convert-to-number="{{rule.optionDesc.<%=option%>.type===\'Number\'}}" \n' +
+                    '   ng-model="rule.options.<%=option%>" \n' +
+                    '   class="form-control input-sm" \n' +
+                    '   ng-options="v for v in rule.optionDesc.<%=option%>.possibleVals track by v" \n' +
+                    '>\n' +
+                    '</select>\n';
+
+                var tmplParams = _.defaults({},rule.options,rule.otherOptions);
+                for (var option in rule.optionDesc) {
+                    if (rule.optionDesc.hasOwnProperty(option)) {
+                        var vals = rule.optionDesc[option].possibleVals;
+                        if (vals) {
+                            tmplParams[option] = _.template(optionTmpl)({
+                                option: option
+                            });
+                        } else {
+                            // if there are no options replace '{{color}}' with 'color'
+                            tmplParams[option] = option;
+                        }
+                    }
+                }
+                // now put each select box into description
+                // replace '{{color}}' with '<select name="color"...'
+                var template = _.template(rule.description)(tmplParams);
+
+                // now compile with angular
+                element.html(template).show();
+                $compile(element.contents())(scope);
+            }
+        };
+    };
+    cfsRule.$inject = ['$compile'];
+    app.directive('cfsRule', cfsRule);
+
 
     // factories to provide services. They serve shared game objects
     // app.factory('elements', function () {
@@ -25,12 +99,14 @@ var app = (function () {
 
     function game($http, $q, lab) {
         var game = new Game();
-        game.lab=lab;
+        game.lab = lab;
+        game.allObjects.lab = lab;
         var promise = game.load($http, $q);
+        game.init();
         // return promise;
         return game;
     };
-    game.$inject = ['$http', '$q'];
+    game.$inject = ['$http', '$q', 'lab'];
     app.factory('game', game);
 
     function lab() {
@@ -39,20 +115,20 @@ var app = (function () {
     };
     app.factory('lab', lab);
 
-    function detector() {
-        var detector = new Detector();
-        detector.init(400);
-        return detector;
-    }
-    app.factory('detector', detector);
-
     // add helpers as filters
-
     function niceNumber($filter) {
         return Helpers.formatNumberPostfix;
     };
     niceNumber.$inject = ['$filter'];
     app.filter('niceNumber', niceNumber);
+
+    function transpose($filter) {
+        return function (input) {
+            return _.zip(input);
+        };
+    };
+    transpose.$inject = ['$filter'];
+    app.filter('transpose', transpose);
 
     function niceTime($filter) {
         return Helpers.formatTime;
@@ -81,19 +157,17 @@ var app = (function () {
 
     // controllers
     app.controller('ElementController', ElementController);
-    ElementController.$inject = ['$scope', '$compile', 'game', 'detector', 'lab'];
+    ElementController.$inject = ['$scope', '$compile', 'game', 'lab'];
 
-    function ElementController($scope, $compile, game, detector, lab) {
+    function ElementController($scope, $compile, game, lab) {
         var vm = this;
         vm.dragOptions = {
             revert: true, //"invalid",
             zIndex: 100,
-            // helper: "clone", // drags a clone
-            // opacity: 0.75,
-            // start: vm.onRuneDrop.bind(vs),
-            // stop: vm.onRuneDrop.bind(vs),
             cancel: false,
-            // containment:false
+        };
+        vm.onClick = function (card) {
+            game.play(card);
         };
         vm.elements = game.elements;
         vm.isVisible = function (item) {
@@ -102,23 +176,19 @@ var app = (function () {
         vm.isAvailable = function (item) {
             return item.isAvailable(lab);
         };
-        vm.onDrop = function (event, ui) {
-            // store the dropped element
-            var draggable = angular.element(ui.draggable);
-            var key = draggable.data('element');
-            if (!draggable.hasClass('element-store')) {
-                var Card = vm.elements.get(key);
-                var i = _.findIndex(vm.elements,{$$hashKey:draggable.data('hashkey')});
-                detector.elements.splice(i, 1);
-                Card.state.amount += 1;
-            }
-        };
     };
 
 
-    function DetectorController($scope, game, detector, lab) {
+    function DetectorController($scope, game, lab, $filter) {
         var vm = this;
         vm.elements = detector.elements;
+        vm.rule = '';
+        vm.hints = [];
+        vm.limit = -12;
+        vm.hintCost = 10;
+        vm.ruleCost = 300;
+        vm.lastCards = game.lastCards;
+        vm.incorrectCards = game.incorrectCards;
         vm.dropOptions = {
             //   accept: ".rune",
             addClasses: true,
@@ -127,41 +197,26 @@ var app = (function () {
             activeClass: "ui-state-hover",
             hoverClass: "ui-state-active",
         };
-        vm.dragOptions = {
-            revert: "invalid",
-            zIndex: 100,
-            // helper: "clone", // drags a clone
-            // opacity: 0.75,
-            // start: this.onRuneDrop.bind(this),
-            // stop: this.onRuneDrop.bind(this),
-            cancel: false,
-            // containment:false
-        };
         vm.onDrop = function (event, ui) {
-            var result = detector.onDrop(event, ui, game);
-            if (result)
-                lab.observe(result);
+            var result = game.onDrop(event, ui, game);
         };
-        vm.click = function () {
-            lab.clickDetector();
-            detector.addEvent();
-            UI.showUpdateValue("#update-data", lab.state.detector);
-            game.elements.addKnownToStore();
-            return false;
+        vm.revealRule = function () {
+            vm.rule = game.rule.describe();
+            lab.state.score -= vm.ruleCost;
         };
-        vm.toggleFlameFuel = function () {
-            // console.log('toggleFlameFuel');
-            // detector.flamer.toggleFuel();
-        };
-        vm.clearAll = function () {
-            detector.clearAll(game);
+        vm.revealHint = function () {
+            var hint = game.rule.nextHint();
+            if (hint) {
+                vm.hints.push(hint);
+                lab.state.score -= vm.hintCost;
+            }
         };
     };
-    DetectorController.$inject = ['$scope', 'game', 'detector', 'lab'];
+    DetectorController.$inject = ['$scope', 'game', 'lab', '$filter'];
     app.controller('DetectorController', DetectorController);
 
 
-    function LabController($interval, game, detector, lab) {
+    function LabController($interval, game, lab) {
         // todo give workers instead of game
         var vm = this;
         vm.lab = lab;
@@ -171,68 +226,52 @@ var app = (function () {
             }
             UI.showModal('Detector', vm._detectorInfo);
         };
-        $interval(function () { // one tick
-            var grant = lab.getGrant();
-            UI.showUpdateValue("#update-funding", grant);
-            var sum = 0;
-            for (var i = 0; i < game.workers.length; i++) {
-                sum += game.workers[i].state.hired * game.workers[i].state.rate;
-            }
-            if (sum > 0) {
-                lab.acquireData(sum);
-                UI.showUpdateValue("#update-data", sum);
-                detector.addEventExternal(game.workers.map(function (w) {
-                    return w.state.hired;
-                }).reduce(function (a, b) {
-                    return a + b;
-                }, 0));
-            }
-        }, 1000);
     };
-    LabController.$inject = ['$interval', 'game', 'detector', 'lab'];
+    LabController.$inject = ['$interval', 'game', 'lab'];
     app.controller('LabController', LabController);
 
 
-    function ObservationsController($scope, game, lab) {
-        var vm = this;
-        vm.observations = lab.state.observations;
-        vm.gridOptions = {
-            enableFiltering: true,
-            columnDefs: [{
-                field: 'inputs',
-                filter: {
-                    type: 'select',
-                     selectOptions:  _(game.elements).filter({state:{discovered:true}}).map(function(e){return {value:e.key,label:e.key};}).value(),
-                },
-                visible: true
-            }, {
-                field: 'reactants',
-                visible: false
-            }, {
-                field: 'results',
-                filter: {
-                    type: 'select',
-                     selectOptions:  _(game.elements).filter({state:{discovered:true}}).map(function(e){return {value:e.key,label:e.key};}).value(),
-                },
-                visible: true,
-                sort: {
-                    direction: 'asc'
-                }
-            }, {
-                field: 'catalysts',
-                visible: false
-            }, {
-                field: 'conditions',
-                visible: false
-            }, ],
-            data: vm.observations
-        };
-    };
-    ObservationsController.$inject = ['$scope', 'game', 'lab'];
-    app.controller('ObservationsController', ObservationsController);
-
     function UpgradesController($scope, game, lab) {
         var vm = this;
+        // present just a few hypothesis
+        var rules = Rules.rules.map(function (r) {
+            return angular.copy(r);
+        });
+        rules = _.sampleSize(rules, 2);
+        if (!_.find(rules, {
+                description: game.rule.description
+            })) {
+            var rule = angular.copy(game.rule);
+            rule.setOptions({}); // reset the value of this copy to not give away;
+            rules.push(rule);
+        } else {
+            rules.push(angular.copy(_.sample(Rules.rules)));
+        }
+        vm.rules = _.shuffle(rules);
+
+        // or present them without options?
+        var rules2 = Rules.rules.map(function (r) {
+            var rule = angular.copy(r);
+            rule.randomize();
+            return rule;
+        });
+        rules2 = _.sampleSize(rules, 4);
+
+        // add the real rule and a couple of variations
+        var rule = angular.copy(game.rule);
+        rules2.push(rule);
+        var rule = angular.copy(game.rule);
+        rule.randomize();
+        rules2.push(rule);
+        var rule = angular.copy(game.rule);
+        rule.randomize();
+        rules2.push(rule);
+
+        // clean and add to controller
+        rules2 = _.uniq(rules2);
+        rules2 = _.shuffle(rules2);
+        vm.rules2 = rules2;
+
         vm.upgrades = game.upgrades;
         vm.isVisible = function (upgrade) {
             return upgrade.isVisible(lab, game.allObjects);
@@ -244,6 +283,30 @@ var app = (function () {
             if (upgrade.buy(lab, game.allObjects)) {
                 UI.showUpdateValue("#update-funding", upgrade.cost);
             }
+        };
+        /** return a class based on none right or wrong guessed **/
+        vm.isGuessed = function(rule){
+            if (rule.state.guessed===true)  return 'bg-success';
+            else if (rule.state.guessed===false) return 'bg-danger';
+            else return '';
+
+        };
+        vm.guess = function (e, rule) {
+            var params = angular.element(e.target).parent('form').serializeArray();
+
+            var sameRule = rule.description == game.rule.description;
+            var sameOpts = angular.equals(rule.options, game.rule.options);
+            if (sameRule && sameOpts) {
+                // right!
+                lab.state.score += 200;
+                if (!rule.state) rule.state={};
+                rule.state.guessed=true;
+            } else {
+                lab.state.score -= 200;
+                rule.state.guessed=false;
+            }
+
+            console.log('guess', arguments);
         };
     };
     UpgradesController.$inject = ['$scope', 'game', 'lab'];

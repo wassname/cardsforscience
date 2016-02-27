@@ -5,6 +5,7 @@ describe('services', function () {
     //load modules
     beforeEach(module('scienceAlchemy'));
 
+
     // Test service availability
     describe('game', function () {
         it('should exist', inject(function (game) {
@@ -12,11 +13,11 @@ describe('services', function () {
         }));
     });
 
-    describe('detector', function () {
-        it('should exist', inject(function (detector) {
-            expect(detector).toBeDefined();
-        }));
-    });
+    // describe('detector', function () {
+    //     it('should exist', inject(function (detector) {
+    //         expect(detector).toBeDefined();
+    //     }));
+    // });
 
     describe('lab', function () {
         it('should exist', inject(function (lab) {

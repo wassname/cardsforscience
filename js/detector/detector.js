@@ -5,6 +5,8 @@ var Detector = function(){
 
     return {
         elements: new GameObjects.Cards(),
+        lastCards: new GameObjects.Cards(),
+        incorrectCards: new GameObjects.Cards(),
 
         visible: true,
 
@@ -17,69 +19,11 @@ var Detector = function(){
 
         bubblr: undefined,
 
-        init: function()
+        init: function(game)
         {
-            // this.initBubbles();
-            // this.initFlame();
+            // deal first card
+            this.lastCards.push(_.sample(game.elements));
         },
-
-        initBubbles: function(){
-            // init the test tube animation
-            var bubblrElem = $('#detector-core').bubblr({
-                backgroundColor: '#e8e8e8',
-                bubbleColor: "#bfbfbf",
-                bubbleMinSize: 3,
-                bubbleMaxSize: 5,
-                bubbleMaxSpeed: 2,
-                bubbleMinSpeed: 1,
-                animationSpeed: 20,
-                // bubbleXposMultiplier allows us to position bubbles on the x-axis
-                bubbleXposMultiplier: 2,
-                // bubbleYpopLimit determines how far in pixels from the canvas's
-                // top edge bubbles will disappear
-                bubbleYpopLimit: 10
-            });
-            this.bubblr = bubblrElem.data('plugin_bubblr');
-        },
-
-        // initFlame: function(){
-        //     var flameElem = $('#detector-flame').flame();
-        //     this.flamer = flameElem.data('plugin_flame')
-        // },
-
-        bindOnResize: function(){
-            // HACK
-            $(window).on('resize',this.onResize.bind(this));
-        },
-
-        // onResize: function(){
-        //     // TODO, do one, schedule a check and then prevent firing until then
-        //     if ($(window).width() >= 1200) {
-        //       if (this.width != 500) {
-        //         $('#detector').width(500).height(500);
-        //         this.init(500);
-        //       }
-        //     } else if ($(window).width() < 768 && $(window).height() - 90 < 300) {
-        //       var newWidth = $(window).width() - Math.max($(window).width() - ($(window).height() - 90 + 10), 300) - 10;
-        //       if (this.width != newWidth) {
-        //         $('#detector').width(newWidth).height(newWidth);
-        //         this.init(newWidth);
-        //       }
-        //     } else if ($(window).width() < 992) {
-        //       if (this.width != 300) {
-        //         $('#detector').width(300).height(300);
-        //         this.init(300);
-        //       }
-        //     } else {
-        //       if (this.width != 400) {
-        //         $('#detector').width(400).height(400);
-        //         this.init(400);
-        //       }
-        //     }
-        //
-        //     this.bubblr.onResize();
-        //     this.flamer.onResize();
-        // },
 
         /** When a user clicks the detector **/
         addEvent: function()
@@ -99,19 +43,6 @@ var Detector = function(){
             // this.bubblr.bubble();
         },
 
-        /** Clear an element back to element Store **/
-        storeElementBy: function(qObject,game){
-            var i = _.findIndex(this.elements,qObject);
-            var removedElement = this.elements.splice(i,1)[0];
-            return game.elements.get(removedElement.key).state.amount+=1;
-        },
-
-        clearAll: function(game){
-            var hashKeys = this.elements.map(function(e){return e.$$hashKey;});
-            for (var i = 0; i < hashKeys.length; i++) {
-                this.storeElementBy({'$$hashKey': hashKeys[i]}, game);
-            }
-        },
 
         onDrop: function(event, ui, game){
             var self=this;
@@ -122,60 +53,15 @@ var Detector = function(){
             // if the dragger came from the elements panels, clone it to here
             var newElement;
             if ($draggable.hasClass('element-store')){
-
                 var elementStore = game.elements.filter(function(e){return e.key==$draggable.data('element');})[0];
                 elementStore.state.amount-=1;
                 newElement = angular.copy(elementStore);
-                newElement.state.top=$draggable.offset().top;
-                newElement.state.left=$draggable.offset().left;
                 this.elements.push(newElement);
             }
 
-
-            // get everything intersecting the drop
-            var draggableTop    = $draggable.offset().top;
-            var draggableHeight = $draggable.height();
-            var draggableBottom = draggableTop + draggableHeight;
-            var draggableLeft    = $draggable.offset().left;
-            var draggableWidth = $draggable.height();
-            var draggableRight = draggableLeft + draggableWidth;
-            var detectorDOMElems = angular.element('#detector').find('.element').not('.element-store'); // replace with detector.elements
-            var intersectingDOMElems = detectorDOMElems.filter( function() {
-                var $elem           = angular.element(this);
-                var top             = $elem.offset().top;
-                var height          = $elem.height();
-                var bottom          = top + height;
-
-                var left             = $elem.offset().left;
-                var width          = $elem.width();
-                var right          = left + width;
-
-                var isCoveredByDraggable = top <= draggableBottom && bottom >= draggableTop
-                    && left <= draggableRight && right >= draggableLeft;
-                return isCoveredByDraggable;
-            });
-
-            // We have the DOM's in the area (maybe missing the newly dropped one)
-            // var droppedModel = game.elements.getByHashKey($draggable.data('hashkey'));
-            var intersectingElements = intersectingDOMElems.toArray().map(function(input){
-                return self.elements.getByHashKey(angular.element(input).data('hashkey'));
-            });
-
-            // make sure we include the dropped element as in some cases
-            // it wont have DOM object yet so it wont be picked up as intersecting
-            if (newElement && intersectingElements.indexOf(newElement)===-1) intersectingElements.push(newElement);
-
-
-            var uniqueElems = _(intersectingElements).map('key').uniq().value().length;
-            if (intersectingElements.length==2 && uniqueElems>1){
-                var observation = this.experiment({inputs:intersectingElements,location:$draggable.offset()},game);
-                console.log('intersectingElements', intersectingElements.length, observation);
-                return observation;
-            } else {
-                return;
-            }
-
-
+            var observation = game.test
+            console.log('intersectingElements', intersectingElements.length, observation);
+            return observation;
         },
 
         /** Run an experiment depending on reactants and conditions **/

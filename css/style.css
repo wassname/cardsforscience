@@ -30,20 +30,6 @@ h1 br {
   position: relative;
 }
 
-#detector-flame{
-  position: relative;
-  /* So it looks like the flame it touching the test-tube */
-  top: -60px;
-}
-
-#detector-core {
-   z-index: 0;
-}
-
-#detector-events {
-   z-index: 1;
-}
-
 #detector-info {
   z-index: 10;
   position: absolute;
@@ -140,9 +126,9 @@ h1 br {
   width: 99%;
 }
 
-.panel {
+/*.panel {
   margin-bottom: 0;
-}
+}*/
 
 .media-list-no-margin {
   margin-top: -15px;
@@ -209,8 +195,8 @@ h1 br {
 
 @media screen and (min-width: 768px) {
   #detector-holder {
-    margin-left: -15px;
-    margin-right: -15px;
+    /*margin-left: -15px;
+    margin-right: -15px;*/
   }
 
   .status {
@@ -250,11 +236,11 @@ h1 br {
 
 @media screen and (min-width: 992px) and (max-width: 1199px){
   .col-md-3s {
-    width:20%;
+    /*width:20%;*/
   }
 
   .col-md-5s {
-    width:40%;
+    /*width:40%;*/
   }
 }
 
@@ -417,4 +403,46 @@ h1 br {
 }
 .ui-grid-viewport .ui-grid-cell-contents{
     font-size: 22px;
+}
+
+.card-panel {
+    min-height: 130px;
+    min-width: 100px;
+    /*border: 1px solid black;*/
+    /*border-radius: 4px;*/
+    /*padding: 5px;*/
+    /*margin: 15px;*/
+    /*font-size: 20px;*/
+}
+.short-lines {
+    line-height: 3em;
+}
+.main-line{
+    border: 3px green solid;
+    border-radius: 5px;
+    /*margin: 10px;*/
+}
+.side-line {
+    /*padding-top: 10px;*/
+    /*margin: 10px;*/
+    border:2px red solid;
+    border-radius: 5px;
+    min-height: 200px;
+}
+.card-line{
+    margin-bottom: 5px;
+}
+.left-list ul{
+    padding-left: 5px;
+}
+.hypotheses select{
+    height:20px;
+    padding:1px;
+
+}
+.guess-correct{
+
+}
+.guess-wrong{
+    
 }
