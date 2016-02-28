@@ -7,7 +7,7 @@ describe('directives', function () {
         $rootScope;
 
     // Load the myApp module, which contains the directive
-    beforeEach(module('scienceAlchemy'));
+    beforeEach(module('CardsForScience'));
     // beforeEach(module('Rules'));
 
     // Store references to $rootScope and $compile

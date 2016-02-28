@@ -5,7 +5,7 @@
 describe('filter', function () {
 
     beforeEach(
-        module('scienceAlchemy')
+        module('cardsForScience')
     );
 
     describe('niceNumber', function () {

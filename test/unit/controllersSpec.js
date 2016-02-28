@@ -1,7 +1,7 @@
 'use strict';
 
 /* jasmine specs for controllers go here */
-describe('scienceAlchemy controllers', function () {
+describe('cardsForScience controllers', function () {
     var $controller;
 
     beforeEach(function () {
@@ -19,7 +19,7 @@ describe('scienceAlchemy controllers', function () {
             }
         });
     });
-    beforeEach(module('scienceAlchemy'));
+    beforeEach(module('cardsForScience'));
     beforeEach(inject(function (_$controller_) {
         // The injector unwraps the underscores (_) from around the parameter names when matching
         $controller = _$controller_;

@@ -2,6 +2,7 @@
 var path = require('path');
 var colors = require('colors');
 var webpack = require('webpack');
+// var WebpackConfig = require('webpack-config');
 var WebpackDevServer = require("webpack-dev-server");
 
 // loaders
@@ -18,6 +19,7 @@ var csswring = require('csswring');
 // text
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var htmlMinifyLoader = require("html-minify-loader");
 
 
 /* debug for build folder, not debug for uglify into dist folder */
@@ -43,11 +45,12 @@ var extractLESS = new ExtractTextPlugin('[name].less');
 //
 // inject bundles into html file template. Note html loader can overwrite output
 var htmlWebpack = new HtmlWebpackPlugin({
-    template: 'webpack.html',
+    template: 'src/index.webpack',
     inject: 'body',
-    filename: 'index.html', // otherwise this overrides the template, wierd
+    filename: 'index.html',
     hash: true,
-    showErrors: DEBUG // this will override template
+    showErrors: DEBUG,
+    minify: DEBUG? false: htmlMinifyLoader
 });
 // uglify in production
 var uglifyJsPlugin = new webpack.optimize.UglifyJsPlugin({
@@ -72,18 +75,19 @@ if (DEBUG){
 } else {
     plugins.push(
         new webpack.optimize.DedupePlugin(),
+        new webpack.optimize.OccurenceOrderPlugin(),
         uglifyJsPlugin
     );
 }
 
 module.exports = {
-    target: "web",
+    target: "web", //web[node,async-node,node-webkit,electron,webworker]
     entry: {
         clientApp: 'index.js',
     },
     output: {
         path: path.join(__dirname, DIR),
-        //publicPath: '/' + DIR + '/',
+        // publicPath: '/' + DIR + '/',
         filename: '[name].bundle.js',
         libraryTarget:'umd', //var [CommonJs, AMD, umd,this]
         library: '[name]' // If set, export the bundle as library
@@ -92,11 +96,13 @@ module.exports = {
         loaders: [
         {test: /\.js?$/, loader: 'babel-loader?cacheDirectory', exclude: /(node_modules|bower_components)/ },
         {test: /\.jsx?$/, loader: 'babel-loader?cacheDirectory', exclude: /(node_modules|bower_components)/ },
-        { test: /\.(jpe?g|png|gif)$/i, loader: "file?name=[path][name].[ext]" },
+        { test: /\.(png)$/i, loader: "file?name=[path][name].[ext]" },
+        { test: /\.(gif)$/i, loader: "file?name=[path][name].[ext]" },
+        { test: /\.(jpe?g)$/i, loader: "file?name=[path][name].[ext]" },
         { test: /\.(mp3|ac3|ogg|m4a|wav)$/i, loader: "file?name=[path][name].[ext]" },
         { test: /\.(ttf|woff|eot|svg|woff2)(\?.*$|$)/i, loader: "file?name=[path][name].[ext]" },
-        { test: /\.(json)$/i, loader: "file?name=[path][name].[ext]" },
-        // { test: /\.html/,   loader: 'file?name=[path][name].[ext]'}, // breaks html template
+        { test: /\.(json)$/i, loader: "json-loader" }, // this loads it as javascript in one go
+        { test: /\.html/,   loader: 'file?name=[path][name].[ext]|html-minify'}, // breaks html template // html-minify?
         { test: /\.(less)$/i, loader: extractLESS.extract("style-loader", "css-loader",'less-loader') },
         { test: /\.(css)$/i, loader: ExtractTextPlugin.extract("style-loader", "css-loader") }
     ]
@@ -104,15 +110,16 @@ module.exports = {
     resolve: {
         root: [
             // paths to look in
-            path.resolve(__dirname),
-            path.resolve('./js/external'),
-            path.resolve('./js'),
-            path.resolve('./css'),
-            path.resolve('./json')
+            // path.resolve(__dirname),
+            path.resolve('./src'),
+            path.resolve('./src/js'),
+            path.resolve('./src/css'),
+            path.resolve('./src/less'),
+            path.resolve('./src/fonts'),
+            path.resolve('./src/json')
         ],
         alias: {
-            // "phaser-arcade-physics": "phaser/build/custom/phaser-arcade-physics.js",
-            //  jquery: "jquery/src/jquery"
+            //  e.g. jquery: "jquery/src/jquery"
         },
         // extentions to auto add if needed
         extensions: ["", ".js"]

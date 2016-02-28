@@ -37,7 +37,7 @@ module.exports = function (config) {
         //     // prependPrefix: "web/path/to/templates/",
         //
         //     // the name of the Angular module to create
-        //     moduleName: "scienceAlchemy.templates"
+        //     moduleName: "cardsForScience.templates"
         // },
 
 

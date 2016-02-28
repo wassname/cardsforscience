@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="scienceAlchemy">
+<html lang="en" ng-app="cardsForScience">
   <head>
-    <title>Science Alchemy</title>
+    <title>Cards For Science - Beta</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta property="og:title" content="Science Alchemy">
+    <meta property="og:title" content="Cards For Science">
     <meta property="og:type" content="game">
     <meta property="og:description" content="A card game where you work out the secret rule to determine which cards can be played next.">
     <meta property="og:image" content="assets/favicon.png">
@@ -29,20 +29,20 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand pc-icon" href="#" data-toggle="modal" data-target="#myModal"> Science Alchemy</a>
+          <a class="navbar-brand pc-icon" href="#" data-toggle="modal" data-target="#myModal"> Cards For Science</a>
         </div>
         <div class="collapse navbar-collapse" id="navbar-collapse">
-          <ul class="nav navbar-nav navbar-left">
-            <li><a href="#" data-toggle="modal" data-target="#achievements-modal"><i class="fa fa-trophy"></i> Achievements</a></li>
-            <li><a href="#" data-toggle="modal" data-target="#stats-modal"><i class="fa fa-bar-chart"></i> Statistics</a></li>
-            <li class="dropdown" ng-controller="SaveController">
+          <ul class="nav navbar-nav navbar-right">
+            <!-- <li><a href="#" data-toggle="modal" data-target="#achievements-modal"><i class="fa fa-trophy"></i> Achievements</a></li>
+            <li><a href="#" data-toggle="modal" data-target="#stats-modal"><i class="fa fa-bar-chart"></i> Statistics</a></li> -->
+            <!-- <li class="dropdown" ng-controller="SaveController">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-floppy-o"></i> Saved: <span ng-cloak>{{ lastSaved | date : 'H:mm' }}</span> <span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="#" ng-click="saveNow()"><i class="fa fa-save"></i> Save now</a></li>
                 <li class="divider"></li>
                 <li><a href="#" ng-click="restart()"><i class="fa fa-refresh"></i> Restart</a></li>
               </ul>
-            </li>
+            </li> -->
             <li><a href="#" data-toggle="modal" data-target="#myModal"><i class="fa fa-users"></i> About</a></li>
           </ul>
         </div>
@@ -99,9 +99,7 @@
 
         </div>
 
-
-        <hr class="hidden-xs row"></hr>
-        <div class=""><strong> Which card is next?</strong><br></div>
+        <div class=""><strong> Correct cards. Which card is next?</strong><br></div>
         <div id="detector-holder">
 
           <div id="detector"  ng-controller="DetectorController as dc">
@@ -126,9 +124,10 @@
                         </div>
                     </div>
                 </div>
+                <div class=""><strong>Incorrect cards:</strong><br></div>
                 <div class="side-line card-line short-lines-nup"  id="incorrectCards">
                     <div class="row">
-                        <div class="col-md-1 col-no-padding" ng-repeat="rr in dc.incorrectCards | limitTo: -10" ng-cloak>
+                        <div class="col-md-1 col-no-padding" ng-repeat="rr in dc.incorrectCards | limitTo: -7" ng-cloak>
                             <div class="row">
                                 <div ng-repeat="r in rr| limitTo: -10" class="col-md-12  col-no-padding add-from-right ">
                                         <span
@@ -291,7 +290,7 @@
 
     <div id="mobile-orientation-container">
       <div id="mobile-orientation-message">
-        You can only play Science Alchemy on your mobile device in landscape orientation.
+        You can only play Cards For Science on your mobile device in landscape orientation.
       </div>
     </div>
 
@@ -300,19 +299,19 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="myModalLabel">Science Alchemy</h4>
+            <h4 class="modal-title" id="myModalLabel">Cards For Science</h4>
           </div>
           <div class="modal-body">
             <h4>About</h4>
             <p class="small">Version: 0.6</p>
 
-            <p class="small bg-warning">This is a pre-release. <p>Science Alchemy is a card game where you work out the secret rule to determine which cards can be played. This game is based on <a href="http://www.logicmazes.com/games/eleusis/">Eleusis</a> by Robert Abbott and John Golden's <a href="http://www.logicmazes.com/games/eleusis/express.html">Eleusis</a> Express.
+            <p class="small bg-warning">This is a pre-release. <p>Cards For Science is a card game where you work out the secret rule to determine which cards can be played. This game is based on <a href="http://www.logicmazes.com/games/eleusis/">Eleusis</a> by Robert Abbott and John Golden's <a href="http://www.logicmazes.com/games/eleusis/express.html">Eleusis</a> Express.
 
             <h5>Authors</h5>
             <ul>
               <li><a href="https://github.com/wassname">wassname</a></li>
             </ul>
-            <p>Feel free to get in touch with us via GitHub or by shooting us an email on<br><a href="mailto:particle-clicker@wassname.org">particle-clicker@wassname.org</a>.</p>
+            <p>Feel free to get in touch with us via GitHub or by shooting an message on<br>particle-clicker at wassname.org</a>.</p>
 
           </div>
         </div>
@@ -321,12 +320,12 @@
 
 
     <!-- Google Analytics -->
-    <!-- <script>
+    <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-    </script> -->
+    </script>
     <!-- End Google Analytics -->
 
   </body>

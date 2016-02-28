@@ -1,5 +1,7 @@
 /** Custom google analystics events **/
 var Helpers = require("js/helpers");
+
+
 var analytics = module.exports =
 {
     enabled: true,
@@ -30,8 +32,8 @@ var analytics = module.exports =
             return;
         }
 
-        ga('create', Helpers.analytics);
-        ga('set', { 'appName': 'Particle Clicker', 'appId': 'ch.cern.particle-clicker', 'appVersion': '0.9' });
+        ga('create', Helpers.analytics,'auto');
+        ga('set', { 'appName': 'Cards For Science', 'appId': '', 'appVersion': '0.6' });
         ga('set', 'anonymizeIp', true);
 
 

@@ -4,6 +4,8 @@ var gulp = require('gulp');
 var fs = require('fs');
 var gutil = require('gulp-util')
 
+var webpack = require('webpack-stream');
+
 // var source = require('vinyl-source-stream');
 // var buffer = require('vinyl-buffer');
 // var del = require('del');
@@ -19,21 +21,22 @@ var pjson = require('./package.json');
 var production = (process.env.NODE_ENV === 'production');
 
 var DEBUG = !production;
-console.log('Running in DEBUG='+DEBUG+' mode')
+console.log('Running in DEBUG='+DEBUG+' mode');
 
 var config = {
     app_entry: 'client/scripts/main.js',
     debug: DEBUG,
-}
+};
 
 /*
 Just run webpack
  */
-DEBUG = false
-var webpack = require('webpack-stream');
-gulp.task('webpack', function () {
 
-    var webpackConfig = require('./webpack.config.js')
+
+gulp.task('webpack', function () {
+    DEBUG = config.debug=false; // run production mode
+    process.env.NODE_ENV='production';
+    var webpackConfig = require('./webpack.config.js');
     console.log('debug: ', webpackConfig.debug);
 
     return gulp.src(config.app_entry)
@@ -62,9 +65,9 @@ gulp.task('s3', function () {
     return gulp.src('./dist/**',{cwd:'.'})
 
         // rename to put in subfolder
-        .pipe(rename(function (path) {
-          path.dirname = pjson.name + '/' + path.dirname;
-        }))
+        // .pipe(rename(function (path) {
+        //   path.dirname = pjson.name + '/' + path.dirname; // for /module/path/file.ext
+        // }))
 
         // gzip, Set Content-Encoding headers and add .gz extension
         .pipe(awspublish.gzip())

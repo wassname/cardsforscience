@@ -2,6 +2,18 @@
  * Define the angular app
  */
 'use strict';
+
+//deps
+var jquery = require("jquery");
+var jqueryUi = require("jquery-ui");
+var jqueryUiTouchPunch = require("jquery-ui-touch-punch");
+var jqueryCookie = require("js-cookie");
+
+var angular = require("angular");
+var angularDragdrop = require("angular-dragdrop");
+var angularAnimate = require("angular-animate");
+
+//app
 var ObjectStorage = require("js/storage");
 var Helpers = require("js/helpers");
 var GameObjects = require("js/gameobjects");
@@ -12,7 +24,7 @@ var Rules = require("js/rules.js");
 var app = (function (Helpers,analytics,Game,Rules) {
     Helpers.validateSaveVersion();
 
-    var app = angular.module('scienceAlchemy', ['ngDragDrop','ngAnimate']);
+    var app = angular.module('cardsForScience', ['ngDragDrop','ngAnimate']);
 
     // directives
 

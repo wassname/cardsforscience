@@ -2,7 +2,8 @@
  * Define some useful helpers that are used throughout the game.
  */
 var ObjectStorage = require("js/storage");
-var Helpers = (function (ObjectStorage) {
+var jquery = require("jquery");
+var Helpers = (function ($,ObjectStorage) {
     'use strict';
     /** Load a file (usually JSON).
      */
@@ -99,7 +100,7 @@ var Helpers = (function (ObjectStorage) {
         formatNumberPostfix: formatNumberPostfix,
         formatTime: formatTime,
         validateSaveVersion: validateSaveVersion,
-        analytics: ''
+        analytics: 'UA-51809277-5'
     };
-})(ObjectStorage);
+})(jquery, ObjectStorage);
 module.exports=Helpers;

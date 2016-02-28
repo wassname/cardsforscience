@@ -5,7 +5,10 @@ var ObjectStorage = require("js/storage");
 var Helpers = require("js/helpers");
 var GameObjects = require("js/gameobjects");
 var Rules = require("js/rules.js");
-var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules) {
+var elements = require("json/elements.json");
+var achievements = require("json/achievements.json");
+
+var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,elements,achievements) {
     'use strict';
 
     var Game = function () {
@@ -35,8 +38,8 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules)
         // However, I don't see any other reasonable way to do this in order to
         // make it work with Angular. If you know a way, let me know, and I'll
         // give you a beer. - Kevin
-        this.elements = Helpers.loadFile('json/elements.json');
-        this.achievements = Helpers.loadFile('./json/achievements.json');
+        this.elements = elements; //Helpers.loadFile('json/elements.json');
+        this.achievements = require("json/achievements.json"); //Helpers.loadFile('./json/achievements.json');
 
         // function successCallback(response) {
         //     return angular.fromJson(response.data);
@@ -197,4 +200,4 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules)
     };
 
     return Game;
-}(Helpers, GameObjects, ObjectStorage,Rules));
+}(Helpers, GameObjects, ObjectStorage,Rules,elements,achievements));

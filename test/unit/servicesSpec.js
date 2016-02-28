@@ -3,7 +3,7 @@
 describe('services', function () {
 
     //load modules
-    beforeEach(module('scienceAlchemy'));
+    beforeEach(module('cardsForScience'));
 
 
     // Test service availability

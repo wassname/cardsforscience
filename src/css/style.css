@@ -102,18 +102,12 @@ h1 br {
   top: -1.42857em;
   height: 1.42857em;
 }
-
 .update-plus {
   color: green;
-  /*right: -1em;*/
-  /*top: -1em;*/
   position: relative;
 }
-
 .update-minus {
   color: red;
-  /*right: -1em;*/
-  /*top: -1em;*/
   position: relative;
 }
 
@@ -432,7 +426,7 @@ h1 br {
     /*margin: 10px;*/
     border:2px red solid;
     border-radius: 5px;
-    min-height: 200px;
+    min-height: 400px;
 }
 .card-line{
     margin-bottom: 5px;

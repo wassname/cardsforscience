@@ -120,7 +120,7 @@ describe('Rules compilation', function () {
         $rootScope;
 
     beforeEach(
-        module('scienceAlchemy')
+        module('cardsForScience')
     );
 
     // Store references to $rootScope and $compile
