@@ -2,7 +2,9 @@
 
 /** Define UI specific stuff.
  */
-var UI = (function () {
+var FastClick = require("fastclick");
+var Cookies = require("js-cookie");
+var UI = module.exports = (function (FastClick,Cookies) {
   /** Introduce FastClick for faster clicking on mobile.
    */
   $(function() {
@@ -84,7 +86,7 @@ var UI = (function () {
   }
 
   // display cookie warning
-  if (typeof $.cookie('cookielaw') === 'undefined') {
+  if (typeof Cookies.get('cookielaw') === 'undefined') {
     var alert = '<div id="cookielaw" class="alert alert-info" role="alert">';
     alert += '<button type="button" class="btn btn-primary">OK</button>';
     alert += '<i class="fa fa-info-circle alert-glyph"></i> <span class="alert-text">Particle Clicker uses local storage to store your current progress.</span>';
@@ -92,7 +94,7 @@ var UI = (function () {
     alert = $(alert);
     alert.find('button').click(function ()
     {
-      $.cookie('cookielaw', 'informed', { expires: 365 });
+      Cookies.set('cookielaw', 'informed', { expires: 365 });
       $('#cookielaw').slideUp(300, function() { $('#cookielaw').remove(); });
     })
 
@@ -100,7 +102,7 @@ var UI = (function () {
   }
 
   // display new user alert
-  // if (typeof $.cookie('cern60') === 'undefined') {
+  // if (typeof Cookies.get('cern60') === 'undefined') {
   //   var alert = '<div id="cern60" class="alert alert-info" role="alert">';
   //   alert += '<button type="button" class="btn btn-primary">Close</button>';
   //   alert += '<i class="fa fa-area-chart alert-glyph"></i> <span class="alert-text"><a class="alert-link" href="http://home.web.cern.ch/about/updates/2014/12/take-part-cern-60-public-computing-challenge" target="_blank">Join the CERN 60 computing challenge!</a></span>';
@@ -108,7 +110,7 @@ var UI = (function () {
   //   alert = $(alert);
   //   alert.find('button').click(function ()
   //   {
-  //     $.cookie('cern60', 'closed', { expires: 365 });
+  //     Cookies.set('cern60', 'closed', { expires: 365 });
   //     $('#cern60').slideUp(300, function() { $('#cern60').remove(); });
   //   })
   //
@@ -120,41 +122,41 @@ var UI = (function () {
     showModal: showModal,
     showLevels: showLevels,
     showUpdateValue: showUpdateValue
-  }
-})();
+};
+})(FastClick,Cookies);
 
-
-// I don't know what this is for, so I leave it here for the moment...
-(function() {
-    var hidden = "hidden";
-
-    // Standards:
-    if (hidden in document)
-        document.addEventListener("visibilitychange", onchange);
-    else if ((hidden = "mozHidden") in document)
-        document.addEventListener("mozvisibilitychange", onchange);
-    else if ((hidden = "webkitHidden") in document)
-        document.addEventListener("webkitvisibilitychange", onchange);
-    else if ((hidden = "msHidden") in document)
-        document.addEventListener("msvisibilitychange", onchange);
-    // IE 9 and lower:
-    else if ('onfocusin' in document)
-        document.onfocusin = document.onfocusout = onchange;
-    // All others:
-    else
-        window.onpageshow = window.onpagehide
-            = window.onfocus = window.onblur = onchange;
-
-    function onchange (evt) {
-        var v = 'visible', h = 'hidden',
-            evtMap = {
-                focus:v, focusin:v, pageshow:v, blur:h, focusout:h, pagehide:h
-            };
-
-        evt = evt || window.event;
-        if (evt.type in evtMap)
-            detector.visible = evtMap[evt.type] == 'visible';
-        else
-            detector.visible = !this[hidden];
-    }
-})();
+//
+// // I don't know what this is for, so I leave it here for the moment...
+// (function() {
+//     var hidden = "hidden";
+//
+//     // Standards:
+//     if (hidden in document)
+//         document.addEventListener("visibilitychange", onchange);
+//     else if ((hidden = "mozHidden") in document)
+//         document.addEventListener("mozvisibilitychange", onchange);
+//     else if ((hidden = "webkitHidden") in document)
+//         document.addEventListener("webkitvisibilitychange", onchange);
+//     else if ((hidden = "msHidden") in document)
+//         document.addEventListener("msvisibilitychange", onchange);
+//     // IE 9 and lower:
+//     else if ('onfocusin' in document)
+//         document.onfocusin = document.onfocusout = onchange;
+//     // All others:
+//     else
+//         window.onpageshow = window.onpagehide
+//             = window.onfocus = window.onblur = onchange;
+//
+//     function onchange (evt) {
+//         var v = 'visible', h = 'hidden',
+//             evtMap = {
+//                 focus:v, focusin:v, pageshow:v, blur:h, focusout:h, pagehide:h
+//             };
+//
+//         evt = evt || window.event;
+//         if (evt.type in evtMap)
+//             detector.visible = evtMap[evt.type] == 'visible';
+//         else
+//             detector.visible = !this[hidden];
+//     }
+// })();

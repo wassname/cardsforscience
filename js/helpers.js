@@ -1,7 +1,8 @@
 /** @module Helpers
  * Define some useful helpers that are used throughout the game.
  */
-var Helpers = (function () {
+var ObjectStorage = require("js/storage");
+var Helpers = (function (ObjectStorage) {
     'use strict';
     /** Load a file (usually JSON).
      */
@@ -100,4 +101,5 @@ var Helpers = (function () {
         validateSaveVersion: validateSaveVersion,
         analytics: ''
     };
-})();
+})(ObjectStorage);
+module.exports=Helpers;

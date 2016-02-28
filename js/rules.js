@@ -3,7 +3,8 @@
  * @param  {[type]} function functionName( [description]
  * @return {[type]}          [description]
  */
-var Rules = (function functionName(_) {
+var chai = require("chai");
+var Rules = module.exports = (function functionName(_,chai) {
 
 
 
@@ -250,7 +251,7 @@ var Rules = (function functionName(_) {
     };
 
     /** How many combination of this rule **/
-    Rule.prototype.combinations = function (arguments) {
+    Rule.prototype.combinations = function () {
         var pos = _.map(this.optionDesc, 'possibleVals');
         var c = 0;
         for (var i = 0; i < pos.length; i++) {
@@ -577,4 +578,4 @@ var Rules = (function functionName(_) {
     };
 
 
-})(_);
+})(_,chai);

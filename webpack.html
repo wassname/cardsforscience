@@ -7,15 +7,9 @@
 
     <meta property="og:title" content="Science Alchemy">
     <meta property="og:type" content="game">
-    <meta property="og:description" content="An addictive incremental game that was made during the CERN Webfest 2014. It takes the player on a historic journey through modern particle physics.">
-    <meta property="og:image" content="https://avatars2.githubusercontent.com/u/8345868">
+    <meta property="og:description" content="A card game where you work out the secret rule to determine which cards can be played next.">
+    <meta property="og:image" content="assets/favicon.png">
 
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.css">
-
-    <link rel="stylesheet" type="text/css" href="bower_components/angular-ui-grid/ui-grid.min.css">
-    <link rel="stylesheet" href="css/ui-grid.css">
-    <link rel="stylesheet" href="css/style.css">
 
     <link rel="icon" type="image/png" href="assets/favicon.png" />
     <link rel="apple-touch-icon" href="assets/mobile/icon.png">
@@ -25,6 +19,7 @@
 
   </head>
   <body>
+    <div style="display:none">A card game where you work out the secret rule to determine which cards can be played next.</div>
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
       <div class="container-fluid">
         <div class="navbar-header">
@@ -48,18 +43,7 @@
                 <li><a href="#" ng-click="restart()"><i class="fa fa-refresh"></i> Restart</a></li>
               </ul>
             </li>
-            <!--<li><a href="#" data-toggle="modal" data-target="#myModal"><i class="fa fa-users"></i> About</a></li>-->
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="https://github.com/particle-clicker/particle-clicker/" target="_blank"><i class="fa fa-github"></i> GitHub</a></li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-share-alt"></i> Social<span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="https://facebook.com/particleclicker"><i class="fa fa-facebook-square"></i> Facebook</a></li>
-                <li><a href="https://twitter.com/particleclicker"><i class="fa fa-twitter"></i> Twitter</a></li>
-                <li><a href="https://plus.google.com/share?url=http%3A%2F%2Fcern.ch%2Fparticle-clicker" target="_blank" title="Share on Google+"><i class="fa fa-google-plus-square"></i> Google+</a></li>
-              </ul>
-            </li>
+            <li><a href="#" data-toggle="modal" data-target="#myModal"><i class="fa fa-users"></i> About</a></li>
           </ul>
         </div>
       </div>
@@ -105,7 +89,6 @@
 
       <div id="column-lab" class="col-xs-6 col-md-6 col-md-6s col-lg-7 col-no-padding-xs" ng-controller="LabController as lc">
 
-        <!-- <input class="hidden-xs" id="labname" value="{{ lc.lab.state.name }}" ng-model="lc.lab.state.name" ng-cloak> -->
         <div class="row status" ng-cloak>
           <div class="col-xs-12 text-center col-no-padding-xs">
 
@@ -195,24 +178,6 @@
         </div>
         <button id="detector-info" type="button" class="btn btn-info" ng-click="lc.showDetectorInfo()"><i class="fa fa-info"></i></button>
 
-        <!-- <div class="row status" ng-cloak>
-          <div class="col-xs-4 text-center col-no-padding-xs">
-            <strong>Score</strong><br>
-            {{ lc.lab.state.score | niceNumber }}
-            <div class="update-value" id="update-data"></div>
-          </div>
-          <div class="col-xs-4 text-center col-no-padding-xs">
-            <strong>Rank</strong><br>
-            {{ lc.lab.state.rank | niceNumber }}
-            <div class="update-value" id="update-reputation"></div>
-          </div>
-          <div class="col-xs-4 text-center col-no-padding-xs">
-            <strong>High Score</strong><br>
-            {{ lc.lab.state.highScore | niceNumber }}
-            <div class="update-value" id="update-funding"></div>
-          </div>
-        </div> -->
-
       </div>
 
       <div class="col-md-3 col-md-3s col-lg-2 col-no-padding visible-md-block visible-lg-block">
@@ -224,6 +189,8 @@
           </div>
           <div class="panel-body scrollable large" id="upgradesLarge">
             <div id="upgradesContent" class="left-list" ng-controller="UpgradesController as uc">
+
+             <!-- A more complicated hypothesis display... too complicated I guess -->
               <!-- <label>Search: <input ng-model="searchText"></label> -->
               <!-- <ul class="form-inline hypotheses" ng-cloak>
                 <li ng-repeat="rule in uc.rules|filter:searchText">
@@ -280,7 +247,7 @@
       </div>
     </div>
 
-    <div class="modal fade" id="achievements-modal" tabindex="-1" role="dialog" aria-labelledby="achievements-label" aria-hidden="true" ng-controller="AchievementsController">
+    <!-- <div class="modal fade" id="achievements-modal" tabindex="-1" role="dialog" aria-labelledby="achievements-label" aria-hidden="true" ng-controller="AchievementsController">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -299,9 +266,9 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
-    <div class="modal fade" id="stats-modal" tabindex="-1" role="dialog" aria-labelledby="stats-label" aria-hidden="true" ng-controller="StatsController">
+    <!-- <div class="modal fade" id="stats-modal" tabindex="-1" role="dialog" aria-labelledby="stats-label" aria-hidden="true" ng-controller="StatsController">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -317,7 +284,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div id="achievements-container" class="col-xs-6 col-sm-3"></div>
     <div id="messages-container" class="col-xs-6 col-sm-3"></div>
@@ -337,50 +304,21 @@
           </div>
           <div class="modal-body">
             <h4>About</h4>
-            <p class="small">Version: 0.9</p>
-            <p class="small bg-warning">This is a pre-release. If you encounter any bugs please report them using <a href="https://github.com/particle-clicker/particle-clicker/issues"><i class="fa fa-github"></i> GitHub issues</a>. This game runs best in landscape mode. Performance of the event display may rely heavily on your hardware.</p>
-            <p>Science Alchemy is a game that was made during the <a href="https://webfest.web.cern.ch">CERN Webfest 2014</a>. The idea is borrowed from <a href="http://orteil.dashnet.org/cookieclicker/">Cookie Clicker</a>, an amazing and addictive cookie-themed game.</p>
-            <h5>Libraries</h5>
-            <p>This game is realised using a few libraries. Those are</p>
-            <ul>
-              <li><a href="http://angularjs.org">AngularJS</a></li>
-              <li><a href="http://getbootstrap.com/">Bootstrap</a></li>
-              <li><a href="http://fortawesome.github.io/">Fontawesome</a></li>
-              <li><a href="http://jquery.com">jQuery</a></li>
-              <li><a href="http://imulus.github.io/retinajs/">retina.js</a></li>
-              <li><a href="https://github.com/ftlabs/fastclick">fastclick.js</a></li>
-            </ul>
+            <p class="small">Version: 0.6</p>
+
+            <p class="small bg-warning">This is a pre-release. <p>Science Alchemy is a card game where you work out the secret rule to determine which cards can be played. This game is based on <a href="http://www.logicmazes.com/games/eleusis/">Eleusis</a> by Robert Abbott and John Golden's <a href="http://www.logicmazes.com/games/eleusis/express.html">Eleusis</a> Express.
+
             <h5>Authors</h5>
             <ul>
-              <li><a href="https://github.com/gbiro">Gabor Biro</a></li>
-              <li><a href="https://github.com/ibab">Igor Babuschkin</a></li>
-              <li><a href="https://github.com/kdungs">Kevin Dungs</a></li>
-              <li><a href="https://github.com/ntadej">Tadej Novak</a></li>
-              <li><a href="https://github.com/zhangjiannan">Jiannan Zhang</a></li>
+              <li><a href="https://github.com/wassname">wassname</a></li>
             </ul>
-            <p>Feel free to get in touch with us via GitHub or by shooting us an email on<br><a href="mailto:particle-clicker@googlegroups.com">particle-clicker@googlegroups.com</a>.</p>
-            <h5>Source</h5>
-            <p>The source code of this game is freely available on <a href="https://github.com/particle-clicker/particle-clicker"><i class="fa fa-github"></i> GitHub</a> under the terms of an MIT license.</p>
+            <p>Feel free to get in touch with us via GitHub or by shooting us an email on<br><a href="mailto:particle-clicker@wassname.org">particle-clicker@wassname.org</a>.</p>
+
           </div>
         </div>
       </div>
     </div>
-    <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="bower_components/jquery-ui/jquery-ui.js"></script>
-    <script type="text/javascript" src="js/external/jquery.ui.touch-punch.min.js"></script>
-    <script type="text/javascript" src="js/external/jquery.cookie-1.4.1.min.js"></script>
-    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 
-    <script type="text/javascript" src="bower_components/angular/angular.js"></script>
-    <script type="text/javascript" src="bower_components/angular-dragdrop/src/angular-dragdrop.js"></script>
-    <script type="text/javascript" src="bower_components/angular-animate/angular-animate.js"></script>
-
-    <script type="text/javascript" src="js/external/retina.js"></script>
-    <script type="text/javascript" src="js/external/fastclick.js"></script>
-
-    <script type="text/javascript" src="bower_components/chai/chai.js"></script>
-    <script type="text/javascript" src="bower_components/lodash/dist/lodash.js"></script>
-    <script type="text/javascript" src="bower_components/angular-ui-grid/ui-grid.js"></script>
 
     <!-- Google Analytics -->
     <!-- <script>
@@ -391,13 +329,5 @@
     </script> -->
     <!-- End Google Analytics -->
 
-    <script src="js/storage.js"></script>
-    <script src="js/helpers.js"></script>
-    <script src="js/analytics.js"></script>
-    <script src="js/gameobjects.js"></script>
-    <script src="js/rules.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/game.js"></script>
-    <script src="js/app.js"></script>
   </body>
 </html>

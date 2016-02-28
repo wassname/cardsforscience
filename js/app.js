@@ -2,46 +2,44 @@
  * Define the angular app
  */
 'use strict';
-var app = (function () {
+var ObjectStorage = require("js/storage");
+var Helpers = require("js/helpers");
+var GameObjects = require("js/gameobjects");
+var analytics = require("js/analytics");
+var Game = require("js/game");
+var Rules = require("js/rules.js");
+
+var app = (function (Helpers,analytics,Game,Rules) {
     Helpers.validateSaveVersion();
 
-    var app = angular.module('scienceAlchemy', ['ngDragDrop', 'ui.grid','ngAnimate']);
+    var app = angular.module('scienceAlchemy', ['ngDragDrop','ngAnimate']);
 
     // directives
-    /**
-     * Provides an easy way to toggle a checkboxes indeterminate property
-     *
-     * @example <input type="checkbox" ui-indeterminate="isUnkown">
-     */
-    // app.directive('uiIndeterminate', [
-    //     function () {
-    //
-    //         return {
-    //             compile: function (tElm, tAttrs) {
-    //                 if (!tAttrs.type || tAttrs.type.toLowerCase() !== 'checkbox') {
-    //                     return angular.noop;
-    //                 }
-    //
-    //                 return function ($scope, elm, attrs) {
-    //                     $scope.$watch(attrs.uiIndeterminate, function (newVal) {
-    //                         elm[0].indeterminate = !!newVal;
-    //                     });
-    //                 };
-    //             }
-    //         };
-    //     }
-    // ]);
 
 
     /**
-     * Make little score animations when score changes require ng-model="score"
+     * Make little "+2" "-1" score animations when score changes requires ng-model="score"
+     * Associated css:
+     * ```
+     * .update-value { // set constant height, and the position
+       position: relative;
+       right: -2em;
+       top: -1.42857em;
+       height: 1.42857em;
+     }
+     .update-plus { // if the change is +ve
+       color: green;
+       position: relative;
+     }
+     .update-minus {
+       color: red;
+       position: relative;
+     }
      */
     function cfsScoreChange($compile) {
         return {
             link: function (scope, element, attrs) {
                 scope.$watch(attrs.ngModel, function (newValue, oldValue) {
-                    console.log('value changed, new value is: ' + newValue, oldValue);
-
                     // showUpdateValue
                     var num = newValue-oldValue;
                     var formatted = Helpers.formatNumberPostfix(num);
@@ -56,6 +54,7 @@ var app = (function () {
                                 .html(formatted);
                     }
 
+                    // TODO it would be better to use an ::after element for this
                     // showUpdate
                     element.append(insert);
                     insert.animate({
@@ -416,4 +415,5 @@ var app = (function () {
 
     analytics.init();
     analytics.sendScreen(analytics.screens.main);
-})();
+})(Helpers,analytics,Game,Rules);
+module.exports=app;

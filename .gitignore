@@ -1,8 +1,9 @@
 .DS_Store
 *.sublime*
 notes
-
-
+secrets
+build
+dist
 
 # Created by https://www.gitignore.io/api/bower,node,linux
 

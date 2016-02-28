@@ -1,5 +1,6 @@
 /** Custom google analystics events **/
-var analytics =
+var Helpers = require("js/helpers");
+var analytics = module.exports =
 {
     enabled: true,
 

@@ -1,7 +1,11 @@
 /**
  * Game object load/saves game resources and stores game objects
  */
-var Game = (function (Helpers, GameObjects, ObjectStorage) {
+var ObjectStorage = require("js/storage");
+var Helpers = require("js/helpers");
+var GameObjects = require("js/gameobjects");
+var Rules = require("js/rules.js");
+var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules) {
     'use strict';
 
     var Game = function () {
@@ -193,4 +197,4 @@ var Game = (function (Helpers, GameObjects, ObjectStorage) {
     };
 
     return Game;
-}(Helpers, GameObjects, ObjectStorage));
+}(Helpers, GameObjects, ObjectStorage,Rules));
