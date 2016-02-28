@@ -1,6 +1,18 @@
 /** Custom google analystics events **/
 var Helpers = require("js/helpers");
 
+// google analystics async code
+(function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r;
+    i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments);
+    }, i[r].l = 1 * new Date();
+    a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0];
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
 var analytics = module.exports =
 {
@@ -32,9 +44,13 @@ var analytics = module.exports =
             return;
         }
 
-        ga('create', Helpers.analytics,'auto');
-        ga('set', { 'appName': 'Cards For Science', 'appId': '', 'appVersion': '0.6' });
-        ga('set', 'anonymizeIp', true);
+        // TODO replace with angular analtcs
+        if(ga){
+            ga('create', Helpers.analytics,'auto');
+            ga('set', { 'appName': 'Cards For Science', 'appId': '', 'appVersion': '0.6' });
+            ga('set', 'anonymizeIp', true);
+            ga('send','pageview');
+        }
 
 
         $('#myModal').on('show.bs.modal', function (e) {
@@ -64,8 +80,9 @@ var analytics = module.exports =
         if (!analytics.enabled || typeof type === 'undefined') {
             return;
         }
-
-        ga('send', 'screenview', { 'screenName': type });
+        if(ga){
+            ga('send', 'screenview', { 'screenName': type });
+        }
     },
 
     sendEvent: function(category, action, label, value)
@@ -73,7 +90,8 @@ var analytics = module.exports =
         if (!analytics.enabled || typeof category === 'undefined' || typeof action === 'undefined' || typeof label === 'undefined' || typeof value === 'undefined') {
             return;
         }
-
-        //ga('send', 'event', category, action, label, value, {'screenName': analytics.screens.main });
+        if(ga){
+            ga('send', 'event', category, action, label, value, {'screenName': analytics.screens.main });
+        }
     }
 };

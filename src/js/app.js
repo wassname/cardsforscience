@@ -12,6 +12,8 @@ var jqueryCookie = require("js-cookie");
 var angular = require("angular");
 var angularDragdrop = require("angular-dragdrop");
 var angularAnimate = require("angular-animate");
+var angulartics = require('angulartics');
+var angularticsGoogleAnalytics = require('angulartics-google-analytics');
 
 //app
 var ObjectStorage = require("js/storage");
@@ -24,7 +26,13 @@ var Rules = require("js/rules.js");
 var app = (function (Helpers,analytics,Game,Rules) {
     Helpers.validateSaveVersion();
 
-    var app = angular.module('cardsForScience', ['ngDragDrop','ngAnimate']);
+    var app = angular.module('cardsForScience', ['ngDragDrop','ngAnimate','angulartics', angularticsGoogleAnalytics]);
+
+    // config
+    app.config(function ($analyticsProvider) {
+            $analyticsProvider.firstPageview(true); /* Records pages that don't use $state or $route */
+            $analyticsProvider.withAutoBase(true);  /* Records full path */
+    });
 
     // directives
 

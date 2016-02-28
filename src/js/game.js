@@ -1,9 +1,9 @@
 /**
  * Game object load/saves game resources and stores game objects
  */
-var ObjectStorage = require("js/storage");
-var Helpers = require("js/helpers");
-var GameObjects = require("js/gameobjects");
+var ObjectStorage = require("js/storage.js");
+var Helpers = require("js/helpers.js");
+var GameObjects = require("js/gameobjects.js");
 var Rules = require("js/rules.js");
 var cards = require("json/cards.json");
 var achievements = require("json/achievements.json");
@@ -26,6 +26,8 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
 
         this.lastCards= [];
         this.incorrectCards= [];
+        this.rules=Rules.rules;
+        this.Rule=Rules.Rule;
     };
 
     Game.prototype.load = function ($http, $q) {

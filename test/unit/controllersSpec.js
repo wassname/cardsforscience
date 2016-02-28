@@ -33,17 +33,17 @@ describe('cardsForScience controllers', function () {
             controller = $controller('CardController',{$scope:$scope});
         });
 
-        it('should have elements', function () {
-            expect(controller.elements).toBeDefined();
+        it('should have cards', function () {
+            expect(controller.cards).toBeDefined();
         });
 
         it('should be visible', function () {
-            var item = controller.elements[0];
+            var item = controller.cards[0];
             expect(controller.isVisible(item)).toBeDefined();
         });
 
         it('should be isAvailable', function () {
-            var item = controller.elements[0];
+            var item = controller.cards[0];
             expect(controller.isAvailable(item)).toBeDefined();
         });
 

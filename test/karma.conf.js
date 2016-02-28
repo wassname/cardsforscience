@@ -1,9 +1,24 @@
 module.exports = function (config) {
+
+    // http://mike-ward.net/2015/09/07/tips-on-setting-up-karma-testing-with-webpack/
+    var webpackConfig = require('../webpack.config.js');
+    webpackConfig.entry = {};
+
     config.set({
 
+        webpack: webpackConfig,
+        webpackMiddleware: {
+            // noInfo: true,
+        },
         basePath: '../',
+
+        // web server port
         port: 9876,
         // urlRoot: "/",
+
+        // level of logging
+       // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+       logLevel: config.LOG_INFO,
 
         // enable / disable watching file and executing tests whenever any file changes
         autoWatch: true,
@@ -11,14 +26,30 @@ module.exports = function (config) {
         // enable / disable colors in the output (reporters and logs)
         colors: true,
 
+        // test results reporter to use
+        // possible values: 'dots', 'progress'
+        // available reporters: https://npmjs.org/browse/keyword/karma-reporter
+        reporters: ['progress','html','junit'],
+
         frameworks: ['jasmine'],
 
-        browsers: ['Chrome', 'Firefox'],
+        browsers: [
+            'Chrome',
+            // 'Firefox'
+        ],
+
+
+        // Continuous Integration mode
+        // if true, Karma captures browsers, runs the tests and exits
+        singleRun: false,
 
         plugins: [
-            'karma-chrome-launcher',
-            'karma-firefox-launcher',
-            'karma-jasmine'
+            require('karma-sourcemap-loader'),
+            require("karma-webpack"),
+            require('karma-jasmine'),
+            require('karma-ng-html2js-preprocessor'),
+            require('karma-chrome-launcher'),
+            require('karma-firefox-launcher'),
         ],
 
         junitReporter: {
@@ -27,6 +58,9 @@ module.exports = function (config) {
         },
 
         preprocessors: {
+            // './build/clientapp.bundle.js': ['webpack','sourcemap'],
+            './src/index.js': ['webpack','sourcemap'],
+            // './src/js/rules.js': ['webpack','sourcemap'],
             "*.html": ["ng-html2js"]
         },
 
@@ -46,60 +80,30 @@ module.exports = function (config) {
             '/json/': '/base/json/'
         },
 
+        // test results reporter to use
+        // possible values: 'dots', 'progress'
+        // available reporters: https://npmjs.org/browse/keyword/karma-reporter
+        reporters: ['progress'],
 
         // list of files / patterns to load in the browser
         files: [
 
             // dependencies
-            'bower_components/jquery/dist/jquery.js',
-            'bower_components/jquery-ui/jquery-ui.js',
 
+            // these are for Module('')
+            'node_modules/angular/angular.js',
+            'node_modules/angular-mocks/angular-mocks.js',
 
-            'bower_components/bootstrap/dist/js/bootstrap.js',
-
-            'bower_components/angular/angular.js',
-            'bower_components/angular-route/angular-route.js',
-            'bower_components/angular-resource/angular-resource.js',
-            'bower_components/angular-animate/angular-animate.js',
-            'bower_components/angular-mocks/angular-mocks.js',
-            'bower_components/angular-dragdrop/src/angular-dragdrop.js',
-            'bower_components/angular-ui-grid/ui-grid.js',
-
-            'bower_components/lodash/dist/lodash.js',
-            'bower_components/chai/chai.js',
-
-            'js/external/*.js',
-
-            // fixtures
-            {
-                pattern: 'index.html',
-                watched: true,
-                served: true,
-                included: false
-            }, {
-                pattern: 'json/*.json',
-                watched: true,
-                served: true,
-                included: false
-            },
-            {
-                pattern: 'css/*.css',
-                watched: true,
-                served: true,
-                included: false
-            },
+            // chai for rule tests
+            'node_modules/chai/chai.js',
 
             // files to test
-            'js/storage.js',
-            'js/helpers.js',
-            'js/analytics.js',
-            'js/gameobjects.js',
-            'js/rules.js',
-            'js/detector/detector.js',
-            'js/ui.js',
-            'js/game.js',
-            'js/app.js',
+            './src/index.js', // load in webpack entry point
+            'src/js/rules.js',
             'test/unit/**/*.js'
         ],
+
+        // list of files to exclude
+        exclude: [],
     });
 };

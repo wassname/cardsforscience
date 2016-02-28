@@ -10,9 +10,21 @@ require("css/style.css");
 
 // img
 require("assets/favicon.png");
-require("assets/mobile/icon.png");
-require("assets/mobile/icon.png");
-require("assets/pc32sw.png");
+require("assets/favicon_color.png");
+require("assets/favicons/apple-icon-57x57.png");
+require("assets/favicons/apple-icon-60x60.png");
+require("assets/favicons/apple-icon-72x72.png");
+require("assets/favicons/apple-icon-76x76.png");
+require("assets/favicons/apple-icon-114x114.png");
+require("assets/favicons/apple-icon-120x120.png");
+require("assets/favicons/apple-icon-144x144.png");
+require("assets/favicons/apple-icon-152x152.png");
+require("assets/favicons/apple-icon-180x180.png");
+require("assets/favicons/android-icon-192x192.png");
+require("assets/favicons/favicon-32x32.png");
+require("assets/favicons/favicon-96x96.png");
+require("assets/favicons/favicon-16x16.png");
+require("assets/favicons/ms-icon-144x144.png");
 
 // json
 // var cards = require("json/cards.json");

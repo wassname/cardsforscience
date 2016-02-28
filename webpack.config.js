@@ -35,6 +35,7 @@ var provide = new webpack.ProvidePlugin({
     "jquery": "jquery",
     "$": "jquery",
     "window.jQuery": "jquery",
+    "chai":"chai",
 });
 // extract css file into styles.css
 var extractText = new ExtractTextPlugin("[name].css", {

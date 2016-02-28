@@ -10,10 +10,23 @@
     <meta property="og:description" content="A card game where you work out the secret rule to determine which cards can be played next.">
     <meta property="og:image" content="assets/favicon.png">
 
+    <link rel="apple-touch-icon" sizes="57x57" href="assets/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="assets/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="assets/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="assets/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="assets/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="assets/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="assets/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+    <meta name="msapplication-TileImage" content="ssets//ms-icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
 
-    <link rel="icon" type="image/png" href="assets/favicon.png" />
-    <link rel="apple-touch-icon" href="assets/mobile/icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="assets/mobile/icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
 
@@ -127,9 +140,9 @@
                 <div class=""><strong>Incorrect cards:</strong><br></div>
                 <div class="side-line card-line short-lines-nup"  id="incorrectCards">
                     <div class="row">
-                        <div class="col-md-1 col-no-padding" ng-repeat="rr in dc.incorrectCards | limitTo: -7" ng-cloak>
+                        <div class="col-md-1 col-no-padding" ng-repeat="rr in dc.incorrectCards | limitTo: -10" ng-cloak>
                             <div class="row">
-                                <div ng-repeat="r in rr| limitTo: -10" class="col-md-12  col-no-padding add-from-right ">
+                                <div ng-repeat="r in rr| limitTo: -7" class="col-md-12  col-no-padding add-from-right ">
                                         <span
                                             class="{{r.key}} card {{r.color}}"
                                             data-cards="{{r.key}}"
@@ -317,16 +330,6 @@
         </div>
       </div>
     </div>
-
-
-    <!-- Google Analytics -->
-    <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-    </script>
-    <!-- End Google Analytics -->
 
   </body>
 </html>

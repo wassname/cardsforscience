@@ -1,9 +1,18 @@
+
+
+
+// polyfill and conditional import so this will load in the browser too
+if (!module) module=function(){};
+var chai;
+if (!chai){
+    chair = require("chai");
+}
+
 /**
  * Rules objects for game
  * @param  {[type]} function functionName( [description]
  * @return {[type]}          [description]
  */
-var chai = require("chai");
 var Rules = module.exports = (function functionName(_,chai) {
 
 
@@ -64,12 +73,12 @@ var Rules = module.exports = (function functionName(_,chai) {
         var reason;
         try {
             result = this.ruleFunc(card, lastCards, allCards, this.options);
-            if (result instanceof chai.Assertion) {
+            if ((chai&&result instanceof chai.Assertion)||result.name==='Assertion'||result.constructor.name==='Assertion') {
                 reason = result;
                 result = true;
             }
         } catch (e) {
-            if (e instanceof chai.AssertionError) {
+            if ((chai&&e instanceof chai.AssertionError)||e.name=='AssertionError') {
                 result = false;
                 reason = e;
             } else {

@@ -16,12 +16,12 @@ h1 br {
 }
 
 .pc-icon {
-  background: url('../assets/pc32sw.png') no-repeat 10px center;
+  background: url('../assets/favicon.png') no-repeat 10px center;
   padding-left: 50px;
 }
 
 .pc-icon:hover {
-  background-image: url('../assets/pc32.png');
+  background-image: url('../assets/favicon_color.png');
 }
 
 #detector {
@@ -268,12 +268,12 @@ h1 br {
     only screen and (min-resolution: 144dpi)
 {
   .pc-icon {
-    background-image: url('../assets/pc32sw@2x.png');
+    background-image: url('../assets/favicon.png');
     background-size: 32px 32px;
   }
 
   .pc-icon:hover {
-    background-image: url('../assets/pc32@2x.png');
+    background-image: url('../assets/favicon_color.png');
   }
 }
 
