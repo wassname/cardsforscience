@@ -302,7 +302,7 @@ h1 br {
 .ui-draggable {
     cursor: move;
 }
-.element {
+.card {
     font-size: 3em;
     border: 0px;
     padding: 1px;
@@ -310,7 +310,7 @@ h1 br {
     min-width: 50px;
     min-height: 50px;
 }
-.element.empty {
+.card.empty {
     opacity: 0.2;
 }
 .white-badge.empty {

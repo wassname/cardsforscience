@@ -25,12 +25,12 @@ describe('cardsForScience controllers', function () {
         $controller = _$controller_;
     }));
 
-    describe('ElementController', function () {
+    describe('CardController', function () {
         var $scope, controller;
 
         beforeEach(function () {
             $scope = {};
-            controller = $controller('ElementController',{$scope:$scope});
+            controller = $controller('CardController',{$scope:$scope});
         });
 
         it('should have elements', function () {

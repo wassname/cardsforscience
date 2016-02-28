@@ -24,7 +24,7 @@ var UI = module.exports = (function (FastClick,Cookies) {
     $modal.modal({show: true});
   };
 
-  /** Display only the elements with data-min-level above a certain
+  /** Display only the cards with data-min-level above a certain
    * threshold.
    */
   var showLevels = function(level) {

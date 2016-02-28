@@ -5,15 +5,15 @@ var ObjectStorage = require("js/storage");
 var Helpers = require("js/helpers");
 var GameObjects = require("js/gameobjects");
 var Rules = require("js/rules.js");
-var elements = require("json/elements.json");
+var cards = require("json/cards.json");
 var achievements = require("json/achievements.json");
 
-var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,elements,achievements) {
+var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,cards,achievements) {
     'use strict';
 
     var Game = function () {
         this.lab = null;
-        this.elements = null;
+        this.cards = null;
         this.workers = null;
         this.upgrades = null;
         this.achievements = null;
@@ -38,7 +38,7 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
         // However, I don't see any other reasonable way to do this in order to
         // make it work with Angular. If you know a way, let me know, and I'll
         // give you a beer. - Kevin
-        this.elements = elements; //Helpers.loadFile('json/elements.json');
+        this.cards = cards; //Helpers.loadFile('json/cards.json');
         this.achievements = require("json/achievements.json"); //Helpers.loadFile('./json/achievements.json');
 
         // function successCallback(response) {
@@ -49,11 +49,11 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
         //     return console.error('Could not get url', response.statusText, response);
         // }
         // return $q.all(
-        //     $http.get('json/elements.json', {
+        //     $http.get('json/cards.json', {
         //         transformResponse: angular.fromJson
         //     })
         //     .then(function (response) {
-        //         return self.elements = response.data;
+        //         return self.cards = response.data;
         //     }),
         //     $http.get('json/workers.json', {
         //         transformResponse: angular.fromJson
@@ -92,7 +92,7 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
             self.allObjects[o.key] = o;
             return o;
         };
-        self.elements = self.elements.map(
+        self.cards = self.cards.map(
             function (r) {
                 return makeGameObject(GameObjects.Card, r);
             });
@@ -106,10 +106,10 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
             o.loadState(ObjectStorage.load(key));
         }
 
-        // put elements in extended array with utility methods
+        // put cards in extended array with utility methods
         self.Card = new GameObjects.Cards();
-        self.Card.push.apply(self.Card, self.elements);
-        self.elements = self.Card;
+        self.Card.push.apply(self.Card, self.cards);
+        self.cards = self.Card;
 
         self.loaded = true;
         return self;
@@ -121,13 +121,13 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
         this.rule.randomize();
 
         // check if we have any cards in hand
-        // var totalElements = _(self.elements).map('state.amount').sum();
+        // var totalElements = _(self.cards).map('state.amount').sum();
         // if (totalElements<1) self.dealHand();
         this.dealHand();
 
         // deal first card
         // TODO make sure these follow rule
-        this.lastCards.push.apply(this.lastCards,_.sampleSize(this.elements,3));
+        this.lastCards.push.apply(this.lastCards,_.sampleSize(this.cards,3));
         for (var i = 0; i < this.lastCards.length; i++) {
             this.incorrectCards[i]=[];
         }
@@ -139,13 +139,13 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
 
     Game.prototype.dealHand = function (n) {
         n=n||12;
-        var hand=_.sampleSize(this.elements,n);
-        this.elements.map(function(card){
+        var hand=_.sampleSize(this.cards,n);
+        this.cards.map(function(card){
             card.state.amount=0;
         });
         for (var i = 0; i < hand.length; i++) {
             var card = hand[i];
-            this.elements.get(card.key).state.amount++;
+            this.cards.get(card.key).state.amount++;
         }
 
     };
@@ -154,7 +154,7 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
         console.debug('onClick',arguments);
 
         var cardType = angular.element(ui.draggable).data('element');
-        var card = _.find(this.elements,{key:cardType});
+        var card = _.find(this.cards,{key:cardType});
         return this.play(card);
     };
     Game.prototype.onDrop = function (event, ui) {
@@ -162,7 +162,7 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
         console.debug('onDrop',arguments);
 
         var cardType = angular.element(ui.draggable).data('element');
-        var card = _.find(this.elements,{key:cardType});
+        var card = _.find(this.cards,{key:cardType});
         return this.play(card);
     };
     Game.prototype.play = function (card) {
@@ -182,15 +182,15 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
             this.incorrectCards[turn].push(angular.copy(card));
 
             // deal 2 random cards
-            _.sample(this.elements).state.amount+=1;
-            _.sample(this.elements).state.amount+=1;
+            _.sample(this.cards).state.amount+=1;
+            _.sample(this.cards).state.amount+=1;
             this.lab.state.score-=2;
         }
         return correct;
     };
     /** Test the rule **/
     Game.prototype.test = function (card) {
-        return this.rule.test(card,this.lastCards,this.elements);
+        return this.rule.test(card,this.lastCards,this.cards);
     };
     Game.prototype.save = function () {
         // Save every object's state to local storage
@@ -200,4 +200,4 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
     };
 
     return Game;
-}(Helpers, GameObjects, ObjectStorage,Rules,elements,achievements));
+}(Helpers, GameObjects, ObjectStorage,Rules,cards,achievements));

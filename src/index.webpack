@@ -59,18 +59,18 @@
             </h4>
           </div>
 
-          <div class="panel-body large" id="elementLarge"
-               ng-controller="ElementController as rc"
+          <div class="panel-body large" id="cardsLarge"
+               ng-controller="CardController as rc"
               >
-            <div id="elementContent">
+            <div id="handContent">
               <div class="row" ng-cloak>
 
-                <div class="col-xs-2 col-no-padding " ng-repeat="r in rc.elements|orderBy:'key'" ng-show="rc.isAvailable(r)">
+                <div class="col-xs-2 col-no-padding " ng-repeat="r in rc.cards|orderBy:'key'" ng-show="rc.isAvailable(r)">
                   <span  ng-show="rc.isAvailable(r)"
                     id="{{r.key}}"
-                    class="{{r.key}} element element-store {{ r.state.interesting ? 'blink' : '' }} {{r.color}} {{rc.isAvailable(r) ? ' ui-draggable': 'empty'}}"
+                    class="{{r.key}} card cards-store {{ r.state.interesting ? 'blink' : '' }} {{r.color}} {{rc.isAvailable(r) ? ' ui-draggable': 'empty'}}"
                     ng-click="rc.onClick(r,$event)"
-                    data-element="{{r.key}}"
+                    data-cards="{{r.key}}"
                     data-drag="rc.isAvailable(r)"
                     jqyoui-draggable="rc.jqyouiDraggable"
                     data-jqyoui-options="rc.dataJqyouiOptions"
@@ -102,10 +102,10 @@
         <div class=""><strong> Correct cards. Which card is next?</strong><br></div>
         <div id="detector-holder">
 
-          <div id="detector"  ng-controller="DetectorController as dc">
+          <div id="detector"  ng-controller="TableController as dc">
 
 
-            <div id="detector-element-container"
+            <div id="detector-cards-container"
                 ng-cloak
                 jqyoui-droppable="dc.jqyouiDroppable"
                 data-jqyoui-options="dc.dataJqyouiOptions"
@@ -115,8 +115,8 @@
                     <div class="row" >
                         <div class="col-xs-1 col-no-padding add-from-top" ng-repeat="r in dc.lastCards | limitTo: -10" ng-cloak>
                             <span
-                                class="{{r.key}} element {{r.color}}"
-                                data-element="{{r.key}}"
+                                class="{{r.key}} card {{r.color}}"
+                                data-cards="{{r.key}}"
                                 data-hashkey={{r.$$hashKey}}
                                 >
                                 {{r.key}}
@@ -131,8 +131,8 @@
                             <div class="row">
                                 <div ng-repeat="r in rr| limitTo: -10" class="col-md-12  col-no-padding add-from-right ">
                                         <span
-                                            class="{{r.key}} element {{r.color}}"
-                                            data-element="{{r.key}}"
+                                            class="{{r.key}} card {{r.color}}"
+                                            data-cards="{{r.key}}"
                                             data-hashkey={{r.$$hashKey}}
                                             >
                                             {{r.key}}
@@ -187,7 +187,7 @@
             </h4>
           </div>
           <div class="panel-body scrollable large" id="upgradesLarge">
-            <div id="upgradesContent" class="left-list" ng-controller="UpgradesController as uc">
+            <div id="upgradesContent" class="left-list" ng-controller="RulesController as uc">
 
              <!-- A more complicated hypothesis display... too complicated I guess -->
               <!-- <label>Search: <input ng-model="searchText"></label> -->
@@ -215,12 +215,12 @@
 
       <div id="column-tabs" class="col-xs-6 visible-xs-block visible-sm-block col-no-padding">
         <ul id="TabList" class="nav nav-tabs" role="tablist">
-          <li class="active"><a href="#element" role="tab" data-toggle="tab"><i class="fa fa-cogs"></i> Elements </a></li>
+          <li class="active"><a href="#cards" role="tab" data-toggle="tab"><i class="fa fa-cogs"></i> Elements </a></li>
           <li><a href="#hr" role="tab" data-toggle="tab"><i class="fa fa-users"></i> HR</a></li>
           <li><a href="#upgrades" role="tab" data-toggle="tab"><i class="fa fa-wrench"></i> Upgrades</a></li>
         </ul>
         <div id="TabContent" class="tab-content">
-          <div class="tab-pane active scrollable" id="element">
+          <div class="tab-pane active scrollable" id="cards">
 
           </div>
           <div class="tab-pane scrollable" id="hr">

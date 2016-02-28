@@ -134,16 +134,16 @@ var app = (function (Helpers,analytics,Game,Rules) {
 
 
     // factories to provide services. They serve shared game objects
-    // app.factory('elements', function () {
-    //     var elements = Helpers.loadFile('json/elements.json');
-    //     elements = elements.map(
+    // app.factory('cards', function () {
+    //     var cards = Helpers.loadFile('json/cards.json');
+    //     cards = cards.map(
     //         function (r) {
     //             return new GameObjects.Card(r);
     //         });
     //     // put in extended array with helper methods
-    //     Card = new GameObjects.Cards();
-    //     Card.push.apply(Card,elements);
-    //     return Card;
+    //     Cards = new GameObjects.Cards();
+    //     Cards.push.apply(Cards,cards);
+    //     return Cards;
     // });
 
 
@@ -206,10 +206,10 @@ var app = (function (Helpers,analytics,Game,Rules) {
     app.filter('reverse', reverse);
 
     // controllers
-    app.controller('ElementController', ElementController);
-    ElementController.$inject = ['$scope', '$compile', 'game', 'lab'];
+    app.controller('CardController', CardController);
+    CardController.$inject = ['$scope', '$compile', 'game', 'lab'];
 
-    function ElementController($scope, $compile, game, lab) {
+    function CardController($scope, $compile, game, lab) {
         var vm = this;
         vm.dataJqyouiOptions = {
             revert: "invalid",
@@ -238,7 +238,7 @@ var app = (function (Helpers,analytics,Game,Rules) {
             card.state.lastDragged=new Date();
             console.log('endDrag');
         };
-        vm.elements = game.elements;
+        vm.cards = game.cards;
         vm.isVisible = function (item) {
             return item.isVisible(lab);
         };
@@ -248,9 +248,9 @@ var app = (function (Helpers,analytics,Game,Rules) {
     };
 
 
-    function DetectorController($scope, game, lab, $filter) {
+    function TableController($scope, game, lab, $filter) {
         var vm = this;
-        vm.elements = detector.elements;
+        vm.cards = detector.cards;
         vm.rule = '';
         vm.hints = [];
         vm.limit = -12;
@@ -282,8 +282,8 @@ var app = (function (Helpers,analytics,Game,Rules) {
             }
         };
     };
-    DetectorController.$inject = ['$scope', 'game', 'lab', '$filter'];
-    app.controller('DetectorController', DetectorController);
+    TableController.$inject = ['$scope', 'game', 'lab', '$filter'];
+    app.controller('TableController', TableController);
 
 
     function LabController($interval, game, lab) {
@@ -301,7 +301,7 @@ var app = (function (Helpers,analytics,Game,Rules) {
     app.controller('LabController', LabController);
 
 
-    function UpgradesController($scope, game, lab) {
+    function RulesController($scope, game, lab) {
         var vm = this;
         // present just a few hypothesis
         var rules = Rules.rules.map(function (r) {
@@ -379,8 +379,8 @@ var app = (function (Helpers,analytics,Game,Rules) {
             console.log('guess', arguments);
         };
     };
-    UpgradesController.$inject = ['$scope', 'game', 'lab'];
-    app.controller('UpgradesController', UpgradesController);
+    RulesController.$inject = ['$scope', 'game', 'lab'];
+    app.controller('RulesController', RulesController);
 
     function AchievementsController($scope, game, lab) {
         var vm = this;

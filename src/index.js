@@ -15,7 +15,7 @@ require("assets/mobile/icon.png");
 require("assets/pc32sw.png");
 
 // json
-// var element = require("json/elements.json");
+// var cards = require("json/cards.json");
 // var acheivements = require("json/achievements.json");
 
 // deps
