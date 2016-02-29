@@ -29,7 +29,7 @@ var GameObjects = module.exports = (function () {
         }
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
             s4() + '-' + s4() + s4() + s4();
-    }
+    };
 
     /** @class Lab
      */
@@ -254,109 +254,6 @@ var GameObjects = module.exports = (function () {
         return this.state.amount -= 1;
     };
 
-    /** @class Worker
-     * Implement an auto-clicker in the game.
-     */
-    var Worker = function (obj) {
-        GameObject.apply(this, [obj]);
-        this.state.hired = 0;
-    };
-
-    Worker.prototype = Object.create(GameObject.prototype);
-
-    Worker.prototype.constructor = Worker;
-
-    Worker.prototype.isVisible = function (lab) {
-        if (!lab) {
-            return false;
-        }
-        return this.state.hired > 0 ||
-            lab.state.money >= this.state.cost * GLOBAL_VISIBILITY_THRESHOLD;
-    };
-
-    Worker.prototype.isAvailable = function (lab) {
-        if (!lab) {
-            return false;
-        }
-        return lab.state.money >= this.state.cost;
-    };
-
-    Worker.prototype.hire = function (lab) {
-        if (lab && lab.buy(this.state.cost)) {
-            this.state.hired++;
-            var cost = this.state.cost;
-            this.state.cost = Math.floor(cost * this.cost_increase);
-            return cost;
-        }
-        return -1; // not enough money
-    };
-
-    Worker.prototype.getTotal =
-        function () {
-            return this.state.hired * this.state.rate;
-        };
-
-    /** @class Upgrade
-     */
-    var Upgrade = function (obj) {
-        GameObject.apply(this, [obj]);
-        this.state.visible = false;
-        this.state.used = false;
-    };
-
-    Upgrade.prototype = Object.create(GameObject.prototype);
-
-    Upgrade.prototype.constructor = Upgrade;
-
-    Upgrade.prototype.meetsRequirements = function (allObjects) {
-        if (!allObjects) {
-            return false;
-        }
-        for (var i = 0; i < this.requirements.length; i++) {
-            var req = this.requirements[i];
-            if (allObjects[req.key].state[req.property] < req.threshold) {
-                return false;
-            }
-        }
-        return true;
-    };
-
-    Upgrade.prototype.isAvailable = function (lab, allObjects) {
-        if (!lab || !allObjects) {
-            return false;
-        }
-        return !this.state.used && lab.state.money >= this.cost &&
-            this.meetsRequirements(allObjects);
-    };
-
-    Upgrade.prototype.isVisible = function (lab, allObjects) {
-        if (!lab || !allObjects) {
-            return false;
-        }
-        if (!this.state.used &&
-            (this.state.visible ||
-                lab.state.money >= this.cost * GLOBAL_VISIBILITY_THRESHOLD &&
-                this.meetsRequirements(allObjects))) {
-            this._visible = true;
-            return true;
-        }
-        return false;
-    };
-
-    Upgrade.prototype.buy = function (lab, allObjects) {
-        if (lab && allObjects && !this.state.used && lab.buy(this.cost)) {
-            for (var i = 0; i < this.targets.length; i++) {
-                var t = this.targets[i];
-                allObjects[t.key].state[t.property] *= this.factor || 1;
-                allObjects[t.key].state[t.property] += this.constant || 0;
-            }
-            this.state.used = true; // How about actually REMOVING used upgrades?
-            this.state.visible = false;
-            return this.cost;
-        }
-        return -1;
-    };
-
 
     /** @class Achievement
      */
@@ -394,8 +291,6 @@ var GameObjects = module.exports = (function () {
     return {
         Lab: Lab,
         Card: Card,
-        Worker: Worker,
-        Upgrade: Upgrade,
         Achievement: Achievement,
         Cards: Cards
     };

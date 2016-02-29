@@ -7,13 +7,14 @@
 var jquery = require("jquery");
 var jqueryUi = require("jquery-ui");
 var jqueryUiTouchPunch = require("jquery-ui-touch-punch");
-var jqueryCookie = require("js-cookie");
+var jsCookie = require("js-cookie");
 
 var angular = require("angular");
 var angularDragdrop = require("angular-dragdrop");
 var angularAnimate = require("angular-animate");
 var angulartics = require('angulartics');
 var angularticsGoogleAnalytics = require('angulartics-google-analytics');
+var ngAlertify = require("alertify.js/dist/js/ngAlertify.js");
 
 //app
 var ObjectStorage = require("js/storage");
@@ -22,11 +23,12 @@ var GameObjects = require("js/gameobjects");
 var analytics = require("js/analytics");
 var Game = require("js/game");
 var Rules = require("js/rules.js");
+var UI = require("js/ui.js");
 
 var app = (function (Helpers,analytics,Game,Rules) {
     Helpers.validateSaveVersion();
 
-    var app = angular.module('cardsForScience', ['ngDragDrop','ngAnimate','angulartics', angularticsGoogleAnalytics]);
+    var app = angular.module('cardsForScience', ['ngDragDrop','ngAnimate','angulartics', angularticsGoogleAnalytics,"ngAlertify"]);
 
     // config
     app.config(function ($analyticsProvider) {
@@ -160,7 +162,7 @@ var app = (function (Helpers,analytics,Game,Rules) {
         game.lab = lab;
         game.allObjects.lab = lab;
         var promise = game.load($http, $q);
-        game.init();
+        game.reset();
         // return promise;
         return game;
     };
@@ -259,8 +261,8 @@ var app = (function (Helpers,analytics,Game,Rules) {
     function TableController($scope, game, lab, $filter) {
         var vm = this;
         vm.cards = detector.cards;
-        vm.rule = '';
-        vm.hints = [];
+        vm.ruleInfo = game.ruleInfo;
+        vm.hints = game.hints;
         vm.limit = -12;
         vm.hintCost = 10;
         vm.ruleCost = 300;
@@ -279,8 +281,10 @@ var app = (function (Helpers,analytics,Game,Rules) {
             var result = game.onDrop(event, ui, game);
         };
         vm.revealRule = function () {
-            vm.rule = game.rule.describe();
-            lab.state.score -= vm.ruleCost;
+            if (vm.ruleInfo.length===0){
+                vm.ruleInfo.push(game.rule.describe());
+                lab.state.score -= vm.ruleCost;
+            };
         };
         vm.revealHint = function () {
             var hint = game.rule.nextHint();
@@ -294,61 +298,17 @@ var app = (function (Helpers,analytics,Game,Rules) {
     app.controller('TableController', TableController);
 
 
-    function LabController($interval, game, lab) {
-        // todo give workers instead of game
-        var vm = this;
-        vm.lab = lab;
-        vm.showDetectorInfo = function () {
-            if (!vm._detectorInfo) {
-                vm._detectorInfo = Helpers.loadFile('html/detector.html');
-            }
-            UI.showModal('Detector', vm._detectorInfo);
-        };
-    };
-    LabController.$inject = ['$interval', 'game', 'lab'];
-    app.controller('LabController', LabController);
-
-
-    function RulesController($scope, game, lab) {
+    function RulesController($scope, game, lab,$analytics,alertify) {
         var vm = this;
         // present just a few hypothesis
-        var rules = Rules.rules.map(function (r) {
-            return angular.copy(r);
+
+        // emit event track (with category and label properties for GA)
+        $analytics.eventTrack('rule', {
+          category: 'rule', label: game.rule.describe()
         });
-        rules = _.sampleSize(rules, 2);
-        if (!_.find(rules, {
-                description: game.rule.description
-            })) {
-            var rule = angular.copy(game.rule);
-            rule.setOptions({}); // reset the value of this copy to not give away;
-            rules.push(rule);
-        } else {
-            rules.push(angular.copy(_.sample(Rules.rules)));
-        }
-        vm.rules = _.shuffle(rules);
 
-        // or present them without options?
-        var rules2 = Rules.rules.map(function (r) {
-            var rule = angular.copy(r);
-            rule.randomize();
-            return rule;
-        });
-        rules2 = _.sampleSize(rules, 4);
 
-        // add the real rule and a couple of variations
-        var rule = angular.copy(game.rule);
-        rules2.push(rule);
-        var rule = angular.copy(game.rule);
-        rule.randomize();
-        rules2.push(rule);
-        var rule = angular.copy(game.rule);
-        rule.randomize();
-        rules2.push(rule);
-
-        // clean and add to controller
-        rules2 = _.uniq(rules2);
-        rules2 = _.shuffle(rules2);
-        vm.rules2 = rules2;
+        vm.hypotheses = game.hypotheses;
 
         vm.upgrades = game.upgrades;
         vm.isVisible = function (upgrade) {
@@ -357,15 +317,10 @@ var app = (function (Helpers,analytics,Game,Rules) {
         vm.isAvailable = function (upgrade) {
             return upgrade.isAvailable(lab, game.allObjects);
         };
-        vm.upgrade = function (upgrade) {
-            if (upgrade.buy(lab, game.allObjects)) {
-                UI.showUpdateValue("#update-funding", upgrade.cost);
-            }
-        };
         /** return a class based on none right or wrong guessed **/
         vm.isGuessed = function(rule){
-            if (rule.state.guessed===true)  return 'bg-success';
-            else if (rule.state.guessed===false) return 'bg-danger';
+            if (rule.guessed===true)  return 'bg-success';
+            else if (rule.guessed===false) return 'bg-danger';
             else return '';
 
         };
@@ -377,17 +332,47 @@ var app = (function (Helpers,analytics,Game,Rules) {
             if (sameRule && sameOpts) {
                 // right!
                 lab.state.score += 200;
+                lab.state.rulesGuessed.push({
+                    key: game.rule.key,
+                    options: game.rule.options,
+                    description: game.rule.describe(),
+                });
                 if (!rule.state) rule.state={};
-                rule.state.guessed=true;
+                rule.guessed=true;
+
+                alertify.alert(
+                    'You have won using inductive logic! <p> <p> Play again?',
+                    function(event){
+                        event.preventDefault();
+                        // ObjectStorage.clear();
+                        // $window.location.reload(true); /// reloads are better for ads?
+                        game.reset();
+                        // since this confirmation was away from the dom we need to
+                        // manually refresh
+                        $scope.$apply();
+                    },function(){}
+                );
             } else {
                 lab.state.score -= 200;
-                rule.state.guessed=false;
+                rule.guessed=false;
+                lab.state.rulesFailed.push({
+                    key: rule.key,
+                    options: rule.options,
+                    description: rule.describe(),
+                });
             }
-
             console.log('guess', arguments);
+
+
+            // vm.winDialouge = function () {
+            //     if (!vm._winDialouge) {
+            //         vm._winDialouge = Helpers.loadFile('html/win.html');
+            //     }
+            //     UI.showModal('Win', vm._winDialouge);
+            // };
         };
     };
-    RulesController.$inject = ['$scope', 'game', 'lab'];
+    RulesController.$inject = ['$scope', 'game', 'lab','$analytics','alertify'];
     app.controller('RulesController', RulesController);
 
     function AchievementsController($scope, game, lab) {
@@ -402,35 +387,83 @@ var app = (function (Helpers,analytics,Game,Rules) {
     AchievementsController.$inject = ['$scope', 'game', 'lab'];
     app.controller('AchievementsController', AchievementsController);
 
-    function SaveController($scope, $interval, $window, game, lab) {
+    function SaveController($scope, $interval, $window, alertify, game, lab) {
         var vm = this;
         game.lastSaved = new Date().getTime();
         vm.lastSaved = game.lastSaved;
+;
+
         vm.saveNow = function () {
             var saveTime = new Date().getTime();
             lab.state.time += saveTime - game.lastSaved;
             game.save();
             game.lastSaved = saveTime;
             vm.lastSaved = game.lastSaved;
+
+            // if (lab.state.score<0){
+            //     alertify.alert(
+            //         'Your score is below zero, so you lost :( Want to try a different rule?',
+            //         function(event){
+            //             event.preventDefault();
+            //             // ObjectStorage.clear();
+            //             // $window.location.reload(true); /// reloads are better for ads?
+            //             game.reset();
+            //             // since this confirmation was away from the dom we need to
+            //             // manually refresh
+            //             $scope.$apply();
+            //         },function(){}
+            //     );
+            // }
+
         };
         vm.restart = function () {
-            if ($window.confirm(
-                    'Do you really want to restart the game? All progress will be lost.'
-                )) {
-                ObjectStorage.clear();
-                $window.location.reload(true);
-            }
+            console.log('restart');
+            alertify.confirm(
+                'Do you really want to restart the game? All progress will be lost.',
+                function(event){
+                    event.preventDefault();
+                    // ObjectStorage.clear();
+                    // $window.location.reload(true); /// reloads are better for ads?
+                    game.reset();
+                    // since this confirmation was away from the dom we need to
+                    // manually refresh
+                    $scope.$apply();
+                },function(){}
+            );
         };
         $interval(vm.saveNow, 10000);
     };
-    SaveController.$inject = ['$scope', '$interval', '$window', 'game', 'lab'];
+    SaveController.$inject = ['$scope', '$interval', '$window', 'alertify', 'game', 'lab'];
     app.controller('SaveController', SaveController);
 
-    function StatsController($scope, lab) {
+    function StatsController($scope, lab,game,alertify) {
         var vm = this;
         vm.lab = lab;
+        vm.lost=false;
+
+
+        $scope.$watch('lc.lab.state.score', function (newValue, oldValue) {
+            if (newValue<0&&!vm.lost){
+                vm.lost=true;
+                alertify.alert(
+                    '<p>You lost :( <p> Play again? <p><p>P.S. The rule was: <p>"'+game.rule.describe()+'"',
+                    function(event){
+                        event.preventDefault();
+                        // ObjectStorage.clear();
+                        // $window.location.reload(true); /// reloads are better for ads?
+                        game.reset();
+                        // since this confirmation was away from the dom we need to
+                        // manually refresh
+                        $scope.$apply();
+                        vm.lost=false;
+
+                    },function(){}
+                );
+            };
+        });
+
     };
-    StatsController.$inject = ['$scope', 'lab'];
+    StatsController.$inject = ['$scope', 'lab','game','alertify'];
     app.controller('StatsController', StatsController);
 
     analytics.init();

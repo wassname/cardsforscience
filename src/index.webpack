@@ -48,14 +48,16 @@
           <ul class="nav navbar-nav navbar-right">
             <!-- <li><a href="#" data-toggle="modal" data-target="#achievements-modal"><i class="fa fa-trophy"></i> Achievements</a></li>
             <li><a href="#" data-toggle="modal" data-target="#stats-modal"><i class="fa fa-bar-chart"></i> Statistics</a></li> -->
-            <!-- <li class="dropdown" ng-controller="SaveController">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-floppy-o"></i> Saved: <span ng-cloak>{{ lastSaved | date : 'H:mm' }}</span> <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="#" ng-click="saveNow()"><i class="fa fa-save"></i> Save now</a></li>
-                <li class="divider"></li>
-                <li><a href="#" ng-click="restart()"><i class="fa fa-refresh"></i> Restart</a></li>
-              </ul>
-            </li> -->
+
+            <!-- <li class="dropdown" ng-controller="SaveController as sc"> -->
+            <!-- <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-floppy-o"></i> Saved: <span ng-cloak>{{ lastSaved | date : 'H:mm' }}</span> <span class="caret"></span></a> -->
+              <!-- <ul class="dropdown-menu" role="menu"> -->
+                <!-- <li><a href="#" ng-click="sc.saveNow()"><i class="fa fa-save"></i> Save now</a></li> -->
+                <!-- <li class="divider"></li> -->
+                <li ng-controller="SaveController as sc" ><a href="#" ng-click="sc.restart()"><i class="fa fa-refresh"></i> Restart</a></li>
+              <!-- </ul> -->
+            <!-- </li> -->
+
             <li><a href="#" data-toggle="modal" data-target="#myModal"><i class="fa fa-users"></i> About</a></li>
           </ul>
         </div>
@@ -100,7 +102,7 @@
         </div>
       </div>
 
-      <div id="column-lab" class="col-xs-6 col-md-6 col-md-6s col-lg-7 col-no-padding-xs" ng-controller="LabController as lc">
+      <div id="column-lab" class="col-xs-6 col-md-6 col-md-6s col-lg-7 col-no-padding-xs" ng-controller="StatsController as lc">
 
         <div class="row status" ng-cloak>
           <div class="col-xs-12 text-center col-no-padding-xs">
@@ -158,7 +160,7 @@
             </div>
 
             <div class="row" id="hints">
-                <div ng-click="dc.revealHint()" class="col-md-6">
+                <div ng-click="dc.revealHint()" analytics-on="click" analytics-event="hint" class="col-md-12">
                     <div class="panel panel-default left-list card-panel">
                         <div class="panel-heading">
                             <h3 class="panel-title">Hint</h3>
@@ -171,24 +173,21 @@
                         </div>
                     </div>
                 </div>
-                <div id="rule" ng-click="dc.revealRule()"  class="col-md-6">
+                <!-- <div id="rule" ng-click="dc.revealRule()" analytics-on="click" analytics-event="revealRule" class="col-md-6">
                     <div class="panel panel-default left-list card-panel">
                         <div class="panel-heading">
                             <h3 class="panel-title">Rule</h3>
                             <div ng-cloak>(-{{dc.ruleCost}} score)</div>
                         </div>
                         <div class="panel-body">
-                          <i  ng-cloak>{{dc.rule}}</i>
+                          <li  ng-repeat="h in dc.ruleInfo"  ng-cloak><i>{{h}}</i></li>
                         </div>
 
                     </div>
-                </div>
+                </div> -->
             </div>
-            <!-- <span id="card-deck" title="deal more cards" ng-click="dc.click()" class="prevent-select">🂠</span> -->
-            <!-- <button id="clearall" class="btn btn-default" ng-click="dc.clearAll()"><i class="fa fa-refresh"></i></button> -->
           </div>
         </div>
-        <button id="detector-info" type="button" class="btn btn-info" ng-click="lc.showDetectorInfo()"><i class="fa fa-info"></i></button>
 
       </div>
 
@@ -196,23 +195,14 @@
         <div class="panel panel-default hidden-xs hidden-sm">
           <div class="panel-heading">
             <h4 class="panel-title">
-              <i class="fa fa-wrench"></i> Guess the rule
+              <i class="fa fa-wrench"></i> Winning: guess which rule
             </h4>
           </div>
           <div class="panel-body scrollable large" id="upgradesLarge">
             <div id="upgradesContent" class="left-list" ng-controller="RulesController as uc">
 
-             <!-- A more complicated hypothesis display... too complicated I guess -->
-              <!-- <label>Search: <input ng-model="searchText"></label> -->
-              <!-- <ul class="form-inline hypotheses" ng-cloak>
-                <li ng-repeat="rule in uc.rules|filter:searchText">
-                    <div cfs-rule="rule" index="$index" ng-model="uc.rules[$index]"></div>
-                    <button ng-click="uc.guess($event,rule)" class="btn btn-sm btn-default" type="submit">Guess</button>
-                </li>
-              </ul> -->
-
-              <form class="hypotheses" ng-submit="uc.guess($event,uc.rules2[uc.guessedIndex])">
-                <div class="radio" ng-repeat="rule in uc.rules2">
+              <form class="hypotheses" ng-submit="uc.guess($event,uc.hypotheses[uc.guessedIndex])">
+                <div class="radio" ng-repeat="rule in uc.hypotheses">
                     <label class="{{uc.isGuessed(rule)}}" ng-cloak>
                     <input type="radio" ng-model="uc.guessedIndex" name="ruleRadios" id="ruleRadios-{{$index}}" value="{{$index}}"  class="btn btn-sm btn-default">
                     </input>
@@ -280,6 +270,24 @@
       </div>
     </div> -->
 
+    <div class="modal fade" id="win-modal" tabindex="-1" role="dialog" aria-labelledby="win-label" aria-hidden="true" ng-controller="RulesController">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="stats-label"><i class="fa fa-bar-chart"></i> Statistics</h4>
+          </div>
+          <div class="modal-body">
+            <ul class="list-group">
+              <li class="list-group-item"><i class="fa fa-location-arrow"></i> : <strong>{{ lab.state.clicks | niceNumber }}</strong></li>
+              <li class="list-group-item"><i class="fa fa-database"></i> : <strong>{{ lab.state.dataSpent | niceNumber }}</strong> used / <strong>{{ lab.state.dataCollected | niceNumber }}</strong> collected</li>
+              <li class="list-group-item"><i class="fa fa-money"></i> : <strong>{{ lab.state.moneySpent | niceNumber }}</strong> spent / <strong>{{ lab.state.moneyCollected | niceNumber }}</strong> gathered</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- <div class="modal fade" id="stats-modal" tabindex="-1" role="dialog" aria-labelledby="stats-label" aria-hidden="true" ng-controller="StatsController">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -297,6 +305,7 @@
         </div>
       </div>
     </div> -->
+
 
     <div id="achievements-container" class="col-xs-6 col-sm-3"></div>
     <div id="messages-container" class="col-xs-6 col-sm-3"></div>
@@ -324,7 +333,7 @@
             <ul>
               <li><a href="https://github.com/wassname">wassname</a></li>
             </ul>
-            <p>Feel free to get in touch with us via GitHub or by shooting an message on<br>particle-clicker at wassname.org</a>.</p>
+            <p>Feel free to get in touch with via GitHub or by sending a message on<br>cardsforscience at wassname.org</a>.</p>
 
           </div>
         </div>

@@ -56,4 +56,25 @@ var bootstrap = require("bootstrap");
 // var Rules = require("js/rules.js");
 // var UI = require("js/ui.js");
 // var Game = require("js/game.js");
-var app = require("js/app.js");
+// var app = require("js/app.js");
+
+/** This file exports parts of the app as a library **/
+var clientApp = module.exports = {
+    ObjectStorage: require("js/storage.js"),
+    Helpers: require("js/helpers.js"),
+    Analytics: require("js/analytics.js"),
+    GameObjects: require("js/gameobjects.js"),
+    Rules: require("js/rules.js"),
+    Simulate: require("js/rules/simulate.js"),
+    UI: require("js/ui.js"),
+    Game: require("js/game.js"),
+    app: require("js/app.js"),
+};
+
+// require("html/win.html");
+// require("html/lose.html");
+// require("html/game.html");
+
+// deleteme dev TODO XXX
+require("js/rules/simulate.html");
+console.log('break here for dev');

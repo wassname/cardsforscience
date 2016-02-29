@@ -5,7 +5,7 @@
 if (!module) module=function(){};
 var chai;
 if (!chai){
-    chair = require("chai");
+    chai = require("chai");
 }
 
 /**
@@ -16,11 +16,41 @@ if (!chai){
 var Rules = module.exports = (function functionName(_,chai) {
 
 
+    /** Generate all combination of arguments from array using functional programming instead of recursive
+    * @param {Object} opts    - An array or arrays with keys describing options  [['Ben','Jade','Darren'],['Smith','Miller']]
+    * @returns {Array}        - An array of arrays e.g. [['Ben','Smith'],[..]]
+    **/
+    function cartesianProductOf(opts) {
+        if (arguments.length>1) opts=arguments;
+        return _.reduce(opts, function(a, b) {
+            return _.flatten(_.map(a, function(x) {
+                return _.map(b, function(y) {
+                    return x.concat([y]);
+                });
+            }), true);
+        }, [ [] ]);
+    };
+
+
+    /** Generate all combination of arguments from objects using functional programming instead of recursive
+      * @param {Object} opts    - An object or arrays with keys describing options  {firstName:['Ben','Jade','Darren'],lastName:['Smith','Miller']}
+      * @returns {Array}        - An array of objects e.g. [{firstName:'Ben',LastName:'Smith'},{..]
+      **/
+    function cartesianProductObj(optObj){
+        var opts = _.values(optObj);
+        var keys = _.keys(optObj);
+        var combs = cartesianProductOf(opts);
+        return _.map(combs,function(comb){
+            return _.zipObject(keys,comb);
+        });
+    }
+
 
     /**
      * Rule prototype
+     * @param {String} key                  A short key
      * @param {String} description          Description of the rule using angular templating from options
-     * @param {Function} ruleFunc           A function returning a true or a failure message or a error
+     * @param {Function} ruleFunc           A function returning a true or a failure message or a assertion error
      * @param {Object} optionDefaults       Default options for the rule e.g. {n:1, parameter:'color'}.
      * @param {Object} optionDesc    Object with object for each option
      * @param {Array} optionDesc[].possibleVals  Array of possible values or empty if they are to many to be enumerated
@@ -30,23 +60,44 @@ var Rules = module.exports = (function functionName(_,chai) {
      *                                     `The rule uses <%= parameter %>` and for every parameter you can
      *                                     use `The rule doesn't use <%= parameterUnused %>` to have each unused param substituted in.
      */
-    var Rule = function (description, ruleFunc, optionDefaults, optionDesc, hintTmpls) {
+    var Rule = function (key, description, ruleFunc, optionDefaults, optionDesc, hintTmpls) {
+
+        // check inputs
         if (!(typeof (description) === 'string' || description instanceof String) || !description.length)
-            throw new TypeError('description should be a non empty string');
+            throw new TypeError('Description should be a non empty string');
         this.description = description;
         if (!(ruleFunc instanceof Function))
             throw new TypeError('ruleFunc should be a function');
 
+        this.key=key;
         this.ruleFunc = ruleFunc;
         this.optionDesc = optionDesc || {};
         this.options = this.optionDefaults = optionDefaults || {};
         this.hintTmpls = hintTmpls || [];
 
         // init
-        this.state = {};
-        this.hintsUsed = 0;
+        this.state = {
+            hintsUsed: 0,
+            wrongCards: 0,
+            rightCards: 0,
+            wrongGuesses: 0,
+            rightGuesses: 0,
+        };
+        // used for template rendering
         this.otherOptions={nth:this.nth,lastn:this.lastn};
+        // render hint templates
         this.hints = this.genHints();
+        // work out all option combos, only takes a second
+        this.optionsPossible=this.genOptions();
+    };
+    Rule.prototype.genOptions = function () {
+        var possibleVals={};
+        for (var prop in this.optionDesc) {
+            if (this.optionDesc.hasOwnProperty(prop)) {
+                possibleVals[prop]=this.optionDesc[prop].possibleVals;
+            }
+        }
+        return this.optionsPossible=cartesianProductObj(possibleVals);
     };
     Rule.prototype.setOptions = function (options) {
         this.options = _.defaults(options, this.optionDefaults);
@@ -98,56 +149,6 @@ var Rules = module.exports = (function functionName(_,chai) {
     Rule.prototype.describe = function () {
         return this.describeVariation(this.options);
     };
-    // Rule.prototype.describeHtml = function (arguments) {
-    //     // we want template params where each options is replace with a select box
-    //     var tmplParams = {};
-    //
-    //     for (var option in this.optionDesc) {
-    //         if (this.optionDesc.hasOwnProperty(option)) {
-    //             var vals = this.optionDesc[option].possibleVals;
-    //             if (vals) {
-    //                 s = '<select name="' + option + '" ng-model="rule.options.' + option + '" class="form-control  input-sm">\n';
-    //                 for (var i = 0; i < vals.length; i++) {
-    //                     s += '<option  value="' + vals[i] + '">' + vals[i] + '</option>\n';
-    //                 }
-    //                 s += '</select>\n';
-    //                 tmplParams[option] = s;
-    //             } else {
-    //                 tmplParams[option] = option;
-    //             }
-    //         }
-    //     }
-    //     return _.template(this.description)(tmplParams);
-    // };
-    /** Generate angular template for this rule **/
-    // Rule.prototype.describeNg = function (arguments) {
-    //
-    //     // first put option name into this option template
-    //     // _.templateSettings.interpolate = /<%=([\s\S]+?)%>/g;
-    //     optionTmpl = '' +
-    //         '<select name="<%=option%>" type="number" ng-model="rule.options.<%=option%>" class="form-control input-sm">\n' +
-    //         '<option ng-repeat="v in rule.optionDesc.<%=option%>.possibleVals" value="{{v}}">{{v}}</option>\n' +
-    //         '</select>\n';
-    //
-    //     // we want template params where each options is replace with a select box
-    //     var tmplParams = {};
-    //
-    //     for (var option in this.optionDesc) {
-    //         if (this.optionDesc.hasOwnProperty(option)) {
-    //             var vals = this.optionDesc[option].possibleVals;
-    //             if (vals) {
-    //                 tmplParams[option] = _.template(optionTmpl)({
-    //                     option: option
-    //                 });
-    //             } else {
-    //                 tmplParams[option] = option;
-    //             }
-    //         }
-    //     }
-    //
-    //     // now in description replace params with select box
-    //     return _.template(this.description)(tmplParams);
-    // };
     /** Compile description using options to express rule**/
     Rule.prototype.describeVariation = function (options) {
         var compiled = _.template(this.description);
@@ -191,15 +192,15 @@ var Rules = module.exports = (function functionName(_,chai) {
     };
     /** Get next hint **/
     Rule.prototype.nextHint = function () {
-        var hint = this.hints[this.hintsUsed];
-        this.hintsUsed++;
+        var hint = this.hints[this.state.hintsUsed];
+        this.state.hintsUsed++;
         return hint || "";
 
     };
     /** Generate an automatic hint from params **/
     Rule.prototype.genHints = function () {
         // first manual hints
-        this.hintsUsed = 0;
+        this.state.hintsUsed = 0;
         var hints = [];
 
         // compile hints for each unused property
@@ -226,7 +227,7 @@ var Rules = module.exports = (function functionName(_,chai) {
         for (var optionUnused in unusedOptions) {
             if (unusedOptions.hasOwnProperty(optionUnused)) {
 
-                // find hint templats that take this unused option
+                // find hint templates that take this unused option
                 for (var i = 0; i < this.hintTmpls.length; i++) {
                     var tmpl = this.hintTmpls[i];
                     if (tmpl.indexOf(optionUnused) >= 0) {
@@ -250,8 +251,8 @@ var Rules = module.exports = (function functionName(_,chai) {
         }
 
         // on on a last hint
-        hints.push("That's all the hints for this rule. But don't forget to check for hints for the overall game. This is a game of inductive logic to try to disprove rules.");
-        hints.push("You cheeky blighter. Feel free to restart the game to get a new rule if this one is no fun (it will happen).");
+        hints.push("That's all the hints. But this is a game of inductive logic so try to disprove rules instead of proving them.");
+        hints.push("No more hints you cheeky blighter!");
 
         // and finally remove duplicate hints
         hints = _.uniq(hints);
@@ -299,6 +300,11 @@ var Rules = module.exports = (function functionName(_,chai) {
         }
     };
 
+    Rule.prototype.loadState =
+        function (state) {
+            $.extend(this.state, state);
+        };
+
 
     // Now defined actual rules
     var rules = [];
@@ -307,6 +313,7 @@ var Rules = module.exports = (function functionName(_,chai) {
         // here is a example rule where the card must have differen't color etc from the last card
         // but it's abstracted to allow variations
         new Rule(
+            "d4a2f61a-0fb9-4eb6-9258-3e14ae4cd512",
             "Next card must not have the same <%= property %> as the <%= lastn(n) %> card",
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - this.options.n];
@@ -336,10 +343,10 @@ var Rules = module.exports = (function functionName(_,chai) {
             ]
         ),
         new Rule(
+            "2b70bd6a-8bdd-49d4-bec7-bfb9de090e78",
             "If <%= lastn(n) %> cards value was between <%= min %> and <%= max %> play a card that isn't and vice versa.",
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - this.options.n];
-                var property = this.options.property;
                 var lastWasbetween = options.min < lastNCard.value && lastNCard.value < options.max;
                 if (lastWasbetween)
                     return chai.expect(card)
@@ -382,6 +389,7 @@ var Rules = module.exports = (function functionName(_,chai) {
             ]
         ),
         new Rule(
+            "3e12d713-335a-42e7-81ed-7064442f628a",
             "Play a card with a value <%= min %> to <%= max %> higher than the value of the <%= lastn(n) %> card. The numbers wrap around once they reach the max",
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - this.options.n];
@@ -426,6 +434,7 @@ var Rules = module.exports = (function functionName(_,chai) {
 
 
         new Rule(
+            "99b1d408-000d-41e6-8a0c-886a5d21d06f",
             "If the <%= lastn(n) %> card is an even-valued card, play a <%= evenColor %> card. Otherwise play the other color",
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - this.options.n];
@@ -465,6 +474,7 @@ var Rules = module.exports = (function functionName(_,chai) {
         ),
 
         new Rule(
+            "4014c459-a7a7-4a49-98f5-302a1b7b89e7",
             "Play a card that has the same <%= property %> or color as the <%= lastn(n) %> card but not both.",
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - options.n];
@@ -495,6 +505,7 @@ var Rules = module.exports = (function functionName(_,chai) {
         ),
 
         new Rule(
+            "793d93cb-ca09-4cda-8781-6fce02edf09c",
             "If the <%= lastn(n) %> card's number is higher than <%= min %>, change <%= property %>, and if lower, keep it the same.",
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - options.n];
@@ -540,6 +551,7 @@ var Rules = module.exports = (function functionName(_,chai) {
             ]
         ),
         new Rule(
+            "f4fba793-f886-4db8-9853-240002bb112e",
             "If the <%= lastn(n) %> card was a <%= property %> card, play a higher value card otherwise lower.",
             //TODO what if we have a high card? we can only go higher
             function (card, lastCards, allCards, options) {

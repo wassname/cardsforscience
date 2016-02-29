@@ -49,7 +49,7 @@ var analytics = module.exports =
             ga('create', Helpers.analytics,'auto');
             ga('set', { 'appName': 'Cards For Science', 'appId': '', 'appVersion': '0.6' });
             ga('set', 'anonymizeIp', true);
-            ga('send','pageview');
+            // ga('send','pageview');// angulartics
         }
 
 

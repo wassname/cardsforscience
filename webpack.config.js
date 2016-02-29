@@ -57,7 +57,7 @@ var htmlWebpack = new HtmlWebpackPlugin({
 var uglifyJsPlugin = new webpack.optimize.UglifyJsPlugin({
   minimize: !DEBUG,
   sourceMap: DEBUG,
-  mangle: !DEBUG,
+  mangle: false,//!DEBUG,
   dropDebugger: true,
   dropConsole: true,
 });
@@ -85,6 +85,7 @@ module.exports = {
     target: "web", //web[node,async-node,node-webkit,electron,webworker]
     entry: {
         clientApp: 'index.js',
+        // clientLib: 'lib.js',
     },
     output: {
         path: path.join(__dirname, DIR),

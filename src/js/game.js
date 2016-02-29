@@ -7,6 +7,7 @@ var GameObjects = require("js/gameobjects.js");
 var Rules = require("js/rules.js");
 var cards = require("json/cards.json");
 var achievements = require("json/achievements.json");
+var ruleSimulations = require("json/simulations.json");
 
 var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,cards,achievements) {
     'use strict';
@@ -21,11 +22,13 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
             // lab: this.lab
         };
         this.loaded = false;
-        this.rules = Rules.rules;
-        this.rule=undefined;
 
+        this.hypotheses = [];
         this.lastCards= [];
+        this.hints=[];
+        this.ruleInfo=[];
         this.incorrectCards= [];
+        this.rule=undefined;
         this.rules=Rules.rules;
         this.Rule=Rules.Rule;
     };
@@ -36,55 +39,8 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
             return;
         }
 
-        // I know synchronous requests are bad as they will block the browser.
-        // However, I don't see any other reasonable way to do this in order to
-        // make it work with Angular. If you know a way, let me know, and I'll
-        // give you a beer. - Kevin
         this.cards = cards; //Helpers.loadFile('json/cards.json');
         this.achievements = require("json/achievements.json"); //Helpers.loadFile('./json/achievements.json');
-
-        // function successCallback(response) {
-        //     return angular.fromJson(response.data);
-        // }
-        //
-        // function errorCallback(response) {
-        //     return console.error('Could not get url', response.statusText, response);
-        // }
-        // return $q.all(
-        //     $http.get('json/cards.json', {
-        //         transformResponse: angular.fromJson
-        //     })
-        //     .then(function (response) {
-        //         return self.cards = response.data;
-        //     }),
-        //     $http.get('json/workers.json', {
-        //         transformResponse: angular.fromJson
-        //     })
-        //     .then(function (response) {
-        //         return self.workers = response.data;
-        //     }),
-        //     $http.get('json/upgrades.json', {
-        //         transformResponse: angular.fromJson
-        //     })
-        //     .then(
-        //         function (response) {
-        //             return self.upgrades = response.data;
-        //         }),
-        //     $http.get('json/achievements.json', {
-        //         transformResponse: angular.fromJson
-        //     })
-        //     .then(
-        //         function (response) {
-        //             return self.achievements = response.data;
-        //         }),
-        //     $http.get('json/keywords.json', {
-        //         transformResponse: angular.fromJson
-        //     })
-        //     .then(
-        //         function (response) {
-        //             return self.keywords = response.data;
-        //         })
-        // ).then(function () {
 
         // Turn JSON files into actual game objects and fill map of all objects
         var makeGameObject = function (type, object) {
@@ -102,54 +58,126 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
             function (a) {
                 return makeGameObject(GameObjects.Achievement, a);
             });
-        // Load states from local store
-        for (var key in self.allObjects) {
-            var o = self.allObjects[key];
-            o.loadState(ObjectStorage.load(key));
-        }
+
 
         // put cards in extended array with utility methods
         self.Card = new GameObjects.Cards();
         self.Card.push.apply(self.Card, self.cards);
         self.cards = self.Card;
 
+        // add rules to load and save states
+        self.rules.map(function(o){
+            self.allObjects[o.key] = o;
+        });
+
+        // TODO save and load lastCards and incorrectCards
+
+        // Load states from local store
+        for (var key in self.allObjects) {
+            var o = self.allObjects[key];
+            o.loadState(ObjectStorage.load(key));
+        }
+
         self.loaded = true;
         return self;
     };
 
-    Game.prototype.init = function () {
+    Game.prototype.reset = function () {
         // setup game
-        this.rule = _.sample(Rules.rules);
-        this.rule.randomize();
+        this.rule = this.newRule();
 
-        // check if we have any cards in hand
-        // var totalElements = _(self.cards).map('state.amount').sum();
-        // if (totalElements<1) self.dealHand();
         this.dealHand();
 
         // deal first card
         // TODO make sure these follow rule
+
+        // deal new initial cards
+        this.lastCards.splice(0,this.lastCards.length);
         this.lastCards.push.apply(this.lastCards,_.sampleSize(this.cards,3));
-        for (var i = 0; i < this.lastCards.length; i++) {
-            this.incorrectCards[i]=[];
-        }
+
+        this.ruleInfo.splice(0,this.ruleInfo.length);
+        this.hints.splice(0,this.hints.length);
+
+        // empty incorrect cards
+        this.incorrectCards.splice(0,this.incorrectCards.length);
+        this.incorrectCards.push([]);
+        this.incorrectCards.push([]);
+        this.incorrectCards.push([]);
 
         // reset score
         this.lab.state.score = 200;
-        return self;
+
+        // new set of hypothes
+        this.hypotheses=this.genHypotheses();
+
+        return this;
+    };
+
+    Game.prototype.genHypotheses = function () {
+        // get some hypotheses
+        var hypo=[];
+
+        // a random 2, 2 variations of each
+        for (var i = 0; i < 3; i++) {
+            var rule = _.sample(this.rules);
+            rule = angular.copy(rule);
+            rule.randomize();
+            hypo.push(rule);
+            rule = angular.copy(rule);
+            rule.randomize();
+            hypo.push(rule);
+        }
+
+        // add the real rule
+        var rule = angular.copy(this.rule);
+        hypo.push(rule);
+
+        // and a variation of the real rule
+        var rule = angular.copy(this.rule);
+        rule.randomize();
+        hypo.push(rule);
+
+        // clean and remember
+        hypo = _.uniq(hypo);
+        hypo = _.shuffle(hypo);
+
+        // empty old ones
+        this.hypotheses.splice(0,this.hypotheses.length);
+        // put in new ones
+        for (var i = 0; i < hypo.length; i++) {
+            this.hypotheses.push(hypo[i]);
+        }
+        return this.hypotheses;
+    };
+
+    Game.prototype.newRule = function () {
+        var okRules = _.filter(ruleSimulations,function(s){
+            return s.ratioRight>0.1&&s.ratioRight<0.6;
+        });
+        // choose and ok rule
+        var ruleConfig = _.sample(okRules);
+        // now find the rule and set these options
+        var rule = _.find(this.rules,{key:ruleConfig.key});
+        var options = ruleConfig.options;
+        if (typeof options==="string") options = JSON.parse(options);
+        rule.setOptions(options);
+        return this.rule = rule;
     };
 
     Game.prototype.dealHand = function (n) {
         n=n||12;
-        var hand=_.sampleSize(this.cards,n);
+
+        var sample=_.sampleSize(this.cards,n);
+
+        // empty all cards
         this.cards.map(function(card){
             card.state.amount=0;
         });
-        for (var i = 0; i < hand.length; i++) {
-            var card = hand[i];
+        // now increase the value of our sample
+        for (var i = 0; i < sample.length; i++) {
+            var card = sample[i];
             this.cards.get(card.key).state.amount++;
         }
-
     };
     Game.prototype.onClick = function (event, ui) {
         var self=this;
