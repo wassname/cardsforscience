@@ -98,49 +98,49 @@ var app = (function (Helpers,analytics,Game,Rules) {
      * Directive to render a rule and bind it's option with select boxes
      * This expects ng-model="rule" as an attribute
      */
-    function cfsRule($compile) {
-        return {
-            link: function (scope, element, attrs) {
-                var rule = scope.$eval(attrs.ngModel);
-
-                // first generate a select box for each option (using lodash templating)
-                _.templateSettings.interpolate = /<%=([\s\S]+?)%>/g;
-                var optionTmpl = '' +
-                    '<select \n' +
-                    '   name="<%=option%>" \n' +
-                    '   convert-to-number="{{rule.optionDesc.<%=option%>.type===\'Number\'}}" \n' +
-                    '   ng-model="rule.options.<%=option%>" \n' +
-                    '   class="form-control input-sm" \n' +
-                    '   ng-options="v for v in rule.optionDesc.<%=option%>.possibleVals track by v" \n' +
-                    '>\n' +
-                    '</select>\n';
-
-                var tmplParams = _.defaults({},rule.options,rule.otherOptions);
-                for (var option in rule.optionDesc) {
-                    if (rule.optionDesc.hasOwnProperty(option)) {
-                        var vals = rule.optionDesc[option].possibleVals;
-                        if (vals) {
-                            tmplParams[option] = _.template(optionTmpl)({
-                                option: option
-                            });
-                        } else {
-                            // if there are no options replace '{{color}}' with 'color'
-                            tmplParams[option] = option;
-                        }
-                    }
-                }
-                // now put each select box into description
-                // replace '{{color}}' with '<select name="color"...'
-                var template = _.template(rule.description)(tmplParams);
-
-                // now compile with angular
-                element.html(template).show();
-                $compile(element.contents())(scope);
-            }
-        };
-    };
-    cfsRule.$inject = ['$compile'];
-    app.directive('cfsRule', cfsRule);
+    // function cfsRule($compile) {
+    //     return {
+    //         link: function (scope, element, attrs) {
+    //             var rule = scope.$eval(attrs.ngModel);
+    //
+    //             // first generate a select box for each option (using lodash templating)
+    //             _.templateSettings.interpolate = /<%=([\s\S]+?)%>/g;
+    //             var optionTmpl = '' +
+    //                 '<select \n' +
+    //                 '   name="<%=option%>" \n' +
+    //                 '   convert-to-number="{{rule.optionDesc.<%=option%>.type===\'Number\'}}" \n' +
+    //                 '   ng-model="rule.options.<%=option%>" \n' +
+    //                 '   class="form-control input-sm" \n' +
+    //                 '   ng-options="v for v in rule.optionDesc.<%=option%>.possibleVals track by v" \n' +
+    //                 '>\n' +
+    //                 '</select>\n';
+    //
+    //             var tmplParams = _.defaults({},rule.options,rule.otherOptions);
+    //             for (var option in rule.optionDesc) {
+    //                 if (rule.optionDesc.hasOwnProperty(option)) {
+    //                     var vals = rule.optionDesc[option].possibleVals;
+    //                     if (vals) {
+    //                         tmplParams[option] = _.template(optionTmpl)({
+    //                             option: option
+    //                         });
+    //                     } else {
+    //                         // if there are no options replace '{{color}}' with 'color'
+    //                         tmplParams[option] = option;
+    //                     }
+    //                 }
+    //             }
+    //             // now put each select box into description
+    //             // replace '{{color}}' with '<select name="color"...'
+    //             var template = _.template(rule.description)(tmplParams);
+    //
+    //             // now compile with angular
+    //             element.html(template).show();
+    //             $compile(element.contents())(scope);
+    //         }
+    //     };
+    // };
+    // cfsRule.$inject = ['$compile'];
+    // app.directive('cfsRule', cfsRule);
 
 
     // factories to provide services. They serve shared game objects
@@ -182,13 +182,24 @@ var app = (function (Helpers,analytics,Game,Rules) {
     niceNumber.$inject = ['$filter'];
     app.filter('niceNumber', niceNumber);
 
-    function transpose($filter) {
+    /** transpose data for a table **/
+    // function transpose($filter) {
+    //     return function (input) {
+    //         return _.zip(input);
+    //     };
+    // };
+    // transpose.$inject = ['$filter'];
+    // app.filter('transpose', transpose);
+
+    function boolToTick($filter) {
         return function (input) {
-            return _.zip(input);
+            if (input===true) return '✓';
+            else if (input===false) return '❌';
+            else return input;
         };
     };
-    transpose.$inject = ['$filter'];
-    app.filter('transpose', transpose);
+    boolToTick.$inject = ['$filter'];
+    app.filter('boolToTick', boolToTick);
 
     function niceTime($filter) {
         return Helpers.formatTime;
@@ -421,13 +432,15 @@ var app = (function (Helpers,analytics,Game,Rules) {
             alertify.confirm(
                 'Do you really want to restart the game? All progress will be lost.',
                 function(event){
-                    event.preventDefault();
-                    // ObjectStorage.clear();
-                    // $window.location.reload(true); /// reloads are better for ads?
-                    game.reset();
-                    // since this confirmation was away from the dom we need to
-                    // manually refresh
-                    $scope.$apply();
+                    alertify.alert('Restarting. <p> P.S. The rule was: <p>"'+game.rule.describe(),function(){
+                        event.preventDefault();
+                        // ObjectStorage.clear();
+                        // $window.location.reload(true); /// reloads are better for ads?
+                        game.reset();
+                        // since this confirmation was away from the dom we need to
+                        // manually refresh
+                        $scope.$apply();
+                    });
                 },function(){}
             );
         };

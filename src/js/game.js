@@ -88,12 +88,25 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
 
         this.dealHand();
 
-        // deal first card
-        // TODO make sure these follow rule
-
-        // deal new initial cards
+        // deal new initial cards that follow the rule
         this.lastCards.splice(0,this.lastCards.length);
-        this.lastCards.push.apply(this.lastCards,_.sampleSize(this.cards,3));
+        this.lastCards.push(_.sample(this.cards));
+        for (var i = 0; i < 52; i++) {
+            if (this.lastCards.length>2) break; // stop here
+            var card = _.sample(this.cards);
+            var res;
+            try{
+                res = this.rule.test(card,this.lastCards,this.cards);
+            } catch(e){
+                // in case of an error just add a random card
+                // this is probobly because it is looking back 2 or 3 cards
+                // yet we only have 1
+                this.lastCards.push(_.sample(this.cards));
+            }
+            if (res) this.lastCards.push(_.sample(this.cards));
+        }
+        if (this.lastCards.length<3) console.error('Could not deal cards for rule',this.rule.key,this.rule.options);
+        // this.lastCards.push.apply(this.lastCards,_.sampleSize(this.cards,3));
 
         this.ruleInfo.splice(0,this.ruleInfo.length);
         this.hints.splice(0,this.hints.length);
@@ -151,9 +164,12 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
     };
 
     Game.prototype.newRule = function () {
+        // FIXME
         var okRules = _.filter(ruleSimulations,function(s){
             return s.ratioRight>0.1&&s.ratioRight<0.6;
         });
+        // var okRules = this.rules;
+        // _.map(this.rules,function(r){return r.randomize();});
         // choose and ok rule
         var ruleConfig = _.sample(okRules);
         // now find the rule and set these options

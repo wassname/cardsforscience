@@ -65,16 +65,15 @@ var clientApp = module.exports = {
     Analytics: require("js/analytics.js"),
     GameObjects: require("js/gameobjects.js"),
     Rules: require("js/rules.js"),
-    Simulate: require("js/rules/simulate.js"),
     UI: require("js/ui.js"),
     Game: require("js/game.js"),
     app: require("js/app.js"),
+    simulate: require("json/simulations.json"),
+    cards: require("json/cards.json"),
+    // acheivements: require("json/achievements.json"),
 };
 
-// require("html/win.html");
-// require("html/lose.html");
-// require("html/game.html");
+require("js/rules/simulate.html");
 
 // deleteme dev TODO XXX
-require("js/rules/simulate.html");
 console.log('break here for dev');

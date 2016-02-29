@@ -190,6 +190,7 @@ var Rules = module.exports = (function functionName(_,chai) {
         }
         return s;
     };
+
     /** Get next hint **/
     Rule.prototype.nextHint = function () {
         var hint = this.hints[this.state.hintsUsed];
@@ -304,7 +305,66 @@ var Rules = module.exports = (function functionName(_,chai) {
         function (state) {
             $.extend(this.state, state);
         };
+    Rule.prototype.simulateOne = function (options,cards,n) {
+        if (!n) n=52*2;
+        var t0=new Date();
+        var rights=[];
+        var wrongs=[];
+        var errors=[];
+        var lastCards = _.sampleSize(cards,3);
+        this.setOptions(options);
+        for (var i = 0; i < n; i++) {
+            var res=undefined;
+            var error=undefined;
+            var card = _.sample(cards);
 
+            try{
+                var res = this.testAndTell(card,lastCards,cards);
+            } catch(e){
+                error=e;
+            }
+
+            if (error){
+                errors.push(error.message);
+            } else if (res.result){
+                rights.push(res.result);
+            } else {
+                if (res.reason&&res.reason.message){
+                    wrongs.push(res.reason.message);
+                } else if (res.reason){
+                    wrongs.push(res.reason);
+                } else {
+                    wrongs.push(res);
+                }
+            }
+        }
+        var ratioRight = rights.length/(rights.length+wrongs.length);
+        var ok = ratioRight>0.1&&ratioRight<0.66;
+        return {
+            wrongs:wrongs,
+            wrong:wrongs.length,
+            right:rights.length,
+            rights:rights,
+            error:errors.length,
+            errors:errors,
+            key:this.key,
+            description:this.describe(),
+            options:this.options,
+            n:n,
+            time:new Date()-t0,
+            ok:ok,
+            ratioRight:_.round(ratioRight,4),
+
+        };
+    };
+    Rule.prototype.simulate = function (cards) {
+        var results = [];
+        for (var i = 0; i < this.optionsPossible.length; i++) {
+            var res = this.simulateOne(this.optionsPossible[i],cards);
+            results.push(res);
+        }
+        return results;
+    };
 
     // Now defined actual rules
     var rules = [];

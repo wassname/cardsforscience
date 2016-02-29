@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Simulate rules</title>
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"> -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="../../../clientApp.css">
+    </head>
+    <body>
+        <h1>Simulate rules</h1>
+        <textarea rows="10" style="width: 1000px; height: 400px" id="summary"></textarea>
+        <div id="export"></div>
+        <table id="results" class="table">
+
+        </table>
+
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
+        <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script> -->
+        <script src="../../../clientApp.bundle.js"></script>
+
+    <script>
+    var results = [];
+    for (var i = 0; i < clientApp.Rules.rules.length; i++) {
+        var rule = clientApp.Rules.rules[i];
+        var res = rule.simulate(clientApp.cards);
+        results.push.apply(results,res);
+    }
+
+    var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(results));
+    $('<a class="btn btn-default" href="data:' + data + '" download="data.json">export table as JSON</a>').appendTo('#export');
+
+
+    results=_.map(results,function(r){
+        r.options=JSON.stringify(r.options);
+        return r;
+    })
+    // just get keys we want and in order
+    var keys = [ "n","time", "ratioRight","ok", "right", "wrong",  "error", "key", "options", "rule", "description","rights","wrongs","errors", ]
+
+    var table=$('#results');
+    var ts='';
+    ts+='<thead><tr><th>'+keys.join('</th><th>')+'</th></tr></thead><tbody>';
+    for (var i = 0; i < results.length; i++) {
+        // order them into an array
+        var result = _.map(keys,function(key){return results[i][key];});
+        // make table row
+        ts+='<tr><td>'+result.join('</td><td>')+'</td></tr>';
+    }
+    ts+='</tbody>';
+    table.append(ts);
+    $('#results').dataTable();
+
+    // var summaryJson = JSON.stringify(simulation.summarize(),null,4);
+    // $('#summary').text(summaryJson);
+
+
+    </script>
+  </head>
+  <body>
+</html>
