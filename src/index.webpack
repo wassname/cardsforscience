@@ -69,7 +69,7 @@
 
     <div id="main-content" class="container-fluid Paired">
     <div class="row">
-      <div class="col-md-3 col-lg-2 col-xs-4 col-no-padding">
+      <div class="col-md-3 col-xs-4 col-no-padding">
         <div class="panel panel-default">
           <div class="panel-heading">
             <h4 class="panel-title">
@@ -105,10 +105,10 @@
         </div>
       </div>
 
-      <div id="column-lab" class="col-md-6 col-xs-8 col-lg-7 col-no-padding-xs" ng-controller="StatsController as lc">
+      <div id="column-lab" class="col-md-6 col-xs-8 col-no-padding-xs" ng-controller="StatsController as lc">
 
         <div class="row status" ng-cloak>
-          <div class="col-xs-12 text-center col-no-padding-xs">
+          <div id="score-display" class="col-xs-12 text-center col-no-padding-xs">
 
             <div class="{{lc.lab.state.score<0?'bg-danger':''}} animate-increase animate-decrease" ><strong>Score</strong><br>{{ lc.lab.state.score | niceNumber }}</div>
             <div class="update-value " ng-model="lc.lab.state.score" cfs-score-change id="update-data"></div>
@@ -131,7 +131,7 @@
                 >
                 <div class="main-line card-line" id="lastCards">
                     <div class="row" >
-                        <div class="col-md-1 col-xs-1 col-no-padding add-from-top" ng-repeat="r in dc.lastCards | limitTo: -10" ng-cloak>
+                        <div class="col-xs-1 col-no-padding add-from-top" ng-repeat="r in dc.lastCards | limitTo: -10" ng-cloak>
                             <span
                                 class="{{r.key}} card {{r.color}}"
                                 data-cards="{{r.key}}"
@@ -145,7 +145,7 @@
                 <div class=""><strong>Incorrect cards:</strong><br></div>
                 <div class="side-line card-line short-lines-nup"  id="incorrectCards">
                     <div class="row">
-                        <div class="col-md-1 col-xs-1 col-no-padding" ng-repeat="rr in dc.incorrectCards | limitTo: -10" ng-cloak>
+                        <div class="col-xs-1 col-no-padding" ng-repeat="rr in dc.incorrectCards | limitTo: -10" ng-cloak>
                             <div class="row">
                                 <div ng-repeat="r in rr| limitTo: -7" class="col-xs-12  col-no-padding add-from-right ">
                                         <span
@@ -194,7 +194,7 @@
 
       </div>
 
-      <div class="col-md-3 col-lg-2 col-xs-6  col-no-padding">
+      <div class="col-md-3 col-xs-6  col-no-padding">
         <div class="panel panel-default">
           <div class="panel-heading">
             <h4 class="panel-title">

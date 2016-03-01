@@ -217,7 +217,7 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
         var self=this;
         console.debug('onClick',arguments);
 
-        var cardType = angular.element(ui.draggable).data('element');
+        var cardType = angular.element(ui.draggable).data('cards');
         var card = _.find(this.cards,{key:cardType});
         return this.play(card);
     };
@@ -225,7 +225,7 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
         var self=this;
         console.debug('onDrop',arguments);
 
-        var cardType = angular.element(ui.draggable).data('element');
+        var cardType = angular.element(ui.draggable).data('cards');
         var card = _.find(this.cards,{key:cardType});
         return this.play(card);
     };
