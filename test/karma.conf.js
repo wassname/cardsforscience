@@ -29,7 +29,15 @@ module.exports = function (config) {
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['progress','html','junit'],
+        reporters: ['dots','html'],
+
+        htmlReporter: {
+          outputFile: 'tests/units.html',
+
+          // Optional
+          pageTitle: 'Unit Tests',
+          subPageTitle: 'A sample project description'
+        },
 
         frameworks: ['jasmine'],
 
@@ -50,12 +58,9 @@ module.exports = function (config) {
             require('karma-ng-html2js-preprocessor'),
             require('karma-chrome-launcher'),
             require('karma-firefox-launcher'),
+            "karma-jasmine-html-reporter-livereload" // displays html summary on debug page
         ],
 
-        junitReporter: {
-            outputFile: 'test_out/unit.xml',
-            suite: 'unit'
-        },
 
         preprocessors: {
             // './build/clientapp.bundle.js': ['webpack','sourcemap'],
@@ -80,10 +85,6 @@ module.exports = function (config) {
             '/json/': '/base/json/'
         },
 
-        // test results reporter to use
-        // possible values: 'dots', 'progress'
-        // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['progress'],
 
         // list of files / patterns to load in the browser
         files: [

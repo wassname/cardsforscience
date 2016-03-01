@@ -91,13 +91,15 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
         // deal new initial cards that follow the rule
         this.lastCards.splice(0,this.lastCards.length);
         this.lastCards.push(_.sample(this.cards));
-        for (var i = 0; i < 52; i++) {
+        var error,i;
+        for (i = 0; i < 52; i++) {
             if (this.lastCards.length>2) break; // stop here
             var card = _.sample(this.cards);
             var res;
             try{
                 res = this.rule.test(card,this.lastCards,this.cards);
             } catch(e){
+                error=e;
                 // in case of an error just add a random card
                 // this is probobly because it is looking back 2 or 3 cards
                 // yet we only have 1
@@ -105,7 +107,23 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
             }
             if (res) this.lastCards.push(_.sample(this.cards));
         }
-        if (this.lastCards.length<3) console.error('Could not deal cards for rule',this.rule.key,this.rule.options);
+        if (this.lastCards.length<3) {
+            console.warn(
+                'Could not deal cards for rule after:',
+                i,
+                this.rule.key,
+                this.rule.options,
+                this.rule.describe(),
+                _.map(this.lastCards,'key'),
+                error?error.message:''
+            );
+            // feck, just deal 3 random then
+            this.lastCards.splice(0,this.lastCards.length);
+            this.lastCards.push(_.sample(this.cards));
+            this.lastCards.push(_.sample(this.cards));
+            this.lastCards.push(_.sample(this.cards));
+
+        }
         // this.lastCards.push.apply(this.lastCards,_.sampleSize(this.cards,3));
 
         this.ruleInfo.splice(0,this.ruleInfo.length);

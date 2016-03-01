@@ -15,6 +15,21 @@ if (!chai){
  */
 var Rules = module.exports = (function functionName(_,chai) {
 
+    var Simulation = function(rules,cards){
+        this.results=[];
+        this.cards=cards;
+        this.rules=rules;
+    };
+    Simulation.prototype.run = function () {
+        var allPromises = [];
+        for (var i = 0; i < this.rules.length; i++) {
+            var rule = this.rules[i];
+            var promises = rule.simulate();
+            allPromises.push(promises);
+        }
+        return Promise.all(allPromises).then(function(data){return _.concat(data);});
+    };
+
 
     /** Generate all combination of arguments from array using functional programming instead of recursive
     * @param {Object} opts    - An array or arrays with keys describing options  [['Ben','Jade','Darren'],['Smith','Miller']]
@@ -306,21 +321,24 @@ var Rules = module.exports = (function functionName(_,chai) {
             $.extend(this.state, state);
         };
     Rule.prototype.simulateOne = function (options,cards,n) {
+        var self = this;
+        // return new Promise(function(resolve, reject) {
         if (!n) n=52*2;
         var t0=new Date();
         var rights=[];
         var wrongs=[];
         var errors=[];
         var lastCards = _.sampleSize(cards,3);
-        this.setOptions(options);
+        self.setOptions(options);
         for (var i = 0; i < n; i++) {
             var res=undefined;
             var error=undefined;
             var card = _.sample(cards);
 
             try{
-                var res = this.testAndTell(card,lastCards,cards);
+                var res = self.testAndTell(card,lastCards,cards);
             } catch(e){
+                console.error('simulateOne',err);
                 error=e;
             }
 
@@ -339,6 +357,7 @@ var Rules = module.exports = (function functionName(_,chai) {
             }
         }
         var ratioRight = rights.length/(rights.length+wrongs.length);
+        if (isNaN(ratioRight)) ratioRight = 0;
         var ok = ratioRight>0.1&&ratioRight<0.66;
         return {
             wrongs:wrongs,
@@ -347,9 +366,9 @@ var Rules = module.exports = (function functionName(_,chai) {
             rights:rights,
             error:errors.length,
             errors:errors,
-            key:this.key,
-            description:this.describe(),
-            options:this.options,
+            key:self.key,
+            description:self.describe(),
+            options:self.options,
             n:n,
             time:new Date()-t0,
             ok:ok,
@@ -360,8 +379,8 @@ var Rules = module.exports = (function functionName(_,chai) {
     Rule.prototype.simulate = function (cards) {
         var results = [];
         for (var i = 0; i < this.optionsPossible.length; i++) {
-            var res = this.simulateOne(this.optionsPossible[i],cards);
-            results.push(res);
+            var result = this.simulateOne(this.optionsPossible[i],cards);
+            results.push(result);
         }
         return results;
     };
@@ -656,6 +675,7 @@ var Rules = module.exports = (function functionName(_,chai) {
     return {
         Rule: Rule,
         rules: rules,
+        Simulation: Simulation,
     };
 
 
