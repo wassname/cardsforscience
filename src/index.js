@@ -9,6 +9,7 @@ require("font-awesome/css/font-awesome.css");
 require("css/style.css");
 
 // img
+require("../favicon.ico");
 require("assets/favicon.png");
 require("assets/favicon_color.png");
 require("assets/favicons/apple-icon-57x57.png");

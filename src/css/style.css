@@ -1,3 +1,6 @@
+
+
+/** rest **/
 body {
   padding-top: 40px;
 }
@@ -302,14 +305,38 @@ h1 br {
 .ui-draggable {
     cursor: move;
 }
+
+/** we need to make sure the fonts used support unicode playing cards **/
+
+@font-face{
+	font-family: 'CardFont';
+	src: url('../fonts/cardfont/cardfont-webfont.eot'); /* IE9 Compat Modes */
+	src: url('../fonts/cardfont/cardfont-webfont.eot?#iefix') format('embedded-opentype'),
+	     url('../fonts/cardfont/cardfont-webfont.woff') format('woff'),
+	     url('../fonts/cardfont/cardfont-webfont.ttf') format('truetype'),
+         url('../fonts/cardfont/cardfont-webfont.svg#cardfont') format('svg'); /* Legacy iOS */
+}
+
 .card {
-    font-size: 3em;
     border: 0px;
     padding: 1px;
     z-index: 50;
     min-width: 50px;
     min-height: 50px;
+    font-size: 3em;
+
+    font-family: 'CardFont' !important;
+    font-style: normal;
+    font-weight: normal;
+    position: relative;
+
+    top: 1px;
+    display: inline-block;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
 }
+
 .card.empty {
     opacity: 0.2;
 }

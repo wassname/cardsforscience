@@ -378,7 +378,7 @@
                             <!-- <th>
                                 {{card.key}}
                             </th> -->
-                            <td ng-repeat='key in ["key", "name", "value", "suit", "color", "royal", "face", "number","loop"]'>
+                            <td class=""card ng-repeat='key in ["key", "name", "value", "suit", "color", "royal", "face", "number","loop"]'>
                                 {{card[key]|boolToTick}}
                             </td>
                         </tr>

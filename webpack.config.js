@@ -96,15 +96,15 @@ module.exports = {
     },
     module: {
         loaders: [
-        {test: /\.js?$/, loader: 'babel-loader?cacheDirectory', exclude: /(node_modules|bower_components)/ },
-        {test: /\.jsx?$/, loader: 'babel-loader?cacheDirectory', exclude: /(node_modules|bower_components)/ },
-        { test: /\.(png)$/i, loader: "file?name=[path][name].[ext]" },
-        { test: /\.(gif)$/i, loader: "file?name=[path][name].[ext]" },
-        { test: /\.(jpe?g)$/i, loader: "file?name=[path][name].[ext]" },
+        {test: /\.js?$/i, loader: 'babel?cacheDirectory', exclude: /(node_modules|bower_components)/ },
+        {test: /\.jsx?$/i, loader: 'babel?cacheDirectory', exclude: /(node_modules|bower_components)/ },
+        { test: /\.(png)$/i, loader: "url?limit=5000&name=[path][name].[ext]" },
+        { test: /\.(gif)$/i, loader: "url?limit=5000&name=[path][name].[ext]" },
+        { test: /\.(jpe?g)$/i, loader: "url?limit=5000&name=[path][name].[ext]" },
         { test: /\.(mp3|ac3|ogg|m4a|wav)$/i, loader: "file?name=[path][name].[ext]" },
-        { test: /\.(ttf|woff|eot|svg|woff2)(\?.*$|$)/i, loader: "file?name=[path][name].[ext]" },
+        { test: /\.(ttf|woff|eot|svg|woff2|ico)(\?.*$|$)/i, loader: "file?&name=[path][name].[ext]" },
         { test: /\.(json)$/i, loader: "json-loader" }, // this loads it as javascript in one go
-        { test: /\.html/,   loader: 'file?name=[path][name].[ext]|html-minify'}, // breaks html template // html-minify?
+        { test: /\.html/i,   loader: 'file?name=[path][name].[ext]!html-minify'}, // breaks html template // html-minify?
         { test: /\.(less)$/i, loader: extractLESS.extract("style-loader", "css-loader",'less-loader') },
         { test: /\.(css)$/i, loader: ExtractTextPlugin.extract("style-loader", "css-loader") }
     ]
@@ -130,5 +130,13 @@ module.exports = {
     debug: DEBUG, // Switch loaders to debug mode.
     // Create Sourcemaps for the bundle
     devtool: DEBUG ? 'source-map' : false, //  slower than 'cheap-module-eval-source-map'
-    plugins: plugins
+    plugins: plugins,
+    'html-minify-loader': {
+         empty: true,        // KEEP empty attributes
+         cdata: true,        // KEEP CDATA from scripts
+         comments: DEBUG,     // KEEP comments
+         dom: {                            // options of !(htmlparser2)[https://github.com/fb55/htmlparser2]
+                lowerCaseAttributeNames: false,      // do not call .toLowerCase for each attribute name (Angular2 uses camelCase attributes)
+         }
+    }
 };
