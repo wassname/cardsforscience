@@ -13,6 +13,7 @@
     <body>
         <h1>Simulate rules</h1>
         <textarea rows="10" style="width: 1000px; height: 400px" id="summary"></textarea>
+        <textarea rows="3" style="width: 1000px; height: 100px" id="oks"></textarea>
         <div id="export"></div>
         <table id="results" class="table">
 
@@ -25,12 +26,18 @@
         <script src="../../../clientApp.bundle.js"></script>
 
     <script>
-    var results = [];
-    for (var i = 0; i < clientApp.Rules.rules.length; i++) {
-        var rule = clientApp.Rules.rules[i];
-        var res = rule.simulate(clientApp.cards);
-        results.push.apply(results,res);
-    }
+
+    var simulation = new clientApp.Rules.Simulation(clientApp.Rules.rules,clientApp.cards);
+    var results=simulation.run();
+    var summary = simulation.summarize()
+    // var results = [];
+    // for (var i = 0; i < clientApp.Rules.rules.length; i++) {
+    //     var rule = clientApp.Rules.rules[i];
+    //     var res = rule.simulate(clientApp.cards);
+    //     results.push.apply(results,res);
+    // }
+
+    $('#oks').text('ok: '+_.map(results,'ok').reduce(_.add)+'/'+results.length);
 
     var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(results));
     $('<a class="btn btn-default" href="data:' + data + '" download="data.json">export table as JSON</a>').appendTo('#export');
@@ -56,8 +63,8 @@
     table.append(ts);
     $('#results').dataTable();
 
-    // var summaryJson = JSON.stringify(simulation.summarize(),null,4);
-    // $('#summary').text(summaryJson);
+    var summaryJson = JSON.stringify(summary,null,4);
+    $('#summary').text(summaryJson);
 
 
     </script>

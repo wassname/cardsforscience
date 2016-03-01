@@ -6,11 +6,6 @@ var gutil = require('gulp-util')
 
 var webpack = require('webpack-stream');
 
-// var source = require('vinyl-source-stream');
-// var buffer = require('vinyl-buffer');
-// var del = require('del');
-// var globby = require('globby');
-
 var concurrent = require("concurrent-transform");
 var rename = require('gulp-rename');
 var awspublish = require('gulp-awspublish');

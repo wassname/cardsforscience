@@ -9,6 +9,8 @@
     <meta property="og:type" content="game">
     <meta property="og:description" content="A card game where you work out the secret rule to determine which cards can be played next.">
     <meta property="og:image" content="assets/favicon.png">
+    <meta name="msvalidate.01" content="36C4A686262A56C0F7978C7A90F26B1A" />
+    <meta name="google-site-verification" content="SF3w4G37_C-mMW_XxVVRNhe1BdkyTjQwQfo9D_G0VbE" />
 
     <link rel="apple-touch-icon" sizes="57x57" href="assets/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="assets/apple-icon-60x60.png">
@@ -67,7 +69,7 @@
 
     <div id="main-content" class="container-fluid Paired">
     <div class="row">
-      <div class="col-md-3 col-md-3s col-lg-2 col-no-padding visible-md-block visible-lg-block">
+      <div class="col-md-3 col-lg-2 col-sm-4 col-no-padding">
         <div class="panel panel-default">
           <div class="panel-heading">
             <h4 class="panel-title">
@@ -81,7 +83,7 @@
             <div id="handContent">
               <div class="row" ng-cloak>
 
-                <div class="col-xs-2 col-no-padding " ng-repeat="r in rc.cards|orderBy:'key'" ng-show="rc.isAvailable(r)">
+                <div class="col-md-2 col-sm-3 col-no-padding " ng-repeat="r in rc.cards|orderBy:'key'" ng-show="rc.isAvailable(r)">
                   <span  ng-show="rc.isAvailable(r)"
                     id="{{r.key}}"
                     class="{{r.key}} card cards-store {{ r.state.interesting ? 'blink' : '' }} {{r.color}} {{rc.isAvailable(r) ? ' ui-draggable': 'empty'}}"
@@ -103,10 +105,10 @@
         </div>
       </div>
 
-      <div id="column-lab" class="col-xs-6 col-md-6 col-md-6s col-lg-7 col-no-padding-xs" ng-controller="StatsController as lc">
+      <div id="column-lab" class="col-md-6 col-sm-8 col-lg-7 col-no-padding-xs" ng-controller="StatsController as lc">
 
         <div class="row status" ng-cloak>
-          <div class="col-xs-12 text-center col-no-padding-xs">
+          <div class="col-sm-12 text-center col-no-padding-xs">
 
             <div class="{{lc.lab.state.score<0?'bg-danger':''}} animate-increase animate-decrease" ><strong>Score</strong><br>{{ lc.lab.state.score | niceNumber }}</div>
             <div class="update-value " ng-model="lc.lab.state.score" cfs-score-change id="update-data"></div>
@@ -129,7 +131,7 @@
                 >
                 <div class="main-line card-line" id="lastCards">
                     <div class="row" >
-                        <div class="col-xs-1 col-no-padding add-from-top" ng-repeat="r in dc.lastCards | limitTo: -10" ng-cloak>
+                        <div class="col-md-1 col-sm-1 col-no-padding add-from-top" ng-repeat="r in dc.lastCards | limitTo: -10" ng-cloak>
                             <span
                                 class="{{r.key}} card {{r.color}}"
                                 data-cards="{{r.key}}"
@@ -143,7 +145,7 @@
                 <div class=""><strong>Incorrect cards:</strong><br></div>
                 <div class="side-line card-line short-lines-nup"  id="incorrectCards">
                     <div class="row">
-                        <div class="col-md-1 col-no-padding" ng-repeat="rr in dc.incorrectCards | limitTo: -10" ng-cloak>
+                        <div class="col-md-1 col-sm-1 col-no-padding" ng-repeat="rr in dc.incorrectCards | limitTo: -10" ng-cloak>
                             <div class="row">
                                 <div ng-repeat="r in rr| limitTo: -7" class="col-md-12  col-no-padding add-from-right ">
                                         <span
@@ -192,8 +194,8 @@
 
       </div>
 
-      <div class="col-md-3 col-md-3s col-lg-2 col-no-padding visible-md-block visible-lg-block">
-        <div class="panel panel-default hidden-xs hidden-sm">
+      <div class="col-md-3 col-lg-2 col-sm-6  col-no-padding">
+        <div class="panel panel-default">
           <div class="panel-heading">
             <h4 class="panel-title">
               <i class="fa fa-wrench"></i> Winning: guess which rule
@@ -217,7 +219,7 @@
         </div>
       </div>
 
-      <div id="column-tabs" class="col-xs-6 visible-xs-block visible-sm-block col-no-padding">
+      <!-- <div id="column-tabs" class="col-xs-6 visible-xs-block visible-sm-block col-no-padding">
         <ul id="TabList" class="nav nav-tabs" role="tablist">
           <li class="active"><a href="#cards" role="tab" data-toggle="tab"><i class="fa fa-cogs"></i> Elements </a></li>
           <li><a href="#hr" role="tab" data-toggle="tab"><i class="fa fa-users"></i> HR</a></li>
@@ -234,7 +236,7 @@
 
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
     </div>
 
@@ -308,7 +310,7 @@
           </div>
           <div class="modal-body">
             <h4>About</h4>
-            <p class="small">Version: 0.6</p>
+            <p class="small">Version: 0.7</p>
 
             <p class="small bg-warning">This is a pre-release. <p>Cards For Science is a card game where you work out the secret rule to determine which cards can be played. This game is based on <a href="http://www.logicmazes.com/games/eleusis/">Eleusis</a> by Robert Abbott and John Golden's <a href="http://www.logicmazes.com/games/eleusis/express.html">Eleusis</a> Express.
 

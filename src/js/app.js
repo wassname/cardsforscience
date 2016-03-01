@@ -432,7 +432,7 @@ var app = (function (Helpers,analytics,Game,Rules) {
             alertify.confirm(
                 'Do you really want to restart the game? All progress will be lost.',
                 function(event){
-                    alertify.alert('Restarting. <p> P.S. The rule was: <p>"'+game.rule.describe(),function(){
+                    alertify.alert('Restarting. <p> The rule was: <p>"'+game.rule.describe(),function(){
                         event.preventDefault();
                         // ObjectStorage.clear();
                         // $window.location.reload(true); /// reloads are better for ads?
@@ -459,7 +459,7 @@ var app = (function (Helpers,analytics,Game,Rules) {
             if (newValue<0&&!vm.lost){
                 vm.lost=true;
                 alertify.alert(
-                    '<p>You lost :( <p> Play again? <p><p>P.S. The rule was: <p>"'+game.rule.describe()+'"',
+                    '<p>You lost :( Play again? <p><p> The rule was: <p>"'+game.rule.describe()+'"',
                     function(event){
                         event.preventDefault();
                         // ObjectStorage.clear();

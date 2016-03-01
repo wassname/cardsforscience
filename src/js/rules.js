@@ -21,13 +21,34 @@ var Rules = module.exports = (function functionName(_,chai) {
         this.rules=rules;
     };
     Simulation.prototype.run = function () {
-        var allPromises = [];
+        var allres = [];
         for (var i = 0; i < this.rules.length; i++) {
             var rule = this.rules[i];
-            var promises = rule.simulate();
-            allPromises.push(promises);
+            var res = rule.simulate(this.cards);
+            allres.push.apply(allres,res);
         }
-        return Promise.all(allPromises).then(function(data){return _.concat(data);});
+        this.results=allres;
+        return allres;
+    };
+    Simulation.prototype.summarize = function () {
+
+        var summarize={};
+        var props = _.keys(this.results[0]);
+        for (var i = 0; i < props.length; i++) {
+            var property=props[i];
+            var vals = _.map(results,property);
+            summarize[property]={
+                min: _.min(vals),
+                max: _.max(vals),
+                n: vals.length,
+                count: _.filter(vals,Boolean).length,
+                hist: _.countBy(vals),
+                mean: _.mean(vals),
+                nTruthy: _.filter(vals,Boolean).length,
+                nFalsey: _.filter(vals,function(v){return !Boolean(v);}).length,
+            };
+        }
+        return summarize;
     };
 
 
@@ -328,9 +349,14 @@ var Rules = module.exports = (function functionName(_,chai) {
         var rights=[];
         var wrongs=[];
         var errors=[];
-        var lastCards = _.sampleSize(cards,3);
         self.setOptions(options);
+
+
+        // simulate once
         for (var i = 0; i < n; i++) {
+            // random last cards each time
+            var lastCards = _.sampleSize(cards,3);
+
             var res=undefined;
             var error=undefined;
             var card = _.sample(cards);
@@ -338,7 +364,7 @@ var Rules = module.exports = (function functionName(_,chai) {
             try{
                 var res = self.testAndTell(card,lastCards,cards);
             } catch(e){
-                console.error('simulateOne',err);
+                console.error('simulateOne',e);
                 error=e;
             }
 
@@ -356,23 +382,24 @@ var Rules = module.exports = (function functionName(_,chai) {
                 }
             }
         }
+
         var ratioRight = rights.length/(rights.length+wrongs.length);
         if (isNaN(ratioRight)) ratioRight = 0;
         var ok = ratioRight>0.1&&ratioRight<0.66;
         return {
-            wrongs:wrongs,
+            wrongs:_.uniq(wrongs),
             wrong:wrongs.length,
             right:rights.length,
-            rights:rights,
+            rights:_.uniq(rights),
             error:errors.length,
-            errors:errors,
+            errors:_.uniq(errors),
             key:self.key,
             description:self.describe(),
             options:self.options,
             n:n,
             time:new Date()-t0,
             ok:ok,
-            ratioRight:_.round(ratioRight,4),
+            ratioRight:_.round(ratioRight,2),
 
         };
     };
@@ -589,7 +616,7 @@ var Rules = module.exports = (function functionName(_,chai) {
 
         new Rule(
             "793d93cb-ca09-4cda-8781-6fce02edf09c",
-            "If the <%= lastn(n) %> card's number is higher than <%= min %>, change <%= property %>, and if lower, keep it the same.",
+            "If the <%= lastn(n) %> card's number is higher than <%= min %>, change <%= property %> from it, and if lower, keep it the same.",
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - options.n];
                 var lastWasHigher = lastNCard.value > options.min;
@@ -635,16 +662,16 @@ var Rules = module.exports = (function functionName(_,chai) {
         ),
         new Rule(
             "f4fba793-f886-4db8-9853-240002bb112e",
-            "If the <%= lastn(n) %> card was a <%= property %> card, play a higher value card otherwise lower. But any card is OK if the <%= lastn(n) %> card was an Ace, King to Joker.",
+            "If the <%= lastn(n) %> card was a <%= property %> card, play a higher value card otherwise lower. But any card is OK if the <%= lastn(n) %> card was an Ace,2, or King to Joker.",
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - options.n];
                 var value = lastNCard.value;
                 var lastHadProperty = lastNCard[options.property];
 
                 // reverse on card of these values
-                var reverseOn=[1,14,15,16];
+                var reverseOn=[1,2,14,15,16];
                 if (reverseOn.indexOf(value)>-1) return true;
-                
+
                 if (lastHadProperty) {
                     return chai.expect(card)
                         .to.have.property('value')

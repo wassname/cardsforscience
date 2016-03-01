@@ -149,7 +149,7 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
         var hypo=[];
 
         // a random 2, 2 variations of each
-        for (var i = 0; i < 3; i++) {
+        for (var i = 0; i < 1; i++) {
             var rule = _.sample(this.rules);
             rule = angular.copy(rule);
             rule.randomize();
