@@ -312,11 +312,11 @@
 
             <p class="small bg-warning">This is a pre-release. <p>Cards For Science is a card game where you work out the secret rule to determine which cards can be played. This game is based on <a href="http://www.logicmazes.com/games/eleusis/">Eleusis</a> by Robert Abbott and John Golden's <a href="http://www.logicmazes.com/games/eleusis/express.html">Eleusis</a> Express.
 
-            <h5>Authors</h5>
+            <h5><em>Authors</em></h5>
             <ul>
               <li><a href="https://github.com/wassname">wassname</a></li>
             </ul>
-            <p>Feel free to get in touch with via GitHub or by sending a message on<br>cardsforscience at wassname.org</a>.</p>
+            <p>Feel free to get in touch via GitHub or by sending a message on<br>cardsforscience at wassname.org</a>.</p>
           </div>
         </div>
       </div>
@@ -330,6 +330,14 @@
             <h4 class="modal-title" id="cardModelLabel">Game</h4>
           </div>
           <div class="modal-body">
+
+            <p class="small bg-warning">This is a pre-release.</p>
+            <p>
+
+            Cards For Science is a card game where you work out the secret rule. The rule decides which card can be played next so you play cards to test the rule.
+
+            <h5><strong>Credits</strong></h5>
+            This game is based on <a href="http://www.logicmazes.com/games/eleusis/">Eleusis</a> by Robert Abbott and John Golden's <a href="http://www.logicmazes.com/games/eleusis/express.html">Eleusis</a> Express.
 
             <h5><strong>Rules</strong></h5>
             <ul>
@@ -347,7 +355,8 @@
             <h5><strong>Hints:</strong></h5>
             <ul>
                 <li>Try to disprove rules, those which remain must be the truth</li>
-                <li>Don't be afraid to use hints</li>
+                <li>Don't be afraid to reveal the rule hints</li>
+                <li>Don't spend too much time thinking before 6 cards have been played.</li>
                 <li>If this rule is too hard restart the game to get a new rule</li>
             </ul>
             <p>
@@ -357,7 +366,7 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th ng-repeat='key in ["key", "name", "value", "suit", "color", "royal", "face", "number"]'>
+                            <th ng-repeat='key in ["key", "name", "value", "suit", "color", "royal", "face", "number","loop"]'>
                                 {{key}}
                             </th>
                         </tr>
@@ -367,7 +376,7 @@
                             <!-- <th>
                                 {{card.key}}
                             </th> -->
-                            <td ng-repeat='key in ["key", "name", "value", "suit", "color", "royal", "face", "number"]'>
+                            <td ng-repeat='key in ["key", "name", "value", "suit", "color", "royal", "face", "number","loop"]'>
                                 {{card[key]|boolToTick}}
                             </td>
                         </tr>

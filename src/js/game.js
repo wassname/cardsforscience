@@ -90,11 +90,11 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
 
         // deal new initial cards that follow the rule
         this.lastCards.splice(0,this.lastCards.length);
-        this.lastCards.push(_.sample(this.cards));
+        this.lastCards.push(angular.copy(_.sample(this.cards)));
         var error,i;
         for (i = 0; i < 52; i++) {
             if (this.lastCards.length>2) break; // stop here
-            var card = _.sample(this.cards);
+            var card = angular.copy(_.sample(this.cards));
             var res;
             try{
                 res = this.rule.test(card,this.lastCards,this.cards);
@@ -103,9 +103,9 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
                 // in case of an error just add a random card
                 // this is probobly because it is looking back 2 or 3 cards
                 // yet we only have 1
-                this.lastCards.push(_.sample(this.cards));
+                this.lastCards.push(card);
             }
-            if (res) this.lastCards.push(_.sample(this.cards));
+            if (res) this.lastCards.push(angular.copy(_.sample(this.cards)));
         }
         if (this.lastCards.length<3) {
             console.warn(
@@ -119,9 +119,9 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
             );
             // feck, just deal 3 random then
             this.lastCards.splice(0,this.lastCards.length);
-            this.lastCards.push(_.sample(this.cards));
-            this.lastCards.push(_.sample(this.cards));
-            this.lastCards.push(_.sample(this.cards));
+            this.lastCards.push(angular.copy(_.sample(this.cards)));
+            this.lastCards.push(angular.copy(_.sample(this.cards)));
+            this.lastCards.push(angular.copy(_.sample(this.cards)));
 
         }
         // this.lastCards.push.apply(this.lastCards,_.sampleSize(this.cards,3));

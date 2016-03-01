@@ -406,7 +406,7 @@ var Rules = module.exports = (function functionName(_,chai) {
             }, {
                 property: {
                     description: 'The property to compare in last and current card',
-                    possibleVals: ['color', 'face', 'number', 'value', 'suit'],
+                    possibleVals: ['color', 'face', 'number', 'suit'],
                     type: 'String'
                 },
                 n: {
@@ -473,8 +473,12 @@ var Rules = module.exports = (function functionName(_,chai) {
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - this.options.n];
                 var val =  card.value%16;
+                var a = (lastNCard.value+options.max)%16;
+                var b = (lastNCard.value+options.min)%16;
+                var max = _.max([a,b]);
+                var min = _.min([a,b]);
                 return chai.expect(val).to.be
-                    .within(lastNCard.value+options.min, lastNCard.value+options.max);
+                    .within(min,max);
             }, {
                 n: 1,
                 min: 1,
@@ -517,7 +521,7 @@ var Rules = module.exports = (function functionName(_,chai) {
             "If the <%= lastn(n) %> card is an even-valued card, play a <%= evenColor %> card. Otherwise play the other color",
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - this.options.n];
-                var lastWasEven = lastNCard % 2 == 0;
+                var lastWasEven = lastNCard.value % 2 == 0;
                 if (lastWasEven)
                     return chai.expect(card)
                         .to.have.property('color')
@@ -528,11 +532,11 @@ var Rules = module.exports = (function functionName(_,chai) {
                         .not.equals(options.evenColor);
             }, {
                 n: 1,
-                evenColor: 'red',
+                evenColor: 'Red',
             }, {
                 evenColor: {
                     description: 'The color to play if lastNCard was even',
-                    possibleVals: ['red', 'black'],
+                    possibleVals: ['Red', 'Black'],
                     type: 'String'
                 },
                 n: {
@@ -607,7 +611,7 @@ var Rules = module.exports = (function functionName(_,chai) {
             }, {
                 property: {
                     description: 'The property to compare to the lastNCard',
-                    possibleVals: ['suit', 'face', 'royal', 'color'],
+                    possibleVals: ['face', 'royal', 'color'],
                     type: 'String'
                 },
                 n: {
@@ -617,7 +621,7 @@ var Rules = module.exports = (function functionName(_,chai) {
                 },
                 min: {
                     description: 'The min difference to the last nth card',
-                    possibleVals: [5, 6, 7, 8, 9],
+                    possibleVals: [3,4,5, 6, 7],
                     type: 'Number'
                 },
             }, [
@@ -631,19 +635,24 @@ var Rules = module.exports = (function functionName(_,chai) {
         ),
         new Rule(
             "f4fba793-f886-4db8-9853-240002bb112e",
-            "If the <%= lastn(n) %> card was a <%= property %> card, play a higher value card otherwise lower.",
-            //TODO what if we have a high card? we can only go higher
+            "If the <%= lastn(n) %> card was a <%= property %> card, play a higher value card otherwise lower. But any card is OK if the <%= lastn(n) %> card was an Ace, King to Joker.",
             function (card, lastCards, allCards, options) {
                 var lastNCard = lastCards[lastCards.length - options.n];
+                var value = lastNCard.value;
                 var lastHadProperty = lastNCard[options.property];
+
+                // reverse on card of these values
+                var reverseOn=[1,14,15,16];
+                if (reverseOn.indexOf(value)>-1) return true;
+                
                 if (lastHadProperty) {
                     return chai.expect(card)
                         .to.have.property('value')
-                        .above(lastNCard[options.value]);
+                        .above(lastNCard.value);
                 } else {
                     return chai.expect(card)
                         .to.have.property('value')
-                        .lessThan(lastNCard[options.value]);
+                        .lessThan(lastNCard.value);
                 }
             }, {
                 n: 1,
@@ -651,7 +660,7 @@ var Rules = module.exports = (function functionName(_,chai) {
             }, {
                 property: {
                     description: 'The property to compare to the lastNCard',
-                    possibleVals: ['face', 'royal', 'spade', 'club', 'diamond', 'heart', 'red', 'black'],
+                    possibleVals: ['spade', 'club', 'diamond', 'heart', 'red', 'black'],
                     type: 'String'
                 },
                 n: {
