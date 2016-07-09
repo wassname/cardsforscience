@@ -64,7 +64,7 @@
         "angular/watchers-execution": [0, "$digest"],
         "angular/window-service": 2
     },
-    "env": {
+    "env": { # http://eslint.org/docs/1.10.3/rules/no-undef.html#environments
         "browser": true,
          "jquery": true,
          "jasmine": true,
@@ -73,7 +73,6 @@
     },
      "globals": {
        "window": true,
-
      },
     "extends": "angular"
 }

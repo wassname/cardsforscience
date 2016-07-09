@@ -54,7 +54,6 @@
     "autoprefixer": "^6.3.3",
     "babel-core": "^6.5.2",
     "babel-loader": "^6.2.4",
-    "bower": "^1.7.7",
     "colors": "^1.1.2",
     "concurrent-transform": "^1.0.0",
     "css-loader": "^0.23.1",
