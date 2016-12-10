@@ -75,6 +75,7 @@ if (DEBUG){
     //);
 } else {
     plugins.push(
+        new webpack.NoErrorsPlugin(),
         new webpack.optimize.DedupePlugin(),
         new webpack.optimize.OccurenceOrderPlugin(),
         uglifyJsPlugin

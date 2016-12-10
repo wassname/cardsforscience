@@ -268,6 +268,10 @@ h1 br {
   }
 }
 
+.pc-icon {
+    background-size: 32px 32px;
+}
+
 /* Retina support */
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5),
     only screen and (min-resolution: 1.5dppx),
@@ -280,6 +284,7 @@ h1 br {
 
   .pc-icon:hover {
     background-image: url('../assets/favicon_color.png');
+    background-size: 32px 32px;
   }
 }
 
@@ -581,4 +586,10 @@ margin left -15px on rows. So we fix it this way **/
 .col-no-padding .row {
   margin-left: 0;
   margin-right: 0;
+}
+
+
+ol.intro {
+    font-size: 16px;
+    padding: 10px;
 }

@@ -8,24 +8,24 @@
     <meta property="og:title" content="Cards For Science">
     <meta property="og:type" content="game">
     <meta property="og:description" content="A card game where you work out the secret rule to determine which cards can be played next.">
-    <meta property="og:image" content="assets/favicon.png">
+    <meta property="og:image" content="src/assets/favicon.png">
     <meta name="msvalidate.01" content="36C4A686262A56C0F7978C7A90F26B1A" />
     <meta name="google-site-verification" content="SF3w4G37_C-mMW_XxVVRNhe1BdkyTjQwQfo9D_G0VbE" />
 
-    <link rel="apple-touch-icon" sizes="57x57" href="assets/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="assets/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="assets/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="assets/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="assets/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="assets/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="assets/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="assets/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="assets/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="assets/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
-    <meta name="msapplication-TileImage" content="ssets//ms-icon-144x144.png">
+    <!-- <link rel="apple-touch-icon" sizes="57x57" href="src/assets/favicons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="src/assets/favicons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="src/assets/favicons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="src/assets/favicons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="src/assets/favicons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="src/assets/favicons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="src/assets/favicons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="src/assets/favicons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="src/assets/favicons/apple-icon-180x180.png"> -->
+    <link rel="icon" type="image/png" sizes="192x192"  href="src/assets/favicons/android-icon-192x192.png">
+    <!-- <link rel="icon" type="image/png" sizes="32x32" href="src/assets/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="src/assets/favicons/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="src/assets/favicons/favicon-16x16.png"> -->
+    <!-- <meta name="msapplication-TileImage" content="asrc/assets/favicons/ms-icon-144x144.png"> -->
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="theme-color" content="#ffffff">
 
@@ -34,6 +34,84 @@
 
   </head>
   <body>
+          <div class="modal fade" id="cardModal" tabindex="-1" role="dialog" aria-labelledby="cardModelLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                  <h4 class="modal-title" id="cardModelLabel">🂠 Help</h4>
+                </div>
+                <div class="modal-body">
+
+
+                  <p>
+
+                  Cards For Science is a solitaire card game where you must work out the secret rule. The rule decides which card can be played next, so play cards to test each rule, then guess correct one to win.
+
+                  <p>
+                      Why are these cards "for science"? To win the game you have rules and try to break them. To do science you form competing hypothesis (or rules) and try to disprove (or break) them. The difference is that players try to discover the rules of the game but scientists try to discover the laws of the universe. Since the universe is complicated science is hard, but don't worry, we can use playing cards for scientific thought. 
+                  </p>
+                  <p>
+                      For example, you have these cards: 🂢, 🂣, and 🂴. You have two rules but only one is true.
+                      <ol>
+                          <li>"The next card must be higher"</li>
+                          <li>"the next card must have a different suite"</li>
+                      </ol>
+                      Are these rules both valid? No because one rule has already been broken. The second rule says we can't have two clubs in a row and we have a two of clubs followed by a three of clubs. That leaves us with rule one, which we guess is the right rule. Correct!
+                  </p>
+                  <p class="small bg-warning">This is a pre-release.</p>
+
+                  <h5><strong>Credits</strong></h5>
+                  This game is inspired by <a href="http://www.logicmazes.com/games/eleusis/">Eleusis</a> by Robert Abbott and John Golden's <a href="http://www.logicmazes.com/games/eleusis/express.html">Eleusis</a> Express.
+                  <h5><strong>Rules</strong></h5>
+                  <ul>
+                      <li>Guess the rule correctly to win the game</li>
+                      <li>The rule determines which card can be put down next</li>
+                      <li>Prove or disprove rules by testing next cards</li>
+                      <li>But putting down an incorrect card decreases your score by 2 and gives you 2 new cards.</li>
+                      <li>Empty your hand to increase your score.</li>
+                      <li>Every game will have a random rule chosen from around 300 rules</li>
+                      <li>Hints cost you 150 points.</li>
+                      <li>At zero points you lose the game.</li>
+                  </ul>
+                  <p>
+
+                  <h5><strong>Hints:</strong></h5>
+                  <ul>
+                      <li>Try to disprove rules, those which remain must be the truth</li>
+                      <li>Don't be afraid to reveal the rule hints</li>
+                      <li>Don't spend too much time thinking before 6 cards have been played.</li>
+                      <li>If this rule is too hard restart the game to get a new rule</li>
+                  </ul>
+                  <p>
+
+                  <h5><strong>Cards and values</strong> </h5>
+                  <div ng-controller="CardController as ec">
+                      <table class="table">
+                          <thead>
+                              <tr>
+                                  <th ng-repeat='key in ["key", "name", "value", "suit", "color", "royal", "face", "number","loop"]'>
+                                      {{key}}
+                                  </th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <tr ng-repeat="card in ec.cards">
+                                  <!-- <th>
+                                      {{card.key}}
+                                  </th> -->
+                                  <td class=""card ng-repeat='key in ["key", "name", "value", "suit", "color", "royal", "face", "number","loop"]'>
+                                      {{card[key]|boolToTick}}
+                                  </td>
+                              </tr>
+                          </tbody>
+                      </table>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
     <div style="display:none">A card game where you work out the secret rule to determine which cards can be played next.</div>
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
       <div class="container-fluid">
@@ -60,7 +138,7 @@
               <!-- </ul> -->
             <!-- </li> -->
 
-            <li><a href="#" data-toggle="modal" data-target="#cardModal">🂠 Game</a></li>
+            <li><a href="#" id="cardModelToggle" data-toggle="modal" data-target="#cardModal">🂠 Help</a></li>
             <li><a href="#" data-toggle="modal" data-target="#myModal"><i class="fa fa-users"></i> About</a></li>
           </ul>
         </div>
@@ -73,7 +151,7 @@
         <div class="panel panel-default">
           <div class="panel-heading">
             <h4 class="panel-title">
-              <i class="fa fa-cogs"></i> Hand
+              <i class="fa fa-cogs"></i> Click a card
             </h4>
           </div>
 
@@ -108,7 +186,16 @@
       <div id="column-lab" class="col-md-6 col-xs-8 col-no-padding-xs" ng-controller="StatsController as lc">
 
         <div class="row status" ng-cloak>
-          <div id="score-display" class="col-xs-12 text-center col-no-padding-xs">
+          <div id="" class="col-xs-8 small text-center col-no-padding-xs">
+          <p><p/>
+              <b>There are four possible rules</b>
+                <ol class="intro">
+                    <li>Test rules by guessing the next card</li>
+                    <li>Choose the correct rule to win (<a href="#" id="cardModelToggle" data-toggle="modal" data-target="#cardModal">more</a>)</li>
+                </ol>
+
+          </div>
+          <div id="score-display" class="col-xs-4 text-center col-no-padding-xs">
 
             <div class="{{lc.lab.state.score<0?'bg-danger':''}} animate-increase animate-decrease" ><strong>Score</strong><br>{{ lc.lab.state.score | niceNumber }}</div>
             <div class="update-value " ng-model="lc.lab.state.score" cfs-score-change id="update-data"></div>
@@ -166,7 +253,7 @@
                 <div ng-click="dc.revealHint()" analytics-on="click" analytics-event="hint" class="col-md-12">
                     <div class="panel panel-default left-list card-panel">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Hint</h3>
+                            <h3 class="panel-title">Buy a <b>hint</b></h3>
                             <div ng-cloak> (-{{dc.hintCost}} score)</div>
                         </div>
                         <div class="panel-body">
@@ -324,72 +411,13 @@
       </div>
     </div>
 
-    <div class="modal fade" id="cardModal" tabindex="-1" role="dialog" aria-labelledby="cardModelLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            <h4 class="modal-title" id="cardModelLabel">Help</h4>
-          </div>
-          <div class="modal-body">
 
-            <p class="small bg-warning">This is a pre-release.</p>
-            <p>
-
-            Cards For Science is a card game where you work out the secret rule. The rule decides which card can be played next so you play cards to test the rule.
-
-            <h5><strong>Credits</strong></h5>
-            This game is based on <a href="http://www.logicmazes.com/games/eleusis/">Eleusis</a> by Robert Abbott and John Golden's <a href="http://www.logicmazes.com/games/eleusis/express.html">Eleusis</a> Express.
-
-            <h5><strong>Rules</strong></h5>
-            <ul>
-                <li>Guess the rule correctly to win the game</li>
-                <li>The rule determines which card can be put down next</li>
-                <li>Prove or disprove rules by testing next cards</li>
-                <li>But putting down an incorrect card decreases your score by 2 and gives you 2 new cards.</li>
-                <li>Empty your hand to increase your score.</li>
-                <li>Every game will have a random rule chosen from around 300 rules</li>
-                <li>Hints cost you 10 points.</li>
-                <li>At zero points you lose the game.</li>
-            </ul>
-            <p>
-
-            <h5><strong>Hints:</strong></h5>
-            <ul>
-                <li>Try to disprove rules, those which remain must be the truth</li>
-                <li>Don't be afraid to reveal the rule hints</li>
-                <li>Don't spend too much time thinking before 6 cards have been played.</li>
-                <li>If this rule is too hard restart the game to get a new rule</li>
-            </ul>
-            <p>
-
-            <h5><strong>Cards and values</strong> </h5>
-            <div ng-controller="CardController as ec">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th ng-repeat='key in ["key", "name", "value", "suit", "color", "royal", "face", "number","loop"]'>
-                                {{key}}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="card in ec.cards">
-                            <!-- <th>
-                                {{card.key}}
-                            </th> -->
-                            <td class=""card ng-repeat='key in ["key", "name", "value", "suit", "color", "royal", "face", "number","loop"]'>
-                                {{card[key]|boolToTick}}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div>
 
   </body>
+  <script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function(event) {
+      // I want to show the help by default
+    //   document.getElementById('cardModelToggle').click()
+  });
+</script>
 </html>

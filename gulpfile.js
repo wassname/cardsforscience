@@ -57,7 +57,7 @@ gulp.task('s3', function () {
             // ...
     };
 
-    return gulp.src('./dist/**',{cwd:'.'})
+    return gulp.src('./dist/**/*.*',{cwd:'.'})
 
         // rename to put in subfolder
         // .pipe(rename(function (path) {
@@ -70,7 +70,7 @@ gulp.task('s3', function () {
         // publisher will add Content-Length, Content-Type and headers specified above
         // If not specified it will set x-amz-acl to public-read by default
         // Noe: this has been made concurrent using concurrent-transform
-        .pipe(concurrent(publisher.publish(headers,{'force':true})), 10)
+        .pipe(concurrent(publisher.publish(headers)), 10)
 
         // create a cache file to speed up consecutive uploads
         .pipe(publisher.cache())

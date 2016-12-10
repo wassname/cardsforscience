@@ -89,42 +89,64 @@ var Game = (function (Helpers, GameObjects, ObjectStorage,Rules,cards,achievemen
         this.dealHand();
 
         // deal new initial cards that follow the rule
-        this.lastCards.splice(0,this.lastCards.length);
-        this.lastCards.push(angular.copy(_.sample(this.cards)));
-        var error,i;
-        for (i = 0; i < 52; i++) {
-            if (this.lastCards.length>2) break; // stop here
-            var card = angular.copy(_.sample(this.cards));
-            var res;
-            try{
-                res = this.rule.test(card,this.lastCards,this.cards);
-            } catch(e){
-                error=e;
-                // in case of an error just add a random card
-                // this is probobly because it is looking back 2 or 3 cards
-                // yet we only have 1
-                this.lastCards.push(card);
-            }
-            if (res) this.lastCards.push(angular.copy(_.sample(this.cards)));
-        }
-        if (this.lastCards.length<3) {
-            console.warn(
-                'Could not deal cards for rule after:',
-                i,
-                this.rule.key,
-                this.rule.options,
-                this.rule.describe(),
-                _.map(this.lastCards,'key'),
-                error?error.message:''
-            );
-            // feck, just deal 3 random then
-            this.lastCards.splice(0,this.lastCards.length);
-            this.lastCards.push(angular.copy(_.sample(this.cards)));
-            this.lastCards.push(angular.copy(_.sample(this.cards)));
-            this.lastCards.push(angular.copy(_.sample(this.cards)));
+        function getInitialCards(rule,cards){
+            function _getInitialCards(rule,cards){
+                var lastCards = [angular.copy(_.sample(cards))]
+                var error,i;
+                for (i = 0; i < 52; i++) {
+                    if (lastCards.length>2) break; // stop here
+                    var card = angular.copy(_.sample(cards));
+                    var res;
+                    try{
+                        res = rule.test(card,lastCards,cards);
+                    } catch(e){
+                        error=e;
+                        // in case of an error just add a random card
+                        // this is probobly because it is looking back 2 or 3 cards
+                        // yet we only have 1
+                        if (e instanceof TypeError && e.message.endsWith("of undefined"))
+                        lastCards.push(card);
+                        else
+                        throw e
+                    }
+                    if (res) lastCards.push(angular.copy(card));
+                }
+                if (lastCards.length<3) {
+                    console.warn(
+                        'Could not deal cards for rule after:',
+                        i,
+                        rule.key,
+                        rule.options,
+                        rule.describe(),
+                        _.map(lastCards,'key'),
+                        error?error.message:''
+                    );
+                    // feck, just deal 3 random then
+                    return null
 
+                } else {
+                    return lastCards
+                }
+            }
+            for (var i = 0; i < 100; i++) {
+                var initialCards = _getInitialCards(rule,cards)
+                if (initialCards) break
+            }
+            if (!initialCards) {
+                throw new Error('Could not deal cards for rule after:' +' ' +
+                    i +' ' +
+                    this.rule.key +' ' +
+                    this.rule.options +' ' +
+                    this.rule.describe() +' ' +
+                    _.map(this.lastCards,'key') +' ' +
+                    error?error.message:'')
+            }
+            return initialCards
         }
-        // this.lastCards.push.apply(this.lastCards,_.sampleSize(this.cards,3));
+
+        let initialCards = getInitialCards(this.rule,this.cards)
+        this.lastCards.splice(0,this.lastCards.length);
+        this.lastCards.push.apply(this.lastCards,initialCards);
 
         this.ruleInfo.splice(0,this.ruleInfo.length);
         this.hints.splice(0,this.hints.length);

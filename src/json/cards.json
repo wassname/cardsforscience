@@ -196,25 +196,7 @@
     "spade": false,
     "club": false,
     "diamond": false
-}, {
-    "key": "🂬",
-    "name": "Knight",
-    "value": 12,
-    "suit": "Spades",
-    "color": "Black",
-    "royal": true,
-    "face": true,
-    "number": false,
-    "red": false,
-    "black": false,
-    "even": true,
-    "odd": false,
-    "loop": false,
-    "heart": false,
-    "spade": false,
-    "club": false,
-    "diamond": false
-}, {
+},  {
     "key": "🂭",
     "name": "Queen",
     "value": 13,
@@ -448,25 +430,7 @@
     "spade": false,
     "club": false,
     "diamond": false
-}, {
-    "key": "🂼",
-    "name": "Knight",
-    "value": 12,
-    "suit": "Hearts",
-    "color": "Red",
-    "royal": true,
-    "face": true,
-    "number": false,
-    "red": false,
-    "black": false,
-    "even": true,
-    "odd": false,
-    "loop": false,
-    "heart": false,
-    "spade": false,
-    "club": false,
-    "diamond": false
-}, {
+},  {
     "key": "🂽",
     "name": "Queen",
     "value": 13,
@@ -695,24 +659,6 @@
     "black": false,
     "even": false,
     "odd": true,
-    "loop": false,
-    "heart": false,
-    "spade": false,
-    "club": false,
-    "diamond": false
-}, {
-    "key": "🃌",
-    "name": "Knight",
-    "value": 12,
-    "suit": "Diamonds",
-    "color": "Red",
-    "royal": true,
-    "face": true,
-    "number": false,
-    "red": false,
-    "black": false,
-    "even": true,
-    "odd": false,
     "loop": false,
     "heart": false,
     "spade": false,
@@ -952,25 +898,7 @@
     "spade": false,
     "club": false,
     "diamond": false
-}, {
-    "key": "🃜",
-    "name": "Knight",
-    "value": 12,
-    "suit": "Clubs",
-    "color": "Black",
-    "royal": true,
-    "face": true,
-    "number": false,
-    "red": false,
-    "black": false,
-    "even": true,
-    "odd": false,
-    "loop": false,
-    "heart": false,
-    "spade": false,
-    "club": false,
-    "diamond": false
-}, {
+},{
     "key": "🃝",
     "name": "Queen",
     "value": 13,
