@@ -4,7 +4,8 @@
  */
 var FastClick = require("fastclick");
 var Cookies = require("js-cookie");
-var UI = module.exports = (function (FastClick,Cookies) {
+export default UI
+var UI = (function (FastClick,Cookies) {
   /** Introduce FastClick for faster clicking on mobile.
    */
   $(function() {

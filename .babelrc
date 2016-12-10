@@ -1,0 +1,16 @@
+{
+    "presets": "Configured to solve this problem http://stackoverflow.com/questions/32211649/debugging-with-webpack-es6-and-babel",
+    "presets": [
+        ["es2015", {
+            "modules": false
+        }],"stage-1"
+    ],
+    "plugins": [
+        "transform-runtime",
+        [
+            "transform-es2015-modules-commonjs-simple", {
+                "noMangle": true
+            }
+        ]
+    ]
+}

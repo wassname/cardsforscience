@@ -1,80 +1,86 @@
 /** App imports **/
 
 // css
-require("css/bootstrap.min.css");
-require("font-awesome/css/font-awesome.css");
-// require("font-awesome/scss/font-awesome.scss");
-// require("bower_components/angular-ui-grid/ui-grid.min.css");
-// require("css/ui-grid.css");
-require("css/style.css");
+import "css/bootstrap.min.css";
+import "font-awesome/css/font-awesome.css";
+// import "font-awesome/scss/font-awesome.scss";
+// import "bower_components/angular-ui-grid/ui-grid.min.css";
+// import "css/ui-grid.css";
+import "css/style.css";
 
 // img
-require("../favicon.ico");
-require("assets/favicon.png");
-require("assets/favicon_color.png");
-require("assets/favicons/apple-icon-57x57.png");
-require("assets/favicons/apple-icon-60x60.png");
-require("assets/favicons/apple-icon-72x72.png");
-require("assets/favicons/apple-icon-76x76.png");
-require("assets/favicons/apple-icon-114x114.png");
-require("assets/favicons/apple-icon-120x120.png");
-require("assets/favicons/apple-icon-144x144.png");
-require("assets/favicons/apple-icon-152x152.png");
-require("assets/favicons/apple-icon-180x180.png");
-require("assets/favicons/android-icon-192x192.png");
-require("assets/favicons/favicon-32x32.png");
-require("assets/favicons/favicon-96x96.png");
-require("assets/favicons/favicon-16x16.png");
-require("assets/favicons/ms-icon-144x144.png");
+import "../favicon.ico";
+import "assets/favicon.png";
+import "assets/favicon_color.png";
+import "assets/favicons/apple-icon-57x57.png";
+import "assets/favicons/apple-icon-60x60.png";
+import "assets/favicons/apple-icon-72x72.png";
+import "assets/favicons/apple-icon-76x76.png";
+import "assets/favicons/apple-icon-114x114.png";
+import "assets/favicons/apple-icon-120x120.png";
+import "assets/favicons/apple-icon-144x144.png";
+import "assets/favicons/apple-icon-152x152.png";
+import "assets/favicons/apple-icon-180x180.png";
+import "assets/favicons/android-icon-192x192.png";
+import "assets/favicons/favicon-32x32.png";
+import "assets/favicons/favicon-96x96.png";
+import "assets/favicons/favicon-16x16.png";
+import "assets/favicons/ms-icon-144x144.png";
 
 // json
-// var cards = require("json/cards.json");
-// var acheivements = require("json/achievements.json");
+// import cards from "json/cards.json";
+// import acheivements from "json/achievements.json";
 
 // deps
-// var jquery = require("jquery");
-// var jqueryUi = require("jquery-ui");
-// var jqueryUiTouchPunch = require("jquery-ui-touch-punch");
-// var jqueryCookie = require("js-cookie");
+// import jquery from "jquery";
+// import jqueryUi from "jquery-ui";
+// import jqueryUiTouchPunch from "jquery-ui-touch-punch";
+// import jqueryCookie from "js-cookie";
 //
-var bootstrap = require("bootstrap");
-// // var retina = require("retina");
-// var FastClick = require("fastclick");
+import bootstrap from "bootstrap";
+// // import retina from "retina";
+// import FastClick from "fastclick";
 //
-// var chai = require("chai");
-// var lodash = require("lodash");
+// import chai from "chai";
+// import lodash from "lodash";
 //
-// var angular = require("angular");
-// var angularDragdrop = require("angular-dragdrop");
-// var angularAnimate = require("angular-animate");
+// import angular from "angular";
+// import angularDragdrop from "angular-dragdrop";
+// import angularAnimate from "angular-animate";
 
 
 // app
-// var ObjectStorage = require("js/storage.js");
-// var Helpers = require("js/helpers.js");
-// var Analytics = require("js/analytics.js");
-// var GameObjects = require("js/gameobjects.js");
-// var Rules = require("js/rules.js");
-// var UI = require("js/ui.js");
-// var Game = require("js/game.js");
-// var app = require("js/app.js");
+import ObjectStorage from "js/storage.js";
+import Helpers from "js/helpers.js";
+import Analytics from "js/analytics.js";
+import GameObjects from "js/gameobjects.js";
+import Rules from "js/rules.js";
+import UI from "js/ui.js";
+import Game from "js/game.js";
+import app from "js/app.js";
+import simulate from "json/simulations.json"
+import cards from "json/cards.json"
 
 /** This file exports parts of the app as a library **/
-var clientApp = module.exports = {
-    ObjectStorage: require("js/storage.js"),
-    Helpers: require("js/helpers.js"),
-    Analytics: require("js/analytics.js"),
-    GameObjects: require("js/gameobjects.js"),
-    Rules: require("js/rules.js"),
-    UI: require("js/ui.js"),
-    Game: require("js/game.js"),
-    app: require("js/app.js"),
-    simulate: require("json/simulations.json"),
-    cards: require("json/cards.json"),
-    // acheivements: require("json/achievements.json"),
-};
+// var clientApp = {
+//     ObjectStorage: import "js/storage.js",
+//     Helpers: import "js/helpers.js",
+//     Analytics: import "js/analytics.js",
+//     GameObjects: import "js/gameobjects.js",
+//     Rules: import "./js/rules.js",
+//     UI: import "js/ui.js",
+//     Game: import "js/game.js",
+//     app: import "js/app.js",
+//     simulate: import "json/simulations.json",
+//     cards: import "json/cards.json",
+//     // acheivements: import "json/achievements.json",
+// };
+var clientApp = {
+    ObjectStorage, Helpers, Analytics, GameObjects, Rules, UI, Game, app, simulate, cards
+}
+export default clientApp
 
-require("js/rules/simulate.html");
+import "js/rules/simulate.html";
 
 // deleteme dev TODO XXX
 console.log('break here for dev');

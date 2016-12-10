@@ -1,5 +1,5 @@
 /** Custom google analystics events **/
-var Helpers = require("js/helpers");
+import Helpers from "js/helpers";
 
 // google analystics async code
 (function (i, s, o, g, r, a, m) {
@@ -14,7 +14,7 @@ var Helpers = require("js/helpers");
     m.parentNode.insertBefore(a, m);
 })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-var analytics = module.exports =
+var analytics = 
 {
     enabled: true,
 
@@ -95,3 +95,5 @@ var analytics = module.exports =
         }
     }
 };
+
+export default analytics

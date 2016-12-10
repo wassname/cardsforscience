@@ -1,8 +1,8 @@
 /** @module Helpers
  * Define some useful helpers that are used throughout the game.
  */
-var ObjectStorage = require("js/storage");
-var jquery = require("jquery");
+import ObjectStorage from "js/storage";
+import jquery from "jquery";
 var Helpers = (function ($,ObjectStorage) {
     'use strict';
     /** Load a file (usually JSON).
@@ -103,4 +103,4 @@ var Helpers = (function ($,ObjectStorage) {
         analytics: 'UA-51809277-5'
     };
 })(jquery, ObjectStorage);
-module.exports=Helpers;
+export default Helpers;

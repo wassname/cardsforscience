@@ -1,7 +1,8 @@
 /** Allows to save objects to HTML5 local storage.
  * However, it can only save properties, not functions.
  */
-var ObjectStorage = module.exports = (function() {
+
+var ObjectStorage = (function() {
   'use strict';
   try {
     var _s = localStorage;
@@ -28,3 +29,4 @@ var ObjectStorage = module.exports = (function() {
     };
   };
 }());
+export default ObjectStorage

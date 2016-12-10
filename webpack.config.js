@@ -90,14 +90,13 @@ module.exports = {
     output: {
         path: path.join(__dirname, DIR),
         // publicPath: '/' + DIR + '/',
-        filename: '[name].bundle.js',
+        filename: '[name].bundle.js?cacheBust=[hash]',
         libraryTarget:'umd', //var [CommonJs, AMD, umd,this]
         library: '[name]' // If set, export the bundle as library
     },
     module: {
         loaders: [
-        {test: /\.js?$/i, loader: 'babel?cacheDirectory', exclude: /(node_modules|bower_components)/ },
-        {test: /\.jsx?$/i, loader: 'babel?cacheDirectory', exclude: /(node_modules|bower_components)/ },
+        {test: /\.jsx?$/i, loader: 'babel?cacheDirectory=node_modules/.cache', exclude: /(node_modules|bower_components)/ },
         { test: /\.(png)$/i, loader: "url?limit=5000&name=[path][name].[ext]" },
         { test: /\.(gif)$/i, loader: "url?limit=5000&name=[path][name].[ext]" },
         { test: /\.(jpe?g)$/i, loader: "url?limit=5000&name=[path][name].[ext]" },

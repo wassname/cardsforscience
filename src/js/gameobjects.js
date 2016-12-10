@@ -2,7 +2,8 @@
  * Game objects such as workers, research, upgrades, and achievements.
  */
 
-var GameObjects = module.exports = (function () {
+
+var GameObjects = (function () {
     'use strict';
     var GLOBAL_VISIBILITY_THRESHOLD = 0.5;
 
@@ -295,3 +296,4 @@ var GameObjects = module.exports = (function () {
         Cards: Cards
     };
 }());
+export default GameObjects

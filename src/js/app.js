@@ -4,26 +4,27 @@
 'use strict';
 
 //deps
-var jquery = require("jquery");
-var jqueryUi = require("jquery-ui");
-var jqueryUiTouchPunch = require("jquery-ui-touch-punch");
-var jsCookie = require("js-cookie");
+import jquery from "jquery";
+import jqueryUi from "jquery-ui";
+import jqueryUiTouchPunch from "jquery-ui-touch-punch";
+import jsCookie from "js-cookie";
 
-var angular = require("angular");
-var angularDragdrop = require("angular-dragdrop");
-var angularAnimate = require("angular-animate");
-var angulartics = require('angulartics');
-var angularticsGoogleAnalytics = require('angulartics-google-analytics');
-var ngAlertify = require("alertify.js/dist/js/ngAlertify.js");
+import angular from "angular";
+import angularDragdrop from "angular-dragdrop";
+import angularAnimate from "angular-animate";
+import angulartics from 'angulartics';
+import angularticsGoogleAnalytics from 'angulartics-google-analytics';
+import ngAlertify from "alertify.js/dist/js/ngAlertify.js";
 
 //app
-var ObjectStorage = require("js/storage");
-var Helpers = require("js/helpers");
-var GameObjects = require("js/gameobjects");
-var analytics = require("js/analytics");
-var Game = require("js/game");
-var Rules = require("js/rules.js");
-var UI = require("js/ui.js");
+import ObjectStorage from "js/storage";
+import Helpers from "js/helpers";
+import GameObjects from "js/gameobjects";
+import analytics from "js/analytics";
+import Game from "js/game";
+import Rules from "js/rules.js";
+import UI from "js/ui.js";
+
 
 var app = (function (Helpers,analytics,Game,Rules) {
     Helpers.validateSaveVersion();
@@ -482,4 +483,5 @@ var app = (function (Helpers,analytics,Game,Rules) {
     analytics.init();
     analytics.sendScreen(analytics.screens.main);
 })(Helpers,analytics,Game,Rules);
-module.exports=app;
+
+export default app;

@@ -1,15 +1,15 @@
 /**
  * Game object load/saves game resources and stores game objects
  */
-var ObjectStorage = require("js/storage.js");
-var Helpers = require("js/helpers.js");
-var GameObjects = require("js/gameobjects.js");
-var Rules = require("js/rules.js");
-var cards = require("json/cards.json");
-var achievements = require("json/achievements.json");
-var ruleSimulations = require("json/simulations.json");
+import ObjectStorage from 'js/storage.js';
+import * as Helpers from './helpers'
+import GameObjects from './gameobjects';
+import * as Rules from './rules.js';
+import cards from 'json/cards.json';
+import achievements from 'json/achievements.json';
+import ruleSimulations from 'json/simulations.json';
 
-var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,cards,achievements) {
+var Game = (function (Helpers, GameObjects, ObjectStorage,Rules,cards,achievements) {
     'use strict';
 
     var Game = function () {
@@ -265,3 +265,5 @@ var Game = module.exports =(function (Helpers, GameObjects, ObjectStorage,Rules,
 
     return Game;
 }(Helpers, GameObjects, ObjectStorage,Rules,cards,achievements));
+
+export default Game
