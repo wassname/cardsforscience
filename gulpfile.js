@@ -4,7 +4,6 @@ var gulp = require('gulp');
 var fs = require('fs');
 var gutil = require('gulp-util')
 
-var webpack = require('webpack-stream');
 
 var concurrent = require("concurrent-transform");
 var rename = require('gulp-rename');
@@ -18,26 +17,6 @@ var production = (process.env.NODE_ENV === 'production');
 var DEBUG = !production;
 console.log('Running in DEBUG='+DEBUG+' mode');
 
-var config = {
-    app_entry: 'client/scripts/main.js',
-    debug: DEBUG,
-};
-
-/*
-Just run webpack
- */
-
-
-gulp.task('webpack', function () {
-    DEBUG = config.debug=false; // run production mode
-    process.env.NODE_ENV='production';
-    var webpackConfig = require('./webpack.config.js');
-    console.log('debug: ', webpackConfig.debug);
-
-    return gulp.src(config.app_entry)
-        .pipe(webpack(require('./webpack.config.js')))
-        .pipe(gulp.dest('dist/'));
-});
 
 
 /** deploy to s3 using gulp-awspublish
@@ -57,7 +36,7 @@ gulp.task('s3', function () {
             // ...
     };
 
-    return gulp.src('./dist/**/*.*',{cwd:'.'})
+    return gulp.src('./src/**/*.*',{cwd:'.'})
 
         // rename to put in subfolder
         // .pipe(rename(function (path) {
@@ -79,5 +58,5 @@ gulp.task('s3', function () {
         .pipe(awspublish.reporter());
 });
 
-gulp.task('default', ['webpack']);
-gulp.task('deploy', ['webpack','s3']);
+// gulp.task('default', ['webpack']);
+gulp.task('deploy', [,'s3']);

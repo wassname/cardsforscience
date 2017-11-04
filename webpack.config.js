@@ -46,7 +46,7 @@ var extractLESS = new ExtractTextPlugin('[name].less');
 //
 // inject bundles into html file template. Note html loader can overwrite output
 var htmlWebpack = new HtmlWebpackPlugin({
-    template: 'src/index.webpack',
+    template: 'src/index.html',
     inject: 'body',
     filename: 'index.html',
     hash: true,
@@ -104,7 +104,7 @@ module.exports = {
         { test: /\.(mp3|ac3|ogg|m4a|wav)$/i, loader: "file?name=[path][name].[ext]" },
         { test: /\.(ttf|woff|eot|svg|woff2|ico)(\?.*$|$)/i, loader: "file?&name=[path][name].[ext]" },
         { test: /\.(json)$/i, loader: "json-loader" }, // this loads it as javascript in one go
-        { test: /\.html/i,   loader: 'file?name=[path][name].[ext]!html-minify'}, // breaks html template // html-minify?
+        { test: /\.html/i,   loader: 'file?name=[path][name].[ext]'}, // breaks html template // html-minify?
         { test: /\.(less)$/i, loader: extractLESS.extract("style-loader", "css-loader",'less-loader') },
         { test: /\.(css)$/i, loader: ExtractTextPlugin.extract("style-loader", "css-loader") }
     ]
